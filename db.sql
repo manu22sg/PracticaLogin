@@ -12,9 +12,7 @@ CREATE TABLE IF NOT EXISTS user (
     password VARCHAR(255) NOT NULL
 );
 
--- Insertar algunos datos de prueba
-INSERT INTO user (name, email, password) VALUES 
-('manu', 'manu@example.com', 'manu');
+
 
 
 
