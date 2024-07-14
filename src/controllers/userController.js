@@ -20,11 +20,23 @@ export const listUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   const { rut } = req.params;
   const { name, email, role } = req.body;
-  await pool.query(
-    "UPDATE users SET name =IFNULL( ?,name), email = IFNULL(?,email), role = IFNULL(?,role), rut = IFNULL(?,rut) ",
-    [name, email, role, rut]
-  );
-  res.json({ message: "Usuario actualizado exitosamente" });
+  try {
+    // Actualizar el usuario especificado por el RUT
+    const [result] = await pool.query(
+      "UPDATE users SET name = IFNULL(?,name), email = IFNULL(?,email), role = IFNULL(?,role) WHERE rut = ?",
+      [name, email, role, rut]
+    );
+
+    if (result.affectedRows <= 0) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Obtener el usuario actualizado
+    const [rows] = await pool.query("SELECT * FROM users WHERE rut = ?", [rut]);
+    res.json(rows[0]);
+  } catch (error) {
+    return res.status(400).json({ message: "Error al actualizar usuario" });
+  }
 };
 
 export const deleteUser = async (req, res) => {

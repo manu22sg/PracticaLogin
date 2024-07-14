@@ -21,12 +21,14 @@ rut VARCHAR(12) PRIMARY KEY NOT NULL UNIQUE,
     role ENUM("Administrador Interno", "Administrador Externo", "Gerente", "Personal Contable", "Persona Administrativa") NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS company(
-    direction VARCHAR(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS companies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    address VARCHAR(100) NOT NULL,
     phone VARCHAR(12) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE PRIMARY KEY,
-    razon_social VARCHAR(100) NOT NULL,
-)
+    password VARCHAR(255) NOT NULL
+);
 
 
 

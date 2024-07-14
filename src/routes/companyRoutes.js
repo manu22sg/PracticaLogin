@@ -4,28 +4,40 @@ import {
   updateCompany,
   deleteCompany,
   listCompany,
+  createCompany,
 } from "../controllers/companyController.js";
 import { authenticateToken, checkRole } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
+
+router.post(
+  "/",
+  authenticateToken,
+  checkRole("Administrador Interno"),
+  createCompany
+);
+
 router.get(
   "/",
   authenticateToken,
   checkRole("Administrador Interno"),
   listCompanies
 );
+
 router.get(
   "/:email",
   authenticateToken,
   checkRole("Administrador Interno"),
   listCompany
 );
+
 router.patch(
   "/:email",
   authenticateToken,
   checkRole("Administrador Interno"),
   updateCompany
 );
+
 router.delete(
   "/:email",
   authenticateToken,

@@ -3,6 +3,11 @@ import { pool } from "../utils/db.js";
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
+  if (!email || !password) {
+    return res
+      .status(400)
+      .json({ message: "Email y contraseña son requeridos" });
+  }
   const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
     email,
   ]);
@@ -24,5 +29,18 @@ export const register = async (req, res) => {
     "INSERT INTO users (rut, name, email, password, role) VALUES (?, ?, ?, ?, ?)",
     [rut, name, email, password, role]
   );
+  if (!rut || !name || !email || !password || !role) {
+    return res.status(400).json({ message: "Faltan campos por llenar" });
+  }
   res.status(201).json({ message: "Usuario registrado exitosamente" });
+};
+
+export const logout = (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Error al cerrar sesión" });
+    }
+    res.clearCookie("sessionID");
+    res.json({ message: "Sesión cerrada exitosamente" });
+  });
 };
