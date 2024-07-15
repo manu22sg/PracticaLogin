@@ -1,5 +1,21 @@
 import jwt from "jsonwebtoken";
 
+// Función para generar el token
+export const generateToken = (user) => {
+  const payload = {
+    rut: user.rut,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+  const secretKey = "mi_clave_secreta_para_jwt";
+  const options = { expiresIn: "1h" };
+
+  return jwt.sign(payload, secretKey, options);
+};
+
+// Middleware para autenticar el token
 export const authenticateToken = (req, res, next) => {
   const token = req.header("Authorization").replace("Bearer ", "");
 
@@ -17,6 +33,7 @@ export const authenticateToken = (req, res, next) => {
   }
 };
 
+// Middleware para verificar el rol del usuario
 export const checkRole = (role) => (req, res, next) => {
   if (req.user.role !== role) {
     return res

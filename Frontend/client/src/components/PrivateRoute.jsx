@@ -1,19 +1,16 @@
-// src/components/PrivateRoute.jsx
-import React from "react";
+import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
-import jwt_decode from "jwt-decode";
+import { AuthContext } from "../context/Contexto"; // Importa el contexto
 
 const PrivateRoute = ({ children, roles }) => {
-  const token = localStorage.getItem("token");
+  const { user } = useContext(AuthContext);
 
-  if (!token) {
+  if (!user) {
     return <Navigate to="/login" />;
   }
 
-  const user = jwt_decode(token);
-
-  if (!roles.includes(user.role)) {
-    return <Navigate to="/login" />;
+  if (roles && !roles.includes(user.role)) {
+    return <Navigate to="/unauthorized" />;
   }
 
   return children;

@@ -8,6 +8,7 @@ export const login = async (req, res) => {
       .status(400)
       .json({ message: "Email y contraseña son requeridos" });
   }
+
   const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
     email,
   ]);
@@ -15,23 +16,35 @@ export const login = async (req, res) => {
   if (rows.length === 0 || rows[0].password !== password) {
     return res.status(401).json({ message: "Email o contraseña incorrectos" });
   }
+
+  const user = rows[0];
   const secretKey = "mi_clave_secreta_para_jwt";
 
-  const token = jwt.sign({ rut: rows[0].rut, role: rows[0].role }, secretKey, {
-    expiresIn: "1h",
-  });
+  const token = jwt.sign(
+    {
+      rut: user.rut,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+    secretKey,
+    { expiresIn: "1h" }
+  );
+
   res.json({ token });
 };
 
 export const register = async (req, res) => {
   const { rut, name, email, password, role } = req.body;
+  if (!rut || !name || !email || !password || !role) {
+    return res.status(400).json({ message: "Faltan campos por llenar" });
+  }
+
   await pool.query(
     "INSERT INTO users (rut, name, email, password, role) VALUES (?, ?, ?, ?, ?)",
     [rut, name, email, password, role]
   );
-  if (!rut || !name || !email || !password || !role) {
-    return res.status(400).json({ message: "Faltan campos por llenar" });
-  }
+
   res.status(201).json({ message: "Usuario registrado exitosamente" });
 };
 

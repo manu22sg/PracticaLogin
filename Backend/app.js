@@ -4,6 +4,7 @@ import path from "path";
 import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import companyRoutes from "./src/routes/companyRoutes.js";
+import cors from "cors";
 
 const app = express();
 const __dirname = path.resolve();
@@ -12,6 +13,12 @@ app.set("port", process.env.PORT || 3000);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Permitir solicitudes desde el frontend en este origen
+    credentials: true, // Permitir enviar y recibir cookies en las solicitudes (si es necesario)
+  })
+);
 
 app.use(
   session({

@@ -1,22 +1,17 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import Sidebar from "./SideBar"; // Asegúrate de importar el Sidebar
+import { Outlet } from "react-router-dom";
 
 const AdminDashboard = () => {
   return (
     <div className="admin-dashboard">
-      <nav>
-        <ul>
-          <li>
-            <Link to="/users">Usuarios</Link>
-          </li>
-          <li>
-            <Link to="/companies">Empresas</Link>
-          </li>
-        </ul>
-      </nav>
-      <header>
-        <Link to="/account">Mi cuenta</Link>
-      </header>
+      <h2>Admin Dashboard</h2>
+      <div className="dashboard-content">
+        <Sidebar />
+        <div className="main-content">
+          <Outlet />
+        </div>
+      </div>
     </div>
   );
 };

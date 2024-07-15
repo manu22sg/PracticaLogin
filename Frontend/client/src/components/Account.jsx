@@ -1,23 +1,20 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import jwt_decode from "jwt-decode";
+import React, { useContext } from "react";
+import { AuthContext } from "../context/Contexto"; // Importa el contexto
 
 const Account = () => {
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-  const user = jwt_decode(token);
+  const { user } = useContext(AuthContext);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
+  if (!user) {
+    return <p>Cargando...</p>; // O cualquier otro mensaje de carga
+  }
 
   return (
-    <div className="account">
-      <h2>Mi cuenta</h2>
-      <p>Nombre: {user.name}</p>
+    <div>
+      <h2>Mi Cuenta</h2>
+      <p>name: {user.name}</p>
+      <p>Rut: {user.rut}</p>
       <p>Email: {user.email}</p>
-      <button onClick={handleLogout}>Logout</button>
+      <p>Rol: {user.role}</p>
     </div>
   );
 };
