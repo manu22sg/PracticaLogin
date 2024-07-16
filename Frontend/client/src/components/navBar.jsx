@@ -5,7 +5,6 @@ import { AuthContext } from "../context/Contexto"; // Importa el contexto
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // Obtén la ubicación actual
   const { user, logout } = useContext(AuthContext);
 
   useEffect(() => {
@@ -18,22 +17,29 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar">
-      <div className="navbar-menu">
+    <nav className="bg-gray-800 text-white flex justify-between items-center px-6 py-3 shadow-md">
+      <div className="flex items-center space-x-4">
+        <Link to="/" className="text-2xl font-bold">
+          Citec UBB
+        </Link>
+        {user && <></>}
+      </div>
+      <div className="flex items-center space-x-4">
         {user ? (
           <>
-            <span className="navbar-item">Hola, {user.name}</span>
-            <span className="navbar-item">Rol: {user.role}</span>
-            <Link to="/account" className="navbar-item">
+            <Link to="/account" className="hover:text-gray-300">
               Mi Cuenta
             </Link>
-            <button onClick={handleLogout} className="navbar-item">
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+            >
               Logout
             </button>
           </>
         ) : (
           location.pathname !== "/login" && (
-            <Link to="/login" className="navbar-item">
+            <Link to="/login" className="hover:text-gray-300">
               Login
             </Link>
           )

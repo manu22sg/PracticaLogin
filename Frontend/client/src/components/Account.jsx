@@ -5,16 +5,24 @@ const Account = () => {
   const { user } = useContext(AuthContext);
 
   if (!user) {
-    return <p>Cargando...</p>; // O cualquier otro mensaje de carga
+    return <p className="text-white">Cargando...</p>; // O cualquier otro mensaje de carga
   }
 
   return (
-    <div>
-      <h2>Mi Cuenta</h2>
-      <p>name: {user.name}</p>
-      <p>Rut: {user.rut}</p>
-      <p>Email: {user.email}</p>
-      <p>Rol: {user.role}</p>
+    <div className="p-4 bg-gray-800 text-white rounded-lg shadow-md max-w-md mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Mi Cuenta</h2>
+      <p className="mb-2">
+        <strong>Nombre:</strong> {user.name}
+      </p>
+      <p className="mb-2">
+        <strong>Rut:</strong> {user.rut}
+      </p>
+      <p className="mb-2">
+        <strong>Email:</strong> {user.email}
+      </p>
+      <p className="mb-2">
+        <strong>Rol:</strong> {user.role}
+      </p>
     </div>
   );
 };

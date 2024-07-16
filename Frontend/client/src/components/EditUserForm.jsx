@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const EditUserForm = ({ user, onClose, onSave }) => {
@@ -6,22 +6,20 @@ const EditUserForm = ({ user, onClose, onSave }) => {
   const [email, setEmail] = useState(user.email);
   const [role, setRole] = useState(user.role);
 
+  useEffect(() => {
+    setName(user.name);
+    setEmail(user.email);
+    setRole(user.role);
+  }, [user]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
         `http://localhost:3000/api/users/${user.rut}`,
-        {
-          name,
-          email,
-          role,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { name, email, role },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       onSave(); // Actualiza la lista de usuarios
       onClose(); // Cierra el formulario
@@ -31,37 +29,51 @@ const EditUserForm = ({ user, onClose, onSave }) => {
   };
 
   return (
-    <div className="edit-user-form">
-      <h2>Editar Usuario</h2>
+    <div className="edit-user-form p-4 bg-gray-800 text-white rounded-lg shadow-md">
+      <h2 className="text-xl font-bold mb-2">Editar Usuario</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Nombre:</label>
+        <div className="mb-2">
+          <label className="block mb-1">Nombre:</label>
           <input
             type="text"
-            value={name}
+            placeholder={name}
             onChange={(e) => setName(e.target.value)}
+            className="p-1 rounded bg-gray-700 text-white w-full"
           />
         </div>
-        <div>
-          <label>Email:</label>
+        <div className="mb-2">
+          <label className="block mb-1">Email:</label>
           <input
             type="email"
-            value={email}
+            placeholder={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="p-1 rounded bg-gray-700 text-white w-full"
           />
         </div>
-        <div>
-          <label>Rol:</label>
+        <div className="mb-2">
+          <label className="block mb-1">Rol:</label>
           <input
             type="text"
-            value={role}
+            placeholder={role}
             onChange={(e) => setRole(e.target.value)}
+            className="p-1 rounded bg-gray-700 text-white w-full"
           />
         </div>
-        <button type="submit">Guardar</button>
-        <button type="button" onClick={onClose}>
-          Cancelar
-        </button>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="mr-2 p-1 bg-blue-500 hover:bg-blue-600 rounded text-white"
+          >
+            Guardar
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 bg-red-500 hover:bg-red-600 rounded text-white"
+          >
+            Cancelar
+          </button>
+        </div>
       </form>
     </div>
   );

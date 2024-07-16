@@ -1,4 +1,3 @@
-// src/components/RegisterForm.jsx
 import React, { useState } from "react";
 import axios from "axios";
 
@@ -33,45 +32,53 @@ const RegisterForm = () => {
   };
 
   return (
-    <div>
-      <h2>Registro</h2>
-      {message && <p>{message}</p>}
+    <div className="p-4 bg-gray-800 text-white rounded-lg shadow-md max-w-md mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Registro</h2>
+      {message && <p className="text-red-500 mb-4">{message}</p>}
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>RUT:</label>
+        <div className="mb-4">
+          <label className="block mb-2">RUT:</label>
           <input
             type="text"
             value={rut}
             onChange={(e) => setRut(e.target.value)}
+            className="w-full p-2 rounded bg-gray-700 text-white"
           />
         </div>
-        <div>
-          <label>Nombre:</label>
+        <div className="mb-4">
+          <label className="block mb-2">Nombre:</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            className="w-full p-2 rounded bg-gray-700 text-white"
           />
         </div>
-        <div>
-          <label>Email:</label>
+        <div className="mb-4">
+          <label className="block mb-2">Email:</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-2 rounded bg-gray-700 text-white"
           />
         </div>
-        <div>
-          <label>Contraseña:</label>
+        <div className="mb-4">
+          <label className="block mb-2">Contraseña:</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 rounded bg-gray-700 text-white"
           />
         </div>
-        <div>
-          <label>Rol:</label>
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
+        <div className="mb-4">
+          <label className="block mb-2">Rol:</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full p-2 rounded bg-gray-700 text-white"
+          >
             <option value="">Selecciona un rol</option>
             <option value="Administrador Interno">Administrador Interno</option>
             <option value="Administrador Externo">Administrador Externo</option>
@@ -82,7 +89,12 @@ const RegisterForm = () => {
             </option>
           </select>
         </div>
-        <button type="submit">Registrar</button>
+        <button
+          type="submit"
+          className="w-full p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
+        >
+          Registrar
+        </button>
       </form>
     </div>
   );

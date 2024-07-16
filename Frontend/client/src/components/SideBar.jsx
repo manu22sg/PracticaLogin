@@ -4,10 +4,15 @@ import getUserFromToken from "../utils/authUtils"; // Importa la función de dec
 
 const Sidebar = () => {
   const [showUserOptions, setShowUserOptions] = useState(false);
+  const [showCompanyOptions, setShowCompanyOptions] = useState(false);
   const user = getUserFromToken();
 
   const toggleUserOptions = () => {
     setShowUserOptions(!showUserOptions);
+  };
+
+  const toggleCompanyOptions = () => {
+    setShowCompanyOptions(!showCompanyOptions);
   };
 
   if (!user || user.role !== "Administrador Interno") {
@@ -15,29 +20,80 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="sidebar">
-      <h3>Menú</h3>
+    <div className="bg-gray-800 text-white w-64 min-h-screen p-4">
+      <h3 className="text-xl font-bold mb-4">Menú</h3>
       <ul>
-        <li>
-          <button onClick={toggleUserOptions} className="sidebar-button">
+        <li className="mb-2">
+          <button
+            onClick={toggleUserOptions}
+            className="w-full text-left px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+          >
             Usuarios
           </button>
           {showUserOptions && (
-            <ul className="submenu">
-              <li>
-                <Link to="/create-user">Crear Usuario</Link>
+            <ul className="ml-4 mt-2">
+              <li className="mb-2">
+                <Link
+                  to="/create-user"
+                  className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+                >
+                  Crear Usuario
+                </Link>
               </li>
-              <li>
-                <Link to="/edit-user">Editar Usuario</Link>
+              <li className="mb-2">
+                <Link
+                  to="/edit-user"
+                  className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+                >
+                  Editar Usuario
+                </Link>
               </li>
-              <li>
-                <Link to="/view-users">Ver Usuarios</Link>
+              <li className="mb-2">
+                <Link
+                  to="/view-users"
+                  className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+                >
+                  Ver Usuarios
+                </Link>
               </li>
             </ul>
           )}
         </li>
-        <li>
-          <Link to="/dashboard/companies">Empresas</Link>
+        <li className="mb-2">
+          <button
+            onClick={toggleCompanyOptions}
+            className="w-full text-left px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+          >
+            Compañías
+          </button>
+          {showCompanyOptions && (
+            <ul className="ml-4 mt-2">
+              <li className="mb-2">
+                <Link
+                  to="/create-company"
+                  className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+                >
+                  Crear Compañía
+                </Link>
+              </li>
+              <li className="mb-2">
+                <Link
+                  to="/edit-company"
+                  className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+                >
+                  Editar Compañía
+                </Link>
+              </li>
+              <li className="mb-2">
+                <Link
+                  to="/view-companies"
+                  className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+                >
+                  Ver Compañías
+                </Link>
+              </li>
+            </ul>
+          )}
         </li>
       </ul>
     </div>
