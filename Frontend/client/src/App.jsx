@@ -6,7 +6,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import EditCompanyForm from "./components/EditCompanyForm";
+
 import CreateCompanyForm from "./components/CreateCompanyForm";
 import ViewCompanies from "./components/ViewCompanies";
 
@@ -21,14 +21,14 @@ import EditUserForm from "./components/EditUserForm";
 import CreateUserForm from "./components/CreateUserForm";
 import ViewUsers from "./components/ViewUsers";
 import Navbar from "./components/navBar";
-// Importa la Sidebar
-import "./App.css";
 import CompanyList from "./components/CompanyList";
+import "./App.css";
 
 const AppContent = () => {
   const location = useLocation();
   const { user, loading } = useContext(AuthContext);
   const isLoginPage = location.pathname === "/login";
+
   if (loading) {
     return <div className="text-white">Cargando...</div>; // Mostrar un mensaje de carga mientras se verifica la autenticación
   }
@@ -49,8 +49,14 @@ const AppContent = () => {
                 </PrivateRoute>
               }
             >
-              <Route path="users" element={<UserList />} />
-              <Route path="edit/:rut" element={<EditUserForm />} />
+              <Route
+                path="users"
+                element={
+                  <PrivateRoute roles={["Administrador Interno"]}>
+                    <UserList />
+                  </PrivateRoute>
+                }
+              ></Route>
             </Route>
             <Route
               path="/account"
@@ -68,14 +74,54 @@ const AppContent = () => {
                 </PrivateRoute>
               }
             />
-            <Route path="/create-user" element={<CreateUserForm />} />
-            <Route path="/edit-user" element={<UserList />} />
-            <Route path="/view-users" element={<ViewUsers />} />
-            <Route path="/create-company" element={<CreateCompanyForm />} />
-            <Route path="/edit-company" element={<CompanyList />} />
-
-            <Route path="/view-companies" element={<ViewCompanies />} />
-
+            <Route
+              path="/create-user"
+              element={
+                <PrivateRoute roles={["Administrador Interno"]}>
+                  <CreateUserForm />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/edit-user"
+              element={
+                <PrivateRoute roles={["Administrador Interno"]}>
+                  <UserList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/view-users"
+              element={
+                <PrivateRoute roles={["Administrador Interno"]}>
+                  <ViewUsers />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/create-company"
+              element={
+                <PrivateRoute roles={["Administrador Interno"]}>
+                  <CreateCompanyForm />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/edit-company"
+              element={
+                <PrivateRoute roles={["Administrador Interno"]}>
+                  <CompanyList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/view-companies"
+              element={
+                <PrivateRoute roles={["Administrador Interno"]}>
+                  <ViewCompanies />
+                </PrivateRoute>
+              }
+            />
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         </div>

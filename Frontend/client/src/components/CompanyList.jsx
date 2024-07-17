@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { getCompanies, deleteCompany } from "../services/api";
 import EditCompanyForm from "./EditCompanyForm";
+import Swal from "sweetalert2";
 
 const CompanyList = () => {
   const [companies, setCompanies] = useState([]);
@@ -13,12 +14,7 @@ const CompanyList = () => {
 
   const fetchCompanies = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:3000/api/companies", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await getCompanies();
       setCompanies(response.data);
     } catch (error) {
       console.error("Error fetching companies: ", error);
@@ -31,22 +27,31 @@ const CompanyList = () => {
   };
 
   const handleDelete = async (companyEmail) => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar esta empresa?")) {
-      try {
-        const token = localStorage.getItem("token");
-        await axios.delete(
-          `http://localhost:3000/api/companies/${companyEmail}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        fetchCompanies();
-      } catch (error) {
-        console.error("Error deleting company: ", error);
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteCompany(companyEmail);
+          fetchCompanies();
+          Swal.fire("¡Eliminado!", "La empresa ha sido eliminada.", "success");
+        } catch (error) {
+          console.error("Error deleting company: ", error);
+          Swal.fire(
+            "Error",
+            "Hubo un problema al eliminar la empresa.",
+            "error"
+          );
+        }
       }
-    }
+    });
   };
 
   const handleSearch = () => {

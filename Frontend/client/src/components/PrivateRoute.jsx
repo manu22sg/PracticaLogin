@@ -5,13 +5,13 @@ import { AuthContext } from "../context/Contexto"; // Importa el contexto
 const PrivateRoute = ({ children, roles }) => {
   const { user } = useContext(AuthContext);
 
-  if (!user) {
+  if (!user || !user.role) {
     return <Navigate to="/login" />;
   }
 
-  if (roles && !roles.includes(user.role)) {
-    return <Navigate to="/unauthorized" />;
-  }
+  // if (roles && !roles.includes(user.role)) {
+  // return <Navigate to="/unauthorized" />;
+  //}
 
   return children;
 };

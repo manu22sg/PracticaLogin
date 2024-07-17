@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { loginUser } from "../services/api";
 import { jwtDecode } from "jwt-decode"; // Importa jwt-decode correctamente
 import { AuthContext } from "../context/Contexto"; // Importa el contexto
 
@@ -20,13 +20,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/login",
-        {
-          email,
-          password,
-        }
-      );
+      const response = await loginUser({ email, password });
 
       const token = response.data.token;
       console.log("Token received:", token); // Verifica que el token se reciba correctamente
@@ -80,6 +74,15 @@ const LoginForm = () => {
           Login
         </button>
       </form>
+      <div className="mt-4 text-center">
+        <p>¿No tienes una cuenta?</p>
+        <button
+          onClick={() => navigate("/register")}
+          className="mt-2 p-2 bg-green-500 hover:bg-green-600 rounded text-white"
+        >
+          Regístrate
+        </button>
+      </div>
     </div>
   );
 };

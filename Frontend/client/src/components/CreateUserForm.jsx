@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { registerUser } from "../services/api";
+import Swal from "sweetalert2";
 
 const CreateUserForm = () => {
   const [rut, setRut] = useState("");
@@ -7,7 +8,6 @@ const CreateUserForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
-  const [error, setError] = useState("");
 
   const rolesDisponibles = [
     "Administrador Interno",
@@ -20,44 +20,37 @@ const CreateUserForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!rut || !name || !email || !password || !role) {
-      setError("Todos los campos son obligatorios");
+      Swal.fire({
+        icon: "warning",
+        title: "Todos los campos son obligatorios",
+      });
       return;
     }
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        "http://localhost:3000/api/auth/register",
-        {
-          rut,
-          name,
-          email,
-          password,
-          role,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      alert("Usuario creado exitosamente");
+      await registerUser({ rut, name, email, password, role });
+      Swal.fire({
+        icon: "success",
+        title: "¡Usuario creado!",
+        text: "Usuario creado exitosamente",
+      });
       setRut("");
       setName("");
       setEmail("");
       setPassword("");
       setRole("");
-      setError("");
     } catch (error) {
-      console.error("Error creating user: ", error);
-      setError("Error al crear el usuario");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error al crear el usuario",
+      });
     }
   };
 
   return (
     <div className="p-4 bg-gray-800 text-white rounded-lg shadow-md max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-4">Crear Usuario</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block mb-2">RUT:</label>

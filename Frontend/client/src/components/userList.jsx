@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { getUsers, deleteUser } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import EditUserForm from "./EditUserForm"; // Importa el nuevo componente
+import Swal from "sweetalert2";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -15,12 +16,7 @@ const UserList = () => {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:3000/api/users", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await getUsers();
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users: ", error);
@@ -33,19 +29,30 @@ const UserList = () => {
   };
 
   const handleDelete = async (userRut) => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
-      try {
-        const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:3000/api/users/${userRut}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        fetchUsers();
-      } catch (error) {
-        console.error("Error deleting user: ", error);
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteUser(userRut);
+          fetchCompanies();
+          Swal.fire("¡Eliminado!", "El usuario ha sido eliminada.", "success");
+        } catch (error) {
+          Swal.fire(
+            "Error",
+            "Hubo un problema al eliminar al usuario.",
+            "error"
+          );
+        }
       }
-    }
+    });
   };
 
   const handleSearch = () => {

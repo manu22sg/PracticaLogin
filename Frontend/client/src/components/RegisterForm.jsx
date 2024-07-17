@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { registerUser } from "../services/api";
+import { useNavigate } from "react-router-dom";
+
+import Swal from "sweetalert2";
 
 const RegisterForm = () => {
   const [rut, setRut] = useState("");
@@ -7,34 +10,40 @@ const RegisterForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
-  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!rut || !name || !email || !password || !role) {
-      setMessage("Faltan campos por llenar");
+      Swal.fire({
+        icon: "warning",
+        title: "Faltan campos por llenar",
+      });
       return;
     }
 
     try {
-      const response = await axios.post("/api/auth/register", {
-        rut,
-        name,
-        email,
-        password,
-        role,
+      const response = await registerUser({ rut, name, email, password, role });
+      Swal.fire({
+        icon: "success",
+        title: "¡Usuario creado!",
+        text: response.data.message,
+      }).then(() => {
+        navigate("/dashboard");
       });
-      setMessage(response.data.message);
     } catch (error) {
-      setMessage("Error al registrar el usuario");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error al registrar el usuario",
+      });
     }
   };
 
   return (
     <div className="p-4 bg-gray-800 text-white rounded-lg shadow-md max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-4">Registro</h2>
-      {message && <p className="text-red-500 mb-4">{message}</p>}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block mb-2">RUT:</label>

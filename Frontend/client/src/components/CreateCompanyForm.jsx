@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { createCompany } from "../services/api";
+import Swal from "sweetalert2";
 
 const CreateCompanyForm = () => {
   const [email, setEmail] = useState("");
@@ -11,29 +12,18 @@ const CreateCompanyForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        "http://localhost:3000/api/companies",
-        { email, name, address, phone, password },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log("Company created successfully:", response.data);
-      alert("Empresa creada exitosamente");
+      await createCompany({ email, name, address, phone, password });
+      Swal.fire({
+        icon: "success",
+        title: "Empresa creada!",
+        text: "Empresa creada exitosamente",
+      });
     } catch (error) {
-      if (error.response) {
-        // El servidor respondió con un código de estado fuera del rango 2xx
-        console.error("Error response:", error.response.data);
-      } else if (error.request) {
-        // La solicitud fue hecha pero no se recibió respuesta
-        console.error("Error request:", error.request);
-      } else {
-        // Algo pasó al configurar la solicitud
-        console.error("Error message:", error.message);
-      }
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error al crear la empresa",
+      });
     }
   };
 

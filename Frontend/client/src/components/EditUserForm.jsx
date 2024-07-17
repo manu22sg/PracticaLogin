@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { updateUser } from "../services/api";
 
 const EditUserForm = ({ user, onClose, onSave }) => {
   const [name, setName] = useState(user.name);
@@ -15,12 +15,7 @@ const EditUserForm = ({ user, onClose, onSave }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
-      await axios.patch(
-        `http://localhost:3000/api/users/${user.rut}`,
-        { name, email, role },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await updateUser(user.rut, { name, email, role });
       onSave(); // Actualiza la lista de usuarios
       onClose(); // Cierra el formulario
     } catch (error) {

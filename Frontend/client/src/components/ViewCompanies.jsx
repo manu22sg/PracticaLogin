@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { getCompanies } from "../services/api";
 
 const ViewCompanies = () => {
   const [companies, setCompanies] = useState([]);
@@ -11,12 +11,7 @@ const ViewCompanies = () => {
 
   const fetchCompanies = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:3000/api/companies", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await getCompanies();
       setCompanies(response.data);
     } catch (error) {
       console.error("Error fetching companies: ", error);

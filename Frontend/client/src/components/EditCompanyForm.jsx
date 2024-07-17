@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { updateCompany } from "../services/api";
 
 const EditCompanyForm = ({ company, onClose, onSave }) => {
   const [email, setEmail] = useState(company.email);
@@ -18,16 +18,13 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
-      await axios.patch(
-        `http://localhost:3000/api/companies/${company.email}`,
-        { email, name, address, phone, password },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await updateCompany(company.email, {
+        email,
+        name,
+        address,
+        phone,
+        password,
+      });
       onSave(); // Actualiza la lista de compañías
       onClose(); // Cierra el formulario
     } catch (error) {

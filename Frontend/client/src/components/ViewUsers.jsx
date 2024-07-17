@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { getUsers } from "../services/api";
 
 const ViewUsers = () => {
   const [users, setUsers] = useState([]);
@@ -11,12 +11,7 @@ const ViewUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:3000/api/users", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await getUsers();
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users: ", error);
