@@ -33,10 +33,18 @@ const RegisterForm = () => {
         navigate("/dashboard");
       });
     } catch (error) {
+      let errorMessage = "Error al registrar el usuario";
+      if (error.response) {
+        if (error.response.status === 409) {
+          errorMessage = "El correo electrónico ya está registrado";
+        } else if (error.response.status === 410) {
+          errorMessage = "El rut ya está registrado";
+        }
+      }
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Error al registrar el usuario",
+        text: errorMessage,
       });
     }
   };

@@ -41,9 +41,9 @@ const CompanyList = () => {
         try {
           await deleteCompany(companyEmail);
           fetchCompanies();
-          Swal.fire("¡Eliminado!", "La empresa ha sido eliminada.", "success");
+          Swal.fire("¡Eliminada!", "La empresa ha sido eliminada.", "success");
         } catch (error) {
-          console.error("Error deleting company: ", error);
+          console.error("Error borrando empresa: ", error);
           Swal.fire(
             "Error",
             "Hubo un problema al eliminar la empresa.",

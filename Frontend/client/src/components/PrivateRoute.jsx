@@ -9,9 +9,9 @@ const PrivateRoute = ({ children, roles }) => {
     return <Navigate to="/login" />;
   }
 
-  // if (roles && !roles.includes(user.role)) {
-  // return <Navigate to="/unauthorized" />;
-  //}
+  if (roles && !roles.includes(user.role)) {
+    return <Navigate to="/dashboard" />;
+  }
 
   return children;
 };

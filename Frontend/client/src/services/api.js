@@ -12,6 +12,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token"); // Limpia el token expirado
+      window.location.href = "/login"; // Redirige al login
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const getCompanies = () => api.get("/companies");
 export const createCompany = (data) => api.post("/companies", data);
 export const updateCompany = (email, data) =>

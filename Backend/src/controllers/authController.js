@@ -1,6 +1,5 @@
-import jwt from "jsonwebtoken";
 import { pool } from "../utils/db.js";
-import { SECRET_KEY } from "../config/envConfig.js";
+
 import { generateToken } from "../middlewares/authMiddleware.js";
 
 export const login = async (req, res) => {
@@ -21,32 +20,36 @@ export const login = async (req, res) => {
 
   const user = rows[0];
 
-  const token = jwt.sign(
-    {
-      rut: user.rut,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
-    SECRET_KEY,
-    { expiresIn: "1h" }
-  );
+  const token = generateToken(user);
 
   res.json({ token });
 };
 
 export const register = async (req, res) => {
   const { rut, name, email, password, role } = req.body;
-  if (!rut || !name || !email || !password || !role) {
-    return res.status(400).json({ message: "Faltan campos por llenar" });
+
+  try {
+    if (!rut || !name || !email || !password || !role) {
+      return res.status(400).json({ message: "Faltan campos por llenar" });
+    }
+    const [existingUser] = await pool.query(
+      "SELECT * FROM users WHERE email = ? OR rut = ?",
+      [email, rut]
+    );
+
+    if (existingUser.length > 0) {
+      if (existingUser[0].email === email) {
+        return res
+          .status(409)
+          .json({ message: "El correo electrónico ya está registrado" });
+      } else if (existingUser[0].rut === rut) {
+        return res.status(410).json({ message: "El rut ya está registrado" });
+      }
+    }
+    res.status(201).json({ message: "Usuario registrado exitosamente" });
+  } catch (error) {
+    res.status(400).json({ message: "Error al registrar usuario" });
   }
-
-  await pool.query(
-    "INSERT INTO users (rut, name, email, password, role) VALUES (?, ?, ?, ?, ?)",
-    [rut, name, email, password, role]
-  );
-
-  res.status(201).json({ message: "Usuario registrado exitosamente" });
 };
 
 export const logout = (req, res) => {
