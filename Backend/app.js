@@ -5,12 +5,9 @@ import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import companyRoutes from "./src/routes/companyRoutes.js";
 import cors from "cors";
-
+import { PORT } from "./src/config/envConfig.js";
 const app = express();
-const __dirname = path.resolve();
 
-app.set("port", process.env.PORT || 3000);
-app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(
@@ -36,6 +33,6 @@ app.use((req, res) => {
   res.status(404).json({ message: "Ruta no encontrada" });
 });
 
-app.listen(app.get("port"), () => {
-  console.log("Servidor escuchando en el puerto", app.get("port"));
+app.listen(PORT, () => {
+  console.log("Servidor escuchando en el puerto", PORT);
 });

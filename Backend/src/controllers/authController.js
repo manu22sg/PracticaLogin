@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import { pool } from "../utils/db.js";
+import { SECRET_KEY } from "../config/envConfig.js";
+import { generateToken } from "../middlewares/authMiddleware.js";
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -18,7 +20,6 @@ export const login = async (req, res) => {
   }
 
   const user = rows[0];
-  const secretKey = "mi_clave_secreta_para_jwt";
 
   const token = jwt.sign(
     {
@@ -27,7 +28,7 @@ export const login = async (req, res) => {
       email: user.email,
       role: user.role,
     },
-    secretKey,
+    SECRET_KEY,
     { expiresIn: "1h" }
   );
 

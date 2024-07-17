@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-
+import { SECRET_KEY } from "../config/envConfig.js";
 // Función para generar el token
 export const generateToken = (user) => {
   const payload = {
@@ -9,10 +9,9 @@ export const generateToken = (user) => {
     role: user.role,
   };
 
-  const secretKey = "mi_clave_secreta_para_jwt";
   const options = { expiresIn: "1h" };
 
-  return jwt.sign(payload, secretKey, options);
+  return jwt.sign(payload, SECRET_KEY, options);
 };
 
 // Middleware para autenticar el token
@@ -24,8 +23,7 @@ export const authenticateToken = (req, res, next) => {
   }
 
   try {
-    const secretKey = "mi_clave_secreta_para_jwt";
-    const verified = jwt.verify(token, secretKey);
+    const verified = jwt.verify(token, SECRET_KEY);
     req.user = verified;
     next();
   } catch (err) {
