@@ -10,28 +10,35 @@ export const login = async (req, res) => {
       .json({ message: "Email y contraseña son requeridos" });
   }
 
-  const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
-    email,
-  ]);
+  try {
+    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
 
-  if (rows.length === 0 || rows[0].password !== password) {
-    return res.status(401).json({ message: "Email o contraseña incorrectos" });
+    if (rows.length === 0 || rows[0].password !== password) {
+      return res
+        .status(401)
+        .json({ message: "Email o contraseña incorrectos" });
+    }
+
+    const user = rows[0];
+
+    const token = generateToken(user);
+
+    res.json({ token });
+  } catch (error) {
+    res.status(500).json({ message: "Error al iniciar sesión" });
   }
-
-  const user = rows[0];
-
-  const token = generateToken(user);
-
-  res.json({ token });
 };
 
 export const register = async (req, res) => {
   const { rut, name, email, password, role } = req.body;
+  if (!rut || !name || !email || !password || !role) {
+    return res.status(400).json({ message: "Faltan campos por llenar" });
+  }
 
   try {
-    if (!rut || !name || !email || !password || !role) {
-      return res.status(400).json({ message: "Faltan campos por llenar" });
-    }
+    // Verificar si el correo electrónico ya está registrado
     const [existingUser] = await pool.query(
       "SELECT * FROM users WHERE email = ? OR rut = ?",
       [email, rut]
@@ -46,9 +53,17 @@ export const register = async (req, res) => {
         return res.status(410).json({ message: "El rut ya está registrado" });
       }
     }
+
+    // Insertar el nuevo usuario en la base de datos
+    await pool.query(
+      "INSERT INTO users (rut, name, email, password, role) VALUES (?, ?, ?, ?, ?)",
+      [rut, name, email, password, role]
+    );
+
     res.status(201).json({ message: "Usuario registrado exitosamente" });
   } catch (error) {
-    res.status(400).json({ message: "Error al registrar usuario" });
+    console.error("Error al registrar usuario:", error);
+    res.status(500).json({ message: "Error al registrar usuario" });
   }
 };
 
