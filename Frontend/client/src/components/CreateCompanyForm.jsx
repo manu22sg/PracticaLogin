@@ -32,7 +32,7 @@ const CreateCompanyForm = () => {
       onSubmit={handleSubmit}
       className="p-4 bg-gray-800 text-white rounded-lg shadow-md max-w-4xl mx-auto"
     >
-      <h2 className="text-2xl font-bold mb-4 text-center">Crear Compañía</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">Crear Empresa</h2>
       <div className="mb-4">
         <label className="block text-white">Email:</label>
         <input
@@ -87,7 +87,7 @@ const CreateCompanyForm = () => {
         type="submit"
         className="p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
       >
-        Crear Compañía
+        Crear Empresa
       </button>
     </form>
   );

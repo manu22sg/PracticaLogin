@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getUsers } from "../services/api";
+import Swal from "sweetalert2";
 
 const ViewUsers = () => {
   const [users, setUsers] = useState([]);
@@ -14,7 +15,11 @@ const ViewUsers = () => {
       const response = await getUsers();
       setUsers(response.data);
     } catch (error) {
-      console.error("Error fetching users: ", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error al cargar los usuarios",
+      });
     }
   };
 

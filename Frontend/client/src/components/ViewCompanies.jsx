@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getCompanies } from "../services/api";
-
+import Swal from "sweetalert2";
 const ViewCompanies = () => {
   const [companies, setCompanies] = useState([]);
   const [searchEmail, setSearchEmail] = useState("");
@@ -14,7 +14,11 @@ const ViewCompanies = () => {
       const response = await getCompanies();
       setCompanies(response.data);
     } catch (error) {
-      console.error("Error fetching companies: ", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error al cargar las empresas",
+      });
     }
   };
 
@@ -27,7 +31,7 @@ const ViewCompanies = () => {
 
   return (
     <div className="p-4 bg-gray-800 text-white rounded-lg shadow-md max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4 text-center">Ver Compañías</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">Ver Empresas</h2>
       <div className="mb-4 flex justify-center">
         <input
           type="text"

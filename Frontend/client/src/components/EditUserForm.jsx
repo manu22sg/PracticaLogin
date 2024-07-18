@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { updateUser } from "../services/api";
+import Swal from "sweetalert2";
 
 const EditUserForm = ({ user, onClose, onSave }) => {
   const [name, setName] = useState(user.name);
@@ -19,7 +20,11 @@ const EditUserForm = ({ user, onClose, onSave }) => {
       onSave(); // Actualiza la lista de usuarios
       onClose(); // Cierra el formulario
     } catch (error) {
-      console.error("Error updating user: ", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error al actualizar el correo electrónico",
+      });
     }
   };
 

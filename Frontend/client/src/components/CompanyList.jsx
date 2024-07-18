@@ -17,7 +17,10 @@ const CompanyList = () => {
       const response = await getCompanies();
       setCompanies(response.data);
     } catch (error) {
-      console.error("Error fetching companies: ", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error al cargar las empresas",
+      });
     }
   };
 

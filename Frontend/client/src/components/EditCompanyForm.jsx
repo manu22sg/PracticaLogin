@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { updateCompany } from "../services/api";
+import Swal from "sweetalert2";
 
 const EditCompanyForm = ({ company, onClose, onSave }) => {
   const [email, setEmail] = useState(company.email);
@@ -25,16 +26,20 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
         phone,
         password,
       });
-      onSave(); // Actualiza la lista de compañías
+      onSave(); // Actualiza la lista de empresas
       onClose(); // Cierra el formulario
     } catch (error) {
-      console.error("Error updating company: ", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error al actualizar la empresa",
+      });
     }
   };
 
   return (
     <div className="edit-company-form p-4 bg-gray-800 text-white rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-2">Editar Compañía</h2>
+      <h2 className="text-xl font-bold mb-2">Editar Empresa</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-2">
           <label className="block mb-1">Email:</label>

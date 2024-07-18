@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/api";
 import { jwtDecode } from "jwt-decode"; // Importa jwt-decode correctamente
 import { AuthContext } from "../context/Contexto"; // Importa el contexto
+import Swal from "sweetalert2";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { user, login } = useContext(AuthContext); // Usa el contexto
 
@@ -18,7 +18,7 @@ const LoginForm = () => {
   }, [user, navigate]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Agrega la función handleSubmit
     try {
       const response = await loginUser({ email, password });
 
@@ -38,14 +38,17 @@ const LoginForm = () => {
         navigate("/some-other-page");
       }
     } catch (error) {
-      setError("Credenciales inválidas. Inténtalo de nuevo.");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Credenciales incorrectas",
+      });
     }
   };
 
   return (
     <div className="p-4 bg-gray-800 text-white rounded-lg shadow-md max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-4">Login</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block mb-2">Email:</label>
