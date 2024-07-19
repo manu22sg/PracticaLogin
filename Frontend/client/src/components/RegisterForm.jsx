@@ -13,6 +13,7 @@ const RegisterForm = () => {
   const [email, setEmail] = useState("");
   const [email_opcional, setEmailOpcional] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("");
   const navigate = useNavigate();
 
@@ -28,11 +29,20 @@ const RegisterForm = () => {
       !fecha_nacimiento ||
       !email ||
       !password ||
+      !confirmPassword ||
       !role
     ) {
       Swal.fire({
         icon: "warning",
         title: "Faltan campos por llenar",
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Swal.fire({
+        icon: "warning",
+        title: "Las contraseñas no coinciden",
       });
       return;
     }
@@ -160,13 +170,30 @@ const RegisterForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Rol:</label>
+          <label className="block mb-2">Confirmar Contraseña:</label>
           <input
-            type="text"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full p-2 rounded bg-gray-200 text-black"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2">Rol:</label>
+          <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
             className="w-full p-2 rounded bg-gray-200 text-black"
-          />
+          >
+            <option value="">Selecciona un rol</option>
+            <option value="Administrador Interno">Administrador Interno</option>
+            <option value="Administrador Externo">Administrador Externo</option>
+            <option value="Gerente">Gerente</option>
+            <option value="Personal Contable">Personal Contable</option>
+            <option value="Persona Administrativa">
+              Persona Administrativa
+            </option>
+          </select>
         </div>
         <button
           type="submit"

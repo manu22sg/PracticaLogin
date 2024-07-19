@@ -179,6 +179,7 @@ const CreateUserForm = () => {
             onChange={(e) => setRole(e.target.value)}
             className="w-full p-2 rounded bg-gray-200 text-black"
           >
+            <option value="">Selecciona un rol</option>
             {rolesDisponibles.map((rol) => (
               <option key={rol} value={rol}>
                 {rol}
@@ -186,32 +187,12 @@ const CreateUserForm = () => {
             ))}
           </select>
         </div>
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="mr-2 p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
-          >
-            Guardar
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setRut("");
-              setName("");
-              setApellidoPaterno("");
-              setApellidoMaterno("");
-              setCelular("");
-              setFechaNacimiento("");
-              setEmail("");
-              setEmailOpcional("");
-              setPassword("");
-              setRole("");
-            }}
-            className="p-2 bg-red-500 hover:bg-red-600 rounded text-white"
-          >
-            Cancelar
-          </button>
-        </div>
+        <button
+          type="submit"
+          className="w-full p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
+        >
+          Crear
+        </button>
       </form>
     </div>
   );
