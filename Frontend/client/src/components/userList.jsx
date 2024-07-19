@@ -42,7 +42,7 @@ const UserList = () => {
       if (result.isConfirmed) {
         try {
           await deleteUser(userRut);
-          fetchCompanies();
+          fetchUsers();
           Swal.fire("¡Eliminado!", "El usuario ha sido eliminada.", "success");
         } catch (error) {
           Swal.fire(
@@ -61,7 +61,7 @@ const UserList = () => {
   };
 
   return (
-    <div className="p-2 bg-gray-800 text-white rounded-lg shadow-md">
+    <div className="p-2 bg-white text-black rounded-lg shadow-md">
       <h2 className="text-xl font-bold mb-2 text-center">Lista de Usuarios</h2>
       <div className="mb-2 flex justify-center">
         <input
@@ -69,7 +69,7 @@ const UserList = () => {
           value={searchRut}
           onChange={(e) => setSearchRut(e.target.value)}
           placeholder="Buscar por RUT"
-          className="p-1 rounded bg-gray-700 text-white"
+          className="p-1 rounded bg-gray-200 text-black"
         />
         <button
           onClick={handleSearch}
@@ -78,8 +78,8 @@ const UserList = () => {
           Buscar
         </button>
       </div>
-      <table className="w-full bg-gray-700 rounded-lg overflow-hidden">
-        <thead className="bg-gray-600">
+      <table className="w-full bg-gray-100 rounded-lg overflow-hidden">
+        <thead className="bg-gray-300">
           <tr>
             <th className="p-1 text-center">Nombre</th>
             <th className="p-1 text-center">Rut</th>
@@ -88,7 +88,7 @@ const UserList = () => {
         </thead>
         <tbody>
           {users.map((user) => (
-            <tr key={user.rut} className="border-b border-gray-600">
+            <tr key={user.rut} className="border-b border-gray-300">
               <td className="p-1 text-center">{user.name}</td>
               <td className="p-1 text-center">{user.rut}</td>
               <td className="p-1 text-right">

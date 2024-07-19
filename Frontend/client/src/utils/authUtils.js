@@ -17,8 +17,13 @@ const getUserFromToken = () => {
 
     // Verifica que el token se decodifique correctamente
     return {
-      name: decoded.name || "", // Asegúrate de que sea una cadena vacía si no hay nombre
-      email: decoded.email || "", // Asegúrate de que sea una cadena vacía si no hay email
+      name: decoded.name || "",
+      apellido_paterno: decoded.apellido_paterno,
+      apellido_materno: decoded.apellido_materno,
+      celular: decoded.celular,
+      fecha_nacimiento: decoded.fecha_nacimiento,
+      email_opcional: decoded.email_opcional,
+      email: decoded.email,
       role: decoded.role,
       rut: decoded.rut,
     };

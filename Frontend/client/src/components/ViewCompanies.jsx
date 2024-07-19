@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { getCompanies } from "../services/api";
 import Swal from "sweetalert2";
+
 const ViewCompanies = () => {
   const [companies, setCompanies] = useState([]);
-  const [searchEmail, setSearchEmail] = useState("");
+  const [searchRut, setSearchRut] = useState("");
 
   useEffect(() => {
     fetchCompanies();
@@ -24,21 +25,21 @@ const ViewCompanies = () => {
 
   const handleSearch = () => {
     const filteredCompanies = companies.filter((company) =>
-      company.email.includes(searchEmail)
+      company.rut.includes(searchRut)
     );
     setCompanies(filteredCompanies);
   };
 
   return (
-    <div className="p-4 bg-gray-800 text-white rounded-lg shadow-md max-w-4xl mx-auto">
+    <div className="p-4 bg-white text-black rounded-lg shadow-md max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-center">Ver Empresas</h2>
       <div className="mb-4 flex justify-center">
         <input
           type="text"
-          value={searchEmail}
-          onChange={(e) => setSearchEmail(e.target.value)}
-          placeholder="Buscar por Email"
-          className="p-2 rounded bg-gray-700 text-white"
+          value={searchRut}
+          onChange={(e) => setSearchRut(e.target.value)}
+          placeholder="Buscar por RUT"
+          className="p-2 rounded bg-gray-200 text-black"
         />
         <button
           onClick={handleSearch}
@@ -47,22 +48,30 @@ const ViewCompanies = () => {
           Buscar
         </button>
       </div>
-      <table className="w-full bg-gray-700 rounded-lg overflow-hidden">
-        <thead className="bg-gray-600">
+      <table className="w-full bg-gray-100 rounded-lg overflow-hidden">
+        <thead className="bg-gray-300">
           <tr>
-            <th className="p-2 text-center">Nombre</th>
+            <th className="p-2 text-center">RUT</th>
             <th className="p-2 text-center">Email</th>
+            <th className="p-2 text-center">Mandante</th>
+            <th className="p-2 text-center">Giro</th>
             <th className="p-2 text-center">Dirección</th>
+            <th className="p-2 text-center">Comuna</th>
+            <th className="p-2 text-center">Ciudad</th>
             <th className="p-2 text-center">Teléfono</th>
           </tr>
         </thead>
         <tbody>
           {companies.map((company) => (
-            <tr key={company.email} className="border-b border-gray-600">
-              <td className="p-2 text-center">{company.name}</td>
+            <tr key={company.rut} className="border-b border-gray-300">
+              <td className="p-2 text-center">{company.rut}</td>
               <td className="p-2 text-center">{company.email}</td>
-              <td className="p-2 text-center">{company.address}</td>
-              <td className="p-2 text-center">{company.phone}</td>
+              <td className="p-2 text-center">{company.mandante}</td>
+              <td className="p-2 text-center">{company.giro}</td>
+              <td className="p-2 text-center">{company.direccion}</td>
+              <td className="p-2 text-center">{company.comuna}</td>
+              <td className="p-2 text-center">{company.ciudad}</td>
+              <td className="p-2 text-center">{company.telefono}</td>
             </tr>
           ))}
         </tbody>

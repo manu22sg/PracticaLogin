@@ -25,21 +25,21 @@ router.get(
 );
 
 router.get(
-  "/:email",
+  "/:rut",
   authenticateToken,
   checkRole("Administrador Interno"),
   listCompany
 );
 
 router.patch(
-  "/:email",
+  "/:rut",
   authenticateToken,
   checkRole("Administrador Interno"),
   updateCompany
 );
 
 router.delete(
-  "/:email",
+  "/:rut",
   authenticateToken,
   checkRole("Administrador Interno"),
   deleteCompany

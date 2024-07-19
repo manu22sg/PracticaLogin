@@ -27,14 +27,39 @@ export const login = async (req, res) => {
 
     res.json({ token });
   } catch (error) {
-    res.status(500).json({ message: "Error al iniciar sesión" });
+    res
+      .status(500)
+      .json({ message: "Error al iniciar sesión", error: error.message });
   }
 };
 
 export const register = async (req, res) => {
-  const { rut, name, email, password, role } = req.body;
-  if (!rut || !name || !email || !password || !role) {
-    return res.status(400).json({ message: "Faltan campos por llenar" });
+  const {
+    rut,
+    name,
+    apellido_paterno,
+    apellido_materno,
+    celular,
+    fecha_nacimiento,
+    email,
+    email_opcional = null,
+    password,
+    role,
+  } = req.body;
+  if (
+    !rut ||
+    !name ||
+    !apellido_paterno ||
+    !apellido_materno ||
+    !celular ||
+    !fecha_nacimiento ||
+    !email ||
+    !password ||
+    !role
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Por favor, llenar los campos vacios" });
   }
 
   try {
@@ -56,14 +81,26 @@ export const register = async (req, res) => {
 
     // Insertar el nuevo usuario en la base de datos
     await pool.query(
-      "INSERT INTO users (rut, name, email, password, role) VALUES (?, ?, ?, ?, ?)",
-      [rut, name, email, password, role]
+      "INSERT INTO users (rut, name, apellido_paterno, apellido_materno, celular,fecha_nacimiento,email,email_opcional,password,role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [
+        rut,
+        name,
+        apellido_paterno,
+        apellido_materno,
+        celular,
+        fecha_nacimiento,
+        email,
+        email_opcional,
+        password,
+        role,
+      ]
     );
 
     res.status(201).json({ message: "Usuario registrado exitosamente" });
   } catch (error) {
-    console.error("Error al registrar usuario:", error);
-    res.status(500).json({ message: "Error al registrar usuario" });
+    res
+      .status(500)
+      .json({ message: "Error al registrar usuario", error: error.message });
   }
 };
 

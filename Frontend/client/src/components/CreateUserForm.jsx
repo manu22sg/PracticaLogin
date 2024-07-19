@@ -5,7 +5,12 @@ import Swal from "sweetalert2";
 const CreateUserForm = () => {
   const [rut, setRut] = useState("");
   const [name, setName] = useState("");
+  const [apellido_paterno, setApellidoPaterno] = useState("");
+  const [apellido_materno, setApellidoMaterno] = useState("");
+  const [celular, setCelular] = useState("");
+  const [fecha_nacimiento, setFechaNacimiento] = useState("");
   const [email, setEmail] = useState("");
+  const [email_opcional, setEmailOpcional] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
 
@@ -19,7 +24,17 @@ const CreateUserForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!rut || !name || !email || !password || !role) {
+    if (
+      !rut ||
+      !name ||
+      !apellido_paterno ||
+      !apellido_materno ||
+      !celular ||
+      !fecha_nacimiento ||
+      !email ||
+      !password ||
+      !role
+    ) {
       Swal.fire({
         icon: "warning",
         title: "Todos los campos son obligatorios",
@@ -28,7 +43,18 @@ const CreateUserForm = () => {
     }
 
     try {
-      await registerUser({ rut, name, email, password, role });
+      await registerUser({
+        rut,
+        name,
+        apellido_paterno,
+        apellido_materno,
+        celular,
+        fecha_nacimiento,
+        email,
+        email_opcional,
+        password,
+        role,
+      });
       Swal.fire({
         icon: "success",
         title: "¡Usuario creado!",
@@ -36,7 +62,12 @@ const CreateUserForm = () => {
       });
       setRut("");
       setName("");
+      setApellidoPaterno("");
+      setApellidoMaterno("");
+      setCelular("");
+      setFechaNacimiento("");
       setEmail("");
+      setEmailOpcional("");
       setPassword("");
       setRole("");
     } catch (error) {
@@ -57,7 +88,7 @@ const CreateUserForm = () => {
   };
 
   return (
-    <div className="p-4 bg-gray-800 text-white rounded-lg shadow-md max-w-md mx-auto">
+    <div className="p-4 bg-white text-black rounded-lg shadow-md max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-4">Crear Usuario</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -66,7 +97,7 @@ const CreateUserForm = () => {
             type="text"
             value={rut}
             onChange={(e) => setRut(e.target.value)}
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded bg-gray-200 text-black"
           />
         </div>
         <div className="mb-4">
@@ -75,7 +106,43 @@ const CreateUserForm = () => {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded bg-gray-200 text-black"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2">Apellido Paterno:</label>
+          <input
+            type="text"
+            value={apellido_paterno}
+            onChange={(e) => setApellidoPaterno(e.target.value)}
+            className="w-full p-2 rounded bg-gray-200 text-black"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2">Apellido Materno:</label>
+          <input
+            type="text"
+            value={apellido_materno}
+            onChange={(e) => setApellidoMaterno(e.target.value)}
+            className="w-full p-2 rounded bg-gray-200 text-black"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2">Celular:</label>
+          <input
+            type="text"
+            value={celular}
+            onChange={(e) => setCelular(e.target.value)}
+            className="w-full p-2 rounded bg-gray-200 text-black"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2">Fecha de Nacimiento:</label>
+          <input
+            type="date"
+            value={fecha_nacimiento}
+            onChange={(e) => setFechaNacimiento(e.target.value)}
+            className="w-full p-2 rounded bg-gray-200 text-black"
           />
         </div>
         <div className="mb-4">
@@ -84,7 +151,16 @@ const CreateUserForm = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded bg-gray-200 text-black"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2">Email Opcional:</label>
+          <input
+            type="email"
+            value={email_opcional}
+            onChange={(e) => setEmailOpcional(e.target.value)}
+            className="w-full p-2 rounded bg-gray-200 text-black"
           />
         </div>
         <div className="mb-4">
@@ -93,7 +169,7 @@ const CreateUserForm = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded bg-gray-200 text-black"
           />
         </div>
         <div className="mb-4">
@@ -101,9 +177,8 @@ const CreateUserForm = () => {
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded bg-gray-200 text-black"
           >
-            <option value="">Selecciona un rol</option>
             {rolesDisponibles.map((rol) => (
               <option key={rol} value={rol}>
                 {rol}
@@ -111,12 +186,32 @@ const CreateUserForm = () => {
             ))}
           </select>
         </div>
-        <button
-          type="submit"
-          className="w-full p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
-        >
-          Crear
-        </button>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="mr-2 p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
+          >
+            Guardar
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setRut("");
+              setName("");
+              setApellidoPaterno("");
+              setApellidoMaterno("");
+              setCelular("");
+              setFechaNacimiento("");
+              setEmail("");
+              setEmailOpcional("");
+              setPassword("");
+              setRole("");
+            }}
+            className="p-2 bg-red-500 hover:bg-red-600 rounded text-white"
+          >
+            Cancelar
+          </button>
+        </div>
       </form>
     </div>
   );

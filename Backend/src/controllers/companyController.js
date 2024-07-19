@@ -2,13 +2,23 @@ import { pool } from "../utils/db.js";
 
 export const createCompany = async (req, res) => {
   try {
-    const { email, name, address, phone, password } = req.body;
-    if (!email || !name || !address || !phone || !password) {
+    const { rut, email, mandante, giro, direccion, comuna, ciudad, telefono } =
+      req.body;
+    if (
+      !rut ||
+      !email ||
+      !mandante ||
+      !giro ||
+      !direccion ||
+      !comuna ||
+      !ciudad ||
+      !telefono
+    ) {
       return res.status(400).json({ message: "Faltan campos por llenar" });
     }
     await pool.query(
-      "INSERT INTO companies (email, name, address, phone, password) VALUES (?, ?, ?, ?, ?)",
-      [email, name, address, phone, password]
+      "INSERT INTO companies (rut,email, mandante, giro, direccion, comuna, ciudad, telefono) VALUES (?,?, ?, ?, ?, ?, ?, ?)",
+      [rut, email, mandante, giro, direccion, comuna, ciudad, telefono]
     );
     res.json({ message: "Empresa creada exitosamente" });
   } catch (error) {
@@ -34,11 +44,10 @@ export const listCompanies = async (req, res) => {
 
 export const listCompany = async (req, res) => {
   try {
-    const { email } = req.params;
-    const [rows] = await pool.query("SELECT * FROM companies WHERE email = ?", [
-      email,
+    const { rut } = req.params;
+    const [rows] = await pool.query("SELECT * FROM companies WHERE rut = ?", [
+      rut,
     ]);
-
     if (rows.length <= 0) {
       return res.status(404).json({ message: "Empresa no encontrada" });
     }
@@ -52,9 +61,9 @@ export const listCompany = async (req, res) => {
 
 export const deleteCompany = async (req, res) => {
   try {
-    const { email } = req.params;
-    const [result] = await pool.query("DELETE FROM companies WHERE email = ?", [
-      email,
+    const { rut } = req.params;
+    const [result] = await pool.query("DELETE FROM companies WHERE rut = ?", [
+      rut,
     ]);
     if (result.affectedRows <= 0) {
       return res.status(404).json({ message: "Empresa no encontrada" });
@@ -69,17 +78,18 @@ export const deleteCompany = async (req, res) => {
 
 export const updateCompany = async (req, res) => {
   try {
-    const { email } = req.params;
-    const { name, address, phone, password } = req.body;
+    const { rut } = req.params;
+    const { email, mandante, giro, direccion, comuna, ciudad, telefono } =
+      req.body;
     const [result] = await pool.query(
-      "UPDATE companies SET name = IFNULL(?, name), address = IFNULL(?, address), phone = IFNULL(?, phone), password = IFNULL(?, password) WHERE email = ?",
-      [name, address, phone, password, email]
+      "UPDATE companies SET email = IFNULL(?, email), mandante = IFNULL(?, mandante), giro = IFNULL(?, giro), direccion = IFNULL(?, direccion), comuna = IFNULL(?, comuna), ciudad = IFNULL(?, ciudad), telefono = IFNULL(?, telefono) WHERE rut = ?",
+      [email, mandante, giro, direccion, comuna, ciudad, telefono, rut]
     );
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Empresa no encontrada" });
     }
-    const [rows] = await pool.query("SELECT * FROM companies WHERE email = ?", [
-      email,
+    const [rows] = await pool.query("SELECT * FROM companies WHERE rut = ?", [
+      rut,
     ]);
     res.json(rows[0]);
   } catch (error) {

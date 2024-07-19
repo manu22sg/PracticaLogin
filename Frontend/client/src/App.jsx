@@ -34,7 +34,7 @@ const AppContent = () => {
   }
 
   return (
-    <div className="bg-gray-900 min-h-screen text-white">
+    <div className="bg-white text-black">
       {!isLoginPage && <Navbar />}
       <div className="container mx-auto py-4 flex">
         <div className="flex-1 p-4">

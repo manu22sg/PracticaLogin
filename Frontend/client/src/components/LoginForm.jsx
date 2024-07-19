@@ -23,7 +23,7 @@ const LoginForm = () => {
       const response = await loginUser({ email, password });
 
       const token = response.data.token;
-      console.log("Token received:", token); // Verifica que el token se reciba correctamente
+      console.log("Token recibido:", token); // Verifica que el token se reciba correctamente
       login(token); // Usa la función login del contexto
 
       // Decodificar el token para verificar el rol del usuario
@@ -35,7 +35,7 @@ const LoginForm = () => {
         navigate("/dashboard");
       } else {
         // Redirigir a una página diferente si el rol no es Administrador Interno
-        navigate("/some-other-page");
+        navigate("/algunaotrapagina");
       }
     } catch (error) {
       Swal.fire({
@@ -47,7 +47,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="p-4 bg-gray-800 text-white rounded-lg shadow-md max-w-md mx-auto">
+    <div className="p-4 bg-white text-black rounded-lg shadow-md max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-4">Login</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -57,7 +57,7 @@ const LoginForm = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded bg-gray-200 text-black"
           />
         </div>
         <div className="mb-4">
@@ -67,7 +67,7 @@ const LoginForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded bg-gray-200 text-black"
           />
         </div>
         <button

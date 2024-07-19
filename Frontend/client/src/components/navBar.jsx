@@ -17,9 +17,9 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-800 text-white flex justify-between items-center px-6 py-3 shadow-md">
+    <nav className="bg-white text-black flex justify-between items-center px-6 py-3 shadow-md">
       <div className="flex items-center space-x-4">
-        <Link to="/" className="text-2xl font-bold">
+        <Link to="/dashboard" className="text-2xl font-bold">
           Citec UBB
         </Link>
         {user && <></>}
@@ -27,7 +27,7 @@ const Navbar = () => {
       <div className="flex items-center space-x-4">
         {user ? (
           <>
-            <Link to="/account" className="hover:text-gray-300">
+            <Link to="/account" className="hover:text-gray-700">
               Mi Cuenta
             </Link>
             <button
@@ -39,7 +39,7 @@ const Navbar = () => {
           </>
         ) : (
           location.pathname !== "/login" && (
-            <Link to="/login" className="hover:text-gray-300">
+            <Link to="/login" className="hover:text-gray-700">
               Login
             </Link>
           )

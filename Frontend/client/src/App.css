@@ -1,218 +1,32 @@
-/* src/App.css */
-.admin-dashboard {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
 .admin-dashboard nav {
-  background: #f4f4f4;
-  width: 200px;
-  padding: 20px;
-}
-
-.admin-dashboard nav ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.admin-dashboard nav ul li {
-  margin-bottom: 10px;
-}
-
-.admin-dashboard header {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-.account {
-  padding: 20px;
+  background: #ffffff; /* Cambiado a blanco */
 }
 
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  background-color: #333;
-  color: white;
+  background-color: #ffffff; /* Cambiado a blanco */
+  color: black; /* Cambiado a negro */
 }
 
 .navbar-brand a {
-  color: white;
-  text-decoration: none;
-  font-size: 1.5rem;
-}
-
-.navbar-menu {
-  display: flex;
-  align-items: center;
-}
-
-.navbar-item {
-  margin-left: 1rem;
-  cursor: pointer;
+  color: black; /* Cambiado a negro */
 }
 
 .navbar-item a {
-  color: white;
-  text-decoration: none;
+  color: black; /* Cambiado a negro */
 }
 
 .navbar-item button {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-.user-list {
-  list-style-type: none;
-  padding: 0;
-}
-
-.user-list-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  border-bottom: 1px solid #ccc;
-}
-
-.user-list-item span {
-  flex: 1;
-}
-
-.user-list-item strong {
-  flex: 1;
-  text-align: left;
-}
-
-.edit-button {
-  background-color: green;
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  cursor: pointer;
-  margin-right: 0.5rem;
-}
-
-.delete-button {
-  background-color: red;
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  cursor: pointer;
-}
-.user-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-.user-table th, .user-table td {
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  text-align: left;
-}
-
-.user-table th {
-  background-color: #f4f4f4;
-}
-
-.edit-button {
-  background-color: green;
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  cursor: pointer;
-  margin-right: 0.5rem;
-}
-
-.delete-button {
-  background-color: red;
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  cursor: pointer;
-}
-
-.main-content {
-  display: flex;
+  color: black; /* Cambiado a negro */
 }
 
 .sidebar {
-  width: 200px;
-  background-color: #f4f4f4;
-  padding: 1rem;
-}
-
-.sidebar h3 {
-  margin-top: 0;
-}
-
-.sidebar ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.sidebar ul li {
-  margin-bottom: 1rem;
+  background-color: #ffffff; /* Cambiado a blanco */
 }
 
 .sidebar ul li a, .sidebar-button {
-  text-decoration: none;
-  color: #333;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  font: inherit;
-}
-
-.submenu {
-  list-style-type: none;
-  padding-left: 1rem;
-}
-
-.submenu li {
-  margin-bottom: 0.5rem;
-}
-
-.content {
-  flex: 1;
-  padding: 1rem;
-}
-
-.user-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-.user-table th, .user-table td {
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  text-align: left;
+  color: #333; /* Mantener el color del texto */
 }
 
 .user-table th {
-  background-color: #f4f4f4;
-}
-
-.edit-button {
-  background-color: green;
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  cursor: pointer;
-  margin-right: 0.5rem;
-}
-
-.delete-button {
-  background-color: red;
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  cursor: pointer;
+  background-color: #ffffff; /* Cambiado a blanco */
 }

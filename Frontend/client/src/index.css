@@ -12,6 +12,7 @@
   max-width: 300px;
   border: 1px solid #ccc;
   border-radius: 10px;
+  background-color: #ffffff; /* Añadido fondo blanco */
 }
 
 .register-form div {
@@ -29,6 +30,8 @@
   font-size: 1em;
   width: 100%;
   box-sizing: border-box;
+  border: 1px solid #ccc; /* Añadido borde */
+  border-radius: 5px; /* Añadido borde redondeado */
 }
 
 .register-form button {

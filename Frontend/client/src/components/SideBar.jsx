@@ -20,13 +20,13 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="bg-gray-800 text-white w-64 min-h-screen p-4">
+    <div className="bg-white text-black w-64 min-h-screen p-4">
       <h3 className="text-xl font-bold mb-4">Menú</h3>
       <ul>
         <li className="mb-2">
           <button
             onClick={toggleUserOptions}
-            className="w-full text-left px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+            className="w-full text-left px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
           >
             Usuarios
           </button>
@@ -35,7 +35,7 @@ const Sidebar = () => {
               <li className="mb-2">
                 <Link
                   to="/create-user"
-                  className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+                  className="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
                 >
                   Crear Usuario
                 </Link>
@@ -43,7 +43,7 @@ const Sidebar = () => {
               <li className="mb-2">
                 <Link
                   to="/edit-user"
-                  className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+                  className="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
                 >
                   Editar Usuario
                 </Link>
@@ -51,7 +51,7 @@ const Sidebar = () => {
               <li className="mb-2">
                 <Link
                   to="/view-users"
-                  className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+                  className="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
                 >
                   Ver Usuarios
                 </Link>
@@ -62,7 +62,7 @@ const Sidebar = () => {
         <li className="mb-2">
           <button
             onClick={toggleCompanyOptions}
-            className="w-full text-left px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+            className="w-full text-left px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
           >
             Empresas
           </button>
@@ -71,7 +71,7 @@ const Sidebar = () => {
               <li className="mb-2">
                 <Link
                   to="/create-company"
-                  className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+                  className="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
                 >
                   Crear Empresa
                 </Link>
@@ -79,7 +79,7 @@ const Sidebar = () => {
               <li className="mb-2">
                 <Link
                   to="/edit-company"
-                  className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+                  className="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
                 >
                   Editar Empresa
                 </Link>
@@ -87,7 +87,7 @@ const Sidebar = () => {
               <li className="mb-2">
                 <Link
                   to="/view-companies"
-                  className="block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+                  className="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
                 >
                   Ver Empresas
                 </Link>

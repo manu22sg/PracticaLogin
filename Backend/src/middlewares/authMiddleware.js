@@ -5,7 +5,12 @@ export const generateToken = (user) => {
   const payload = {
     rut: user.rut,
     name: user.name,
+    apellido_paterno: user.apellido_paterno,
+    apellido_materno: user.apellido_materno,
+    celular: user.celular,
+    fecha_nacimiento: user.fecha_nacimiento,
     email: user.email,
+    email_opcional: user.email_opcional,
     role: user.role,
   };
 
