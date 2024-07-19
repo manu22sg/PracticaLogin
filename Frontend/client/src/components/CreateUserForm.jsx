@@ -12,6 +12,7 @@ const CreateUserForm = () => {
   const [email, setEmail] = useState("");
   const [email_opcional, setEmailOpcional] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("");
 
   const rolesDisponibles = [
@@ -33,11 +34,21 @@ const CreateUserForm = () => {
       !fecha_nacimiento ||
       !email ||
       !password ||
+      !confirmPassword ||
       !role
     ) {
       Swal.fire({
         icon: "warning",
         title: "Todos los campos son obligatorios",
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Las contraseñas no coinciden",
       });
       return;
     }
@@ -69,6 +80,7 @@ const CreateUserForm = () => {
       setEmail("");
       setEmailOpcional("");
       setPassword("");
+      setConfirmPassword("");
       setRole("");
     } catch (error) {
       let errorMessage = "Error al registrar el usuario";
@@ -169,6 +181,15 @@ const CreateUserForm = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 rounded bg-gray-200 text-black"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2">Confirmar Contraseña:</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             className="w-full p-2 rounded bg-gray-200 text-black"
           />
         </div>
