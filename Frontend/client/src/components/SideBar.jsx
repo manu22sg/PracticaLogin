@@ -20,7 +20,7 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="bg-white text-black w-64 min-h-screen p-4">
+    <div className="sidebar bg-white text-black w-48 h-screen fixed top-16 left-0 overflow-y-auto p-4">
       <h3 className="text-xl font-bold mb-4">Menú</h3>
       <ul>
         <li className="mb-2">

@@ -46,3 +46,14 @@
 .register-form button:hover {
   background-color: #0056b3;
 }
+.sidebar {
+  width: 200px;
+  transition: transform 0.3s ease;
+}
+.main-content {
+  margin-left: 200px; /* Debe coincidir con el ancho de la sidebar */
+  padding: 20px;
+}
+
+
+

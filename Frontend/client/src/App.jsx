@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -9,7 +9,6 @@ import {
 
 import CreateCompanyForm from "./components/CreateCompanyForm";
 import ViewCompanies from "./components/ViewCompanies";
-
 import { AuthProvider, AuthContext } from "./context/Contexto";
 import RegisterForm from "./components/RegisterForm";
 import LoginForm from "./components/LoginForm";
@@ -21,23 +20,46 @@ import EditUserForm from "./components/EditUserForm";
 import CreateUserForm from "./components/CreateUserForm";
 import ViewUsers from "./components/ViewUsers";
 import Navbar from "./components/navBar";
+import Sidebar from "./components/SideBar"; // Importa tu Sidebar
 import CompanyList from "./components/CompanyList";
 import "./App.css";
 
 const AppContent = () => {
   const location = useLocation();
   const { user, loading } = useContext(AuthContext);
-  const isLoginPage = location.pathname === "/login";
+  const [isSidebarVisible, setSidebarVisible] = useState(
+    JSON.parse(localStorage.getItem("isSidebarVisible")) ?? true
+  );
+  const isLoginPage =
+    location.pathname === "/login" || location.pathname === "/register";
+
+  useEffect(() => {
+    localStorage.setItem("isSidebarVisible", JSON.stringify(isSidebarVisible));
+  }, [isSidebarVisible]);
 
   if (loading) {
     return <div className="text-white">Cargando...</div>; // Mostrar un mensaje de carga mientras se verifica la autenticación
   }
 
+  const toggleSidebar = () => {
+    setSidebarVisible(!isSidebarVisible);
+  };
+
   return (
-    <div className="bg-white text-black">
-      {!isLoginPage && <Navbar />}
-      <div className="container mx-auto py-4 flex">
-        <div className="flex-1 p-4">
+    <div className="bg-white text-black flex">
+      {!isLoginPage && isSidebarVisible && <Sidebar />}
+      <div
+        className={`flex-grow flex flex-col ${
+          isSidebarVisible ? "ml-48" : "ml-0"
+        } mt-16`}
+      >
+        {!isLoginPage && (
+          <Navbar
+            toggleSidebar={toggleSidebar}
+            isSidebarVisible={isSidebarVisible}
+          />
+        )}
+        <div className="container mx-auto py-4">
           <Routes>
             <Route path="/register" element={<RegisterForm />} />
             <Route path="/login" element={<LoginForm />} />
@@ -56,7 +78,7 @@ const AppContent = () => {
                     <UserList />
                   </PrivateRoute>
                 }
-              ></Route>
+              />
             </Route>
             <Route
               path="/account"
@@ -122,7 +144,6 @@ const AppContent = () => {
                 </PrivateRoute>
               }
             />
-            <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         </div>
       </div>
@@ -130,14 +151,14 @@ const AppContent = () => {
   );
 };
 
-function App() {
+const App = () => {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <AppContent />
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
-}
+};
 
 export default App;

@@ -100,7 +100,7 @@ const CreateUserForm = () => {
   };
 
   return (
-    <div className="p-4 bg-white text-black rounded-lg shadow-md max-w-md mx-auto">
+    <div className=" create-user-form p-4 bg-white text-black rounded-lg shadow-md max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-4">Crear Usuario</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

@@ -1,3 +1,4 @@
+
 .admin-dashboard nav {
   background: #ffffff; /* Cambiado a blanco */
 }
@@ -30,3 +31,13 @@
 .user-table th {
   background-color: #ffffff; /* Cambiado a blanco */
 }
+
+.sidebar {
+  width: 250px;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-hidden {
+  transform: translateX(-100%);
+}
+

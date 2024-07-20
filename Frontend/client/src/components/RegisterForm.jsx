@@ -202,6 +202,14 @@ const RegisterForm = () => {
           Registrar
         </button>
       </form>
+      <div className="mt-4 text-center">
+        <button
+          onClick={() => navigate("/login")}
+          className="text-blue-500 hover:text-blue-700"
+        >
+          Volver al Login
+        </button>
+      </div>
     </div>
   );
 };
