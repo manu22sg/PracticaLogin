@@ -41,3 +41,12 @@
   transform: translateX(-100%);
 }
 
+.modal {
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.overlay {
+  background: rgba(0, 0, 0, 0.5);
+}

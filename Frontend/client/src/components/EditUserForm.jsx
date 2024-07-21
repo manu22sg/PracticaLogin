@@ -54,8 +54,8 @@ const EditUserForm = ({ user, onClose, onSave }) => {
   };
 
   return (
-    <div className="edit-user-form p-4 bg-white text-black rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-2">Editar Usuario</h2>
+    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
+      <h2 className="text-xl font-bold mb-4">Editar Usuario</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-2">
           <label className="block mb-1">RUT:</label>

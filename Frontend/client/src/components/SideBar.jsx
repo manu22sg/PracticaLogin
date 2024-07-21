@@ -42,18 +42,10 @@ const Sidebar = () => {
               </li>
               <li className="mb-2">
                 <Link
-                  to="/edit-user"
-                  className="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
-                >
-                  Editar Usuario
-                </Link>
-              </li>
-              <li className="mb-2">
-                <Link
                   to="/view-users"
                   className="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
                 >
-                  Ver Usuarios
+                  Gestión de usuarios
                 </Link>
               </li>
             </ul>

@@ -3,7 +3,6 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate,
   useLocation,
 } from "react-router-dom";
 
@@ -15,10 +14,9 @@ import LoginForm from "./components/LoginForm";
 import AdminDashboard from "./components/AdminDashboard";
 import Account from "./components/Account";
 import PrivateRoute from "./components/PrivateRoute";
-import UserList from "./components/userList";
-import EditUserForm from "./components/EditUserForm";
+import UserList from "./components/userList"; // Vista combinada de usuarios
 import CreateUserForm from "./components/CreateUserForm";
-import ViewUsers from "./components/ViewUsers";
+//import ViewUsers from "./components/ViewUsers"; // Puede eliminarse si está integrada en UserList
 import Navbar from "./components/navBar";
 import Sidebar from "./components/SideBar"; // Importa tu Sidebar
 import CompanyList from "./components/CompanyList";
@@ -70,16 +68,7 @@ const AppContent = () => {
                   <AdminDashboard />
                 </PrivateRoute>
               }
-            >
-              <Route
-                path="users"
-                element={
-                  <PrivateRoute roles={["Administrador Interno"]}>
-                    <UserList />
-                  </PrivateRoute>
-                }
-              />
-            </Route>
+            ></Route>
             <Route
               path="/account"
               element={
@@ -104,19 +93,12 @@ const AppContent = () => {
                 </PrivateRoute>
               }
             />
-            <Route
-              path="/edit-user"
-              element={
-                <PrivateRoute roles={["Administrador Interno"]}>
-                  <UserList />
-                </PrivateRoute>
-              }
-            />
+
             <Route
               path="/view-users"
               element={
                 <PrivateRoute roles={["Administrador Interno"]}>
-                  <ViewUsers />
+                  <UserList />
                 </PrivateRoute>
               }
             />
