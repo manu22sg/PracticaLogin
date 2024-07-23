@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { getUsers, deleteUser } from "../services/api";
 import Swal from "sweetalert2";
 import EditUserForm from "./EditUserForm";
 import UserDetails from "./userDetails";
+import { AuthContext } from "../context/Contexto";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [searchRut, setSearchRut] = useState("");
   const [editingUser, setEditingUser] = useState(null);
   const [viewingUser, setViewingUser] = useState(null);
+  const { user } = useContext(AuthContext); // Importar el contexto de autenticación
 
   useEffect(() => {
     fetchUsers();
@@ -28,6 +30,13 @@ const UserList = () => {
   };
 
   const handleDelete = async (userRut) => {
+    if (userRut === user.rut) {
+      return Swal.fire(
+        "Error",
+        "No puedes eliminar tu propio usuario.",
+        "error"
+      );
+    }
     Swal.fire({
       title: "¿Estás seguro?",
       text: "¡No podrás revertir esto!",
@@ -41,6 +50,7 @@ const UserList = () => {
       if (result.isConfirmed) {
         try {
           await deleteUser(userRut);
+
           fetchUsers();
           Swal.fire("¡Eliminado!", "El usuario ha sido eliminado.", "success");
         } catch (error) {
@@ -83,7 +93,7 @@ const UserList = () => {
         <thead className="bg-gray-300">
           <tr>
             <th className="p-1 text-center">Nombre</th>
-            <th className="p-1 text-center">Correo</th>
+            <th className="p-1 text-center">Rut</th>
             <th className="p-1 text-center">Rol</th>
             <th className="p-1 text-right">Acciones</th>
           </tr>
@@ -92,7 +102,7 @@ const UserList = () => {
           {users.map((user) => (
             <tr key={user.rut} className="border-b border-gray-300">
               <td className="p-1 text-center">{user.name}</td>
-              <td className="p-1 text-center">{user.email}</td>
+              <td className="p-1 text-center">{user.rut}</td>
               <td className="p-1 text-center">{user.role}</td>
               <td className="p-1 text-right">
                 <button
