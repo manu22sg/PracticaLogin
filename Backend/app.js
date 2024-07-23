@@ -4,9 +4,9 @@ import path from "path";
 import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import companyRoutes from "./src/routes/companyRoutes.js";
+import giroRoutes from "./src/routes/giroRoutes.js";
 import cors from "cors";
 import { PORT } from "./src/config/envConfig.js";
-import { pool } from "./src/utils/db.js";
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
@@ -29,14 +29,11 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/companies", companyRoutes);
+app.use("/api", giroRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Ruta no encontrada" });
 });
-const [result] = await pool.query(
-  "SELECT * FROM  giros where descripcion = 'CULTIVO DE OTROS CEREALES'"
-);
-console.log(result);
 
 app.listen(PORT, () => {
   console.log("Servidor escuchando en el puerto", PORT);

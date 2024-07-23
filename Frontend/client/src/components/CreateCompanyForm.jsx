@@ -1,28 +1,51 @@
-import React, { useState } from "react";
-import { createCompany } from "../services/api";
+import React, { useState, useEffect } from "react";
+import { createCompany, listGiros } from "../services/api";
 import Swal from "sweetalert2";
 
 const CreateCompanyForm = () => {
   const [rut, setRut] = useState("");
-  const [email, setEmail] = useState("");
-  const [mandante, setMandante] = useState("");
-  const [giro, setGiro] = useState("");
+  const [razonSocial, setRazonSocial] = useState("");
+  const [nombreFantasia, setNombreFantasia] = useState("");
   const [direccion, setDireccion] = useState("");
   const [comuna, setComuna] = useState("");
   const [ciudad, setCiudad] = useState("");
   const [telefono, setTelefono] = useState("");
+  const [giroCodigo, setGiroCodigo] = useState("");
+  const [emails, setEmails] = useState([""]);
+  const [giros, setGiros] = useState([]);
+
+  useEffect(() => {
+    listGiros()
+      .then((response) => {
+        setGiros(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching giros:", error);
+      });
+  }, []);
+
+  const handleEmailChange = (index, event) => {
+    const newEmails = emails.slice();
+    newEmails[index] = event.target.value;
+    setEmails(newEmails);
+  };
+
+  const addEmailField = () => {
+    setEmails([...emails, ""]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
       !rut ||
-      !email ||
-      !mandante ||
-      !giro ||
+      !razonSocial ||
       !direccion ||
       !comuna ||
       !ciudad ||
-      !telefono
+      !telefono ||
+      !giroCodigo ||
+      emails.length === 0 ||
+      !emails[0]
     ) {
       Swal.fire({
         icon: "warning",
@@ -34,13 +57,14 @@ const CreateCompanyForm = () => {
     try {
       await createCompany({
         rut,
-        email,
-        mandante,
-        giro,
+        razon_social: razonSocial,
+        nombre_fantasia: nombreFantasia,
         direccion,
         comuna,
         ciudad,
         telefono,
+        giro_codigo: giroCodigo,
+        emails,
       });
       Swal.fire({
         icon: "success",
@@ -48,13 +72,14 @@ const CreateCompanyForm = () => {
         text: "Empresa creada exitosamente",
       });
       setRut("");
-      setEmail("");
-      setMandante("");
-      setGiro("");
+      setRazonSocial("");
+      setNombreFantasia("");
       setDireccion("");
       setComuna("");
       setCiudad("");
       setTelefono("");
+      setGiroCodigo("");
+      setEmails([""]);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -81,33 +106,22 @@ const CreateCompanyForm = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-black">Email:</label>
+        <label className="block text-black">Razón Social:</label>
         <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          value={razonSocial}
+          onChange={(e) => setRazonSocial(e.target.value)}
           className="p-2 rounded bg-gray-200 text-black w-full"
           required
         />
       </div>
       <div className="mb-4">
-        <label className="block text-black">Mandante:</label>
+        <label className="block text-black">Nombre Fantasía:</label>
         <input
           type="text"
-          value={mandante}
-          onChange={(e) => setMandante(e.target.value)}
+          value={nombreFantasia}
+          onChange={(e) => setNombreFantasia(e.target.value)}
           className="p-2 rounded bg-gray-200 text-black w-full"
-          required
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-black">Giro:</label>
-        <input
-          type="text"
-          value={giro}
-          onChange={(e) => setGiro(e.target.value)}
-          className="p-2 rounded bg-gray-200 text-black w-full"
-          required
         />
       </div>
       <div className="mb-4">
@@ -150,11 +164,45 @@ const CreateCompanyForm = () => {
           required
         />
       </div>
-      <button
-        type="submit"
-        className="w-full p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
-      >
-        Guardar
+      <div className="mb-4">
+        <label className="block text-black">Giro:</label>
+        <select
+          value={giroCodigo}
+          onChange={(e) => setGiroCodigo(e.target.value)}
+          className="p-2 rounded bg-gray-200 text-black w-full"
+          required
+        >
+          <option value="">Seleccione un giro</option>
+          {giros.map((giro) => (
+            <option key={giro.codigo} value={giro.codigo}>
+              {giro.descripcion}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="mb-4">
+        <label className="block text-black">Emails:</label>
+        {emails.map((email, index) => (
+          <div key={index} className="mb-2">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => handleEmailChange(index, e)}
+              className="p-2 rounded bg-gray-200 text-black w-full"
+              required={index === 0} // El primer correo es obligatorio
+            />
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addEmailField}
+          className="p-2 bg-blue-500 text-white rounded"
+        >
+          Agregar otro email
+        </button>
+      </div>
+      <button type="submit" className="p-2 bg-green-500 text-white rounded">
+        Crear Compañía
       </button>
     </form>
   );

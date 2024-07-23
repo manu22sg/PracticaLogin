@@ -28,6 +28,7 @@ export const createCompany = (data) => api.post("/companies", data);
 export const updateCompany = (email, data) =>
   api.patch(`/companies/${email}`, data);
 export const deleteCompany = (email) => api.delete(`/companies/${email}`);
+export const listGiros = () => api.get("/giros");
 
 // Puedes añadir más funciones para otras entidades como usuarios
 export const getUsers = () => api.get("/users");
