@@ -42,11 +42,14 @@
 }
 
 .modal {
-  padding: 20px;
+  padding: 10px;
   background: #fff;
   border-radius: 10px;
 }
 
 .overlay {
   background: rgba(0, 0, 0, 0.5);
+}
+.small-text {
+  font-size: 0.20rem; /* Ajusta el tamaño según tus necesidades */
 }

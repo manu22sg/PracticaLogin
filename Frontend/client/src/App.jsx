@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 
 import CreateCompanyForm from "./components/CreateCompanyForm";
-import ViewCompanies from "./components/ViewCompanies";
 import { AuthProvider, AuthContext } from "./context/Contexto";
 import RegisterForm from "./components/RegisterForm";
 import LoginForm from "./components/LoginForm";
@@ -16,7 +15,6 @@ import Account from "./components/Account";
 import PrivateRoute from "./components/PrivateRoute";
 import UserList from "./components/userList"; // Vista combinada de usuarios
 import CreateUserForm from "./components/CreateUserForm";
-//import ViewUsers from "./components/ViewUsers"; // Puede eliminarse si está integrada en UserList
 import Navbar from "./components/navBar";
 import Sidebar from "./components/SideBar"; // Importa tu Sidebar
 import CompanyList from "./components/CompanyList";
@@ -110,19 +108,12 @@ const AppContent = () => {
                 </PrivateRoute>
               }
             />
-            <Route
-              path="/edit-company"
-              element={
-                <PrivateRoute roles={["Administrador Interno"]}>
-                  <CompanyList />
-                </PrivateRoute>
-              }
-            />
+
             <Route
               path="/view-companies"
               element={
                 <PrivateRoute roles={["Administrador Interno"]}>
-                  <ViewCompanies />
+                  <CompanyList />
                 </PrivateRoute>
               }
             />

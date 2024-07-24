@@ -14,8 +14,6 @@ export const createCompany = async (req, res) => {
       emails,
     } = req.body;
 
-    console.log("Datos recibidos:", req.body);
-
     if (
       !rut ||
       !razon_social ||
@@ -81,11 +79,60 @@ export const createCompany = async (req, res) => {
 
 export const listCompanies = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM companies");
+    const [rows] = await pool.query(`
+      SELECT c.*, g.descripcion AS giro_descripcion, e.email
+      FROM companies c
+      LEFT JOIN giros g ON c.giro_codigo = g.codigo
+      LEFT JOIN emails e ON c.id = e.company_id
+    `);
+
     if (rows.length <= 0) {
       return res.status(404).json({ message: "No hay empresas registradas" });
     }
-    res.json(rows);
+
+    // Agrupar correos electrónicos bajo cada empresa
+    const companiesMap = rows.reduce((acc, row) => {
+      // Convertir el arreglo en un mapa
+      const {
+        id,
+        rut,
+        razon_social,
+        nombre_fantasia,
+        direccion,
+        comuna,
+        ciudad,
+        telefono,
+        giro_codigo,
+        giro_descripcion,
+        email,
+      } = row;
+
+      if (!acc[id]) {
+        // Si la empresa no existe en el mapa, agregarla
+        acc[id] = {
+          id,
+          rut,
+          razon_social,
+          nombre_fantasia,
+          direccion,
+          comuna,
+          ciudad,
+          telefono,
+          giro_codigo,
+          giro_descripcion,
+          emails: [],
+        };
+      }
+
+      if (email) {
+        // Si hay un correo electrónico, agregarlo a la empresa
+        acc[id].emails.push(email); // Agregar el correo electrónico a la empresa
+      }
+
+      return acc;
+    }, {});
+
+    res.json(Object.values(companiesMap)); // Convertir el mapa en un arreglo
   } catch (error) {
     res
       .status(500)
@@ -152,63 +199,61 @@ export const updateCompany = async (req, res) => {
       emails,
     } = req.body;
 
-    await pool.getConnection(async (err, connection) => {
-      if (err) throw err;
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
 
-      try {
-        await connection.beginTransaction();
+      const [result] = await connection.query(
+        "UPDATE companies SET razon_social = IFNULL(?, razon_social), nombre_fantasia = IFNULL(?, nombre_fantasia), direccion = IFNULL(?, direccion), comuna = IFNULL(?, comuna), ciudad = IFNULL(?, ciudad), telefono = IFNULL(?, telefono), giro_codigo = IFNULL(?, giro_codigo) WHERE rut = ?",
+        [
+          razon_social,
+          nombre_fantasia || null,
+          direccion,
+          comuna,
+          ciudad,
+          telefono,
+          giro_codigo,
+          rut,
+        ]
+      );
 
-        const [result] = await connection.query(
-          "UPDATE companies SET razon_social = IFNULL(?, razon_social), nombre_fantasia = IFNULL(?, nombre_fantasia), direccion = IFNULL(?, direccion), comuna = IFNULL(?, comuna), ciudad = IFNULL(?, ciudad), telefono = IFNULL(?, telefono), giro_codigo = IFNULL(?, giro_codigo) WHERE rut = ?",
-          [
-            razon_social,
-            nombre_fantasia || null,
-            direccion,
-            comuna,
-            ciudad,
-            telefono,
-            giro_codigo,
-            rut,
-          ]
-        );
-
-        if (result.affectedRows === 0) {
-          return res.status(404).json({ message: "Empresa no encontrada" });
-        }
-
-        const [companyRows] = await connection.query(
-          "SELECT id FROM companies WHERE rut = ?",
-          [rut]
-        );
-        const companyId = companyRows[0].id;
-
-        await connection.query("DELETE FROM emails WHERE company_id = ?", [
-          companyId,
-        ]);
-
-        if (emails && emails.length > 0) {
-          const emailPromises = emails.map((email) => {
-            return connection.query(
-              "INSERT INTO emails (company_id, email) VALUES (?, ?)",
-              [companyId, email]
-            );
-          });
-
-          await Promise.all(emailPromises);
-        }
-
-        await connection.commit();
-        res.json({ message: "Empresa actualizada exitosamente" });
-      } catch (error) {
+      if (result.affectedRows === 0) {
         await connection.rollback();
-        res.status(500).json({
-          message: "Error al actualizar empresa",
-          error: error.message,
-        });
-      } finally {
-        connection.release();
+        return res.status(404).json({ message: "Empresa no encontrada" });
       }
-    });
+
+      const [companyRows] = await connection.query(
+        "SELECT id FROM companies WHERE rut = ?",
+        [rut]
+      );
+      const companyId = companyRows[0].id;
+
+      await connection.query("DELETE FROM emails WHERE company_id = ?", [
+        companyId,
+      ]);
+
+      if (emails && emails.length > 0) {
+        const emailPromises = emails.map((email) => {
+          return connection.query(
+            "INSERT INTO emails (company_id, email) VALUES (?, ?)",
+            [companyId, email]
+          );
+        });
+
+        await Promise.all(emailPromises);
+      }
+
+      await connection.commit();
+      res.json({ message: "Empresa actualizada exitosamente" });
+    } catch (error) {
+      await connection.rollback();
+      res.status(500).json({
+        message: "Error al actualizar empresa",
+        error: error.message,
+      });
+    } finally {
+      connection.release();
+    }
   } catch (error) {
     res
       .status(500)

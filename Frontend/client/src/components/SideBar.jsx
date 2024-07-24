@@ -45,7 +45,7 @@ const Sidebar = () => {
                   to="/view-users"
                   className="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
                 >
-                  Gestión de usuarios
+                  Gestión de Usuarios
                 </Link>
               </li>
             </ul>
@@ -56,7 +56,7 @@ const Sidebar = () => {
             onClick={toggleCompanyOptions}
             className="w-full text-left px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
           >
-            Empresas
+            Compañías
           </button>
           {showCompanyOptions && (
             <ul className="ml-4 mt-2">
@@ -65,15 +65,7 @@ const Sidebar = () => {
                   to="/create-company"
                   className="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
                 >
-                  Crear Empresa
-                </Link>
-              </li>
-              <li className="mb-2">
-                <Link
-                  to="/edit-company"
-                  className="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
-                >
-                  Editar Empresa
+                  Crear Compañía
                 </Link>
               </li>
               <li className="mb-2">
@@ -81,7 +73,7 @@ const Sidebar = () => {
                   to="/view-companies"
                   className="block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
                 >
-                  Ver Empresas
+                  Gestión de Compañías
                 </Link>
               </li>
             </ul>

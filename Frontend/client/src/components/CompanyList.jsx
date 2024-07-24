@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
-import EditCompanyForm from "./EditCompanyForm";
 import { getCompanies, deleteCompany } from "../services/api";
 import Swal from "sweetalert2";
+import EditCompanyForm from "./EditCompanyForm";
+import Modal from "./Modal";
+import CompanyDetails from "./CompanyDetails";
 
 const CompanyList = () => {
   const [companies, setCompanies] = useState([]);
+  const [allCompanies, setAllCompanies] = useState([]); // Estado para todas las compañías
   const [searchRut, setSearchRut] = useState("");
   const [editingCompany, setEditingCompany] = useState(null);
+  const [viewingCompany, setViewingCompany] = useState(null);
 
   useEffect(() => {
     fetchCompanies();
@@ -16,16 +20,13 @@ const CompanyList = () => {
     try {
       const response = await getCompanies();
       setCompanies(response.data);
+      setAllCompanies(response.data); // Guarda todas las compañías originales
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error al cargar las empresas",
-      });
+      console.error("Error fetching companies:", error);
     }
   };
 
-  const handleEdit = (companyRut) => {
-    const company = companies.find((c) => c.rut === companyRut);
+  const handleEdit = (company) => {
     setEditingCompany(company);
   };
 
@@ -44,12 +45,11 @@ const CompanyList = () => {
         try {
           await deleteCompany(companyRut);
           fetchCompanies();
-          Swal.fire("¡Eliminada!", "La empresa ha sido eliminada.", "success");
+          Swal.fire("¡Eliminado!", "La compañía ha sido eliminada.", "success");
         } catch (error) {
-          console.error("Error borrando empresa: ", error);
           Swal.fire(
             "Error",
-            "Hubo un problema al eliminar la empresa.",
+            "Hubo un problema al eliminar la compañía.",
             "error"
           );
         }
@@ -58,79 +58,116 @@ const CompanyList = () => {
   };
 
   const handleSearch = () => {
-    const filteredCompanies = companies.filter((company) =>
-      company.rut.includes(searchRut)
-    );
-    setCompanies(filteredCompanies);
+    if (searchRut === "") {
+      setCompanies(allCompanies); // Muestra todas las compañías si no hay búsqueda
+    } else {
+      const filteredCompanies = allCompanies.filter((company) =>
+        company.rut.includes(searchRut)
+      );
+      setCompanies(filteredCompanies);
+    }
+  };
+
+  const handleSave = () => {
+    fetchCompanies();
+    setEditingCompany(null);
+  };
+
+  const handleClose = () => {
+    setEditingCompany(null);
   };
 
   return (
-    <div className="p-4 bg-white text-black rounded-lg shadow-md max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4 text-center">Lista de Empresas</h2>
-      <div className="mb-4 flex justify-center">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
+      <h2 className="text-xl font-bold mb-2 text-center">
+        Gestión de Compañías
+      </h2>
+      <div className="mb-2 flex justify-center">
         <input
           type="text"
           value={searchRut}
           onChange={(e) => setSearchRut(e.target.value)}
           placeholder="Buscar por RUT"
-          className="p-2 rounded bg-gray-200 text-black"
+          className="p-2 rounded bg-gray-200 text-black w-full"
         />
         <button
           onClick={handleSearch}
-          className="ml-2 p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
+          className="ml-1 p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
         >
           Buscar
         </button>
       </div>
-      <table className="w-full bg-gray-200 rounded-lg overflow-hidden">
+      <table className="w-full bg-gray-100 rounded-lg overflow-hidden">
         <thead className="bg-gray-300">
           <tr>
-            <th className="p-2 text-center">RUT</th>
-            <th className="p-2 text-center">Email</th>
-            <th className="p-2 text-center">Mandante</th>
-            <th className="p-2 text-center">Giro</th>
-            <th className="p-2 text-center">Dirección</th>
-            <th className="p-2 text-center">Comuna</th>
-            <th className="p-2 text-center">Ciudad</th>
-            <th className="p-2 text-center">Teléfono</th>
-            <th className="p-2 text-right">Acciones</th>
+            <th className="p-2 text-center border-b border-gray-400">RUT</th>
+            <th className="p-2 text-center border-b border-gray-400">
+              Razon Social
+            </th>
+            <th className="p-2 text-center border-b border-gray-400">Comuna</th>
+            <th className="p-2 text-right border-b border-gray-400">
+              Acciones
+            </th>
           </tr>
         </thead>
         <tbody>
           {companies.map((company) => (
             <tr key={company.rut} className="border-b border-gray-300">
               <td className="p-2 text-center">{company.rut}</td>
-              <td className="p-2 text-center">{company.email}</td>
-              <td className="p-2 text-center">{company.mandante}</td>
-              <td className="p-2 text-center">{company.giro}</td>
-              <td className="p-2 text-center">{company.direccion}</td>
-              <td className="p-2 text-center">{company.comuna}</td>
-              <td className="p-2 text-center">{company.ciudad}</td>
-              <td className="p-2 text-center">{company.telefono}</td>
+              <td className="p-2 text-center">{company.razon_social}</td>
+              <td className="p-2 text-center text-sm">{company.comuna}</td>
               <td className="p-2 text-right">
-                <button
-                  onClick={() => handleEdit(company.rut)}
-                  className="p-2 bg-yellow-500 hover:bg-yellow-600 rounded text-white"
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleDelete(company.rut)}
-                  className="p-2 bg-red-500 hover:bg-red-600 rounded text-white ml-2"
-                >
-                  Eliminar
-                </button>
+                <div className="flex justify-between">
+                  <div>
+                    <button
+                      onClick={() => handleEdit(company)}
+                      className="mr-1 p-2 bg-yellow-500 hover:bg-yellow-600 rounded text-white"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(company.rut)}
+                      className="mr-1 p-2 bg-red-500 hover:bg-red-600 rounded text-white"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => setViewingCompany(company)}
+                    className="p-2 bg-green-500 hover:bg-green-600 rounded text-white"
+                  >
+                    Ver
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
       {editingCompany && (
-        <EditCompanyForm
-          company={editingCompany}
-          onClose={() => setEditingCompany(null)}
-          onSave={fetchCompanies}
-        />
+        <Modal
+          isOpen={!!editingCompany}
+          onClose={handleClose}
+          title="Editar Compañía"
+        >
+          <EditCompanyForm
+            company={editingCompany}
+            onClose={handleClose}
+            onSave={handleSave}
+          />
+        </Modal>
+      )}
+      {viewingCompany && (
+        <Modal
+          isOpen={!!viewingCompany}
+          onClose={() => setViewingCompany(null)}
+        >
+          <CompanyDetails
+            company={viewingCompany}
+            onClose={() => setViewingCompany(null)}
+          />
+        </Modal>
       )}
     </div>
   );

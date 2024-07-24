@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 
 const UserDetails = ({ user, onClose }) => {
   return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center">
+    <div className="fixed inset-0 bg-gray-800 bg-opacity-15 flex justify-center items-center">
       <div className="bg-white p-4 rounded-lg shadow-lg w-11/12 max-w-lg">
         <h2 className="text-xl font-bold mb-2">Detalles del Usuario</h2>
         <p>

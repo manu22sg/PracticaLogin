@@ -92,7 +92,7 @@ const CreateCompanyForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-white text-black rounded-lg shadow-md max-w-4xl mx-auto"
+      className="p-4 bg-white text-black rounded-lg shadow-md max-w-md mx-auto"
     >
       <h2 className="text-2xl font-bold mb-4 text-center">Crear Empresa</h2>
       <div className="mb-4">

@@ -54,6 +54,8 @@
   margin-left: 200px; /* Debe coincidir con el ancho de la sidebar */
   padding: 20px;
 }
-
+.sidebar-hidden {
+  transform: translateX(-100%);
+}
 
 
