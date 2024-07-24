@@ -4,6 +4,9 @@ import Swal from "sweetalert2";
 import EditUserForm from "./EditUserForm";
 import UserDetails from "./userDetails"; // Asegúrate de que el nombre del archivo es correcto
 import { AuthContext } from "../context/Contexto";
+import trashIcon from "../assets/images/Basura1.png"; // Ruta correcta
+import editIcon from "../assets/images/Usuario1.png"; // Ruta correcta
+import expandIcon from "../assets/images/Expandir1.png"; // Ruta correcta
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -78,9 +81,7 @@ const UserList = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
-      <h2 className="text-xl font-bold mb-2 text-center">
-        Gestión de Usuarios
-      </h2>
+      <h2 className="text-xl font-bold mb-2 text-align">Gestión de Usuarios</h2>
       <div className="mb-2 flex justify-center">
         <input
           type="text"
@@ -99,38 +100,45 @@ const UserList = () => {
       <table className="w-full bg-gray-100 rounded-lg overflow-hidden">
         <thead className="bg-gray-300">
           <tr>
-            <th className="p-2 text-center border-b border-gray-400">Nombre</th>
-            <th className="p-2 text-center border-b border-gray-400">Rut</th>
-            <th className="p-2 text-center border-b border-gray-400">Rol</th>
+            <th className="p-2 text-left border-b border-gray-400">Nombre</th>
+            <th className="p-2 text-left border-b border-gray-400">Rut</th>
+            <th className="p-2 text-left border-b border-gray-400">Rol</th>
             <th className="p-2 text-right border-b border-gray-400">
-              Acciones
+              Operaciones
             </th>
           </tr>
         </thead>
         <tbody>
           {users.map((user) => (
             <tr key={user.rut} className="border-b border-gray-300">
-              <td className="p-2 text-center">{user.name}</td>
-              <td className="p-2 text-center">{user.rut}</td>
-              <td className="p-2 text-center">{user.role}</td>
+              <td className="p-2 text-align">{user.name}</td>
+              <td className="p-2 text-align">{user.rut}</td>
+              <td className="p-2 text-align">{user.role}</td>
               <td className="p-2 text-right">
                 <button
                   onClick={() => handleEdit(user)}
-                  className="mr-1 p-2 bg-yellow-500 hover:bg-yellow-600 rounded text-white"
+                  className="p-2 bg-transparent"
+                  title="Editar"
                 >
-                  Editar
+                  <img src={editIcon} alt="Editar" className="w-9 h-9" />
                 </button>
                 <button
                   onClick={() => handleDelete(user.rut)}
-                  className="mr-1 p-2 bg-red-500 hover:bg-red-600 rounded text-white"
+                  className="p-2 bg-transparent"
+                  title="Eliminar"
                 >
-                  Eliminar
+                  <img src={trashIcon} alt="Eliminar" className="w-9 h-9" />
                 </button>
                 <button
                   onClick={() => setViewingUser(user)}
-                  className="p-2 bg-green-500 hover:bg-green-600 rounded text-white"
+                  className="p-2 bg-transparent"
+                  title="Ver Detalles"
                 >
-                  Ver Detalles
+                  <img
+                    src={expandIcon}
+                    alt="Ver Detalles"
+                    className="w-9 h-9"
+                  />
                 </button>
               </td>
             </tr>

@@ -1,16 +1,24 @@
 import { pool } from "../utils/db.js";
 
 export const listUsers = async (req, res) => {
-  const [rows] = await pool.query("SELECT * FROM users");
-  res.json(rows);
+  try {
+    const [rows] = await pool.query("SELECT * FROM users");
+    res.json(rows);
+  } catch (error) {
+    console.error("Error al obtener usuarios: ", error);
+  }
 };
 export const listUser = async (req, res) => {
-  const { rut } = req.params;
-  const [rows] = await pool.query("SELECT * FROM users WHERE rut = ?", [rut]);
-  if (rows.length === 0) {
-    return res.status(404).json({ message: "Usuario no encontrado" });
-  } else {
-    res.json(rows[0]);
+  try {
+    const { rut } = req.params;
+    const [rows] = await pool.query("SELECT * FROM users WHERE rut = ?", [rut]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    } else {
+      res.json(rows[0]);
+    }
+  } catch (error) {
+    console.error("Error al obtener usuario: ", error);
   }
 };
 

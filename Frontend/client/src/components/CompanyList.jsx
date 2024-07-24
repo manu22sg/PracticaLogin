@@ -4,11 +4,16 @@ import Swal from "sweetalert2";
 import EditCompanyForm from "./EditCompanyForm";
 import Modal from "./Modal";
 import CompanyDetails from "./CompanyDetails";
+import trashIcon from "../assets/images/Basura1.png";
+import editIcon from "../assets/images/EmpresaEditar.png";
+import userIcon from "../assets/images/Expandir1.png";
 
 const CompanyList = () => {
   const [companies, setCompanies] = useState([]);
-  const [allCompanies, setAllCompanies] = useState([]); // Estado para todas las compañías
-  const [searchRut, setSearchRut] = useState("");
+  const [allCompanies, setAllCompanies] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchField, setSearchField] = useState(""); // Estado para el campo de búsqueda
+  const [filterOption, setFilterOption] = useState("rut"); // Estado para el criterio de filtro
   const [editingCompany, setEditingCompany] = useState(null);
   const [viewingCompany, setViewingCompany] = useState(null);
 
@@ -20,7 +25,10 @@ const CompanyList = () => {
     try {
       const response = await getCompanies();
       setCompanies(response.data);
-      setAllCompanies(response.data); // Guarda todas las compañías originales
+      setAllCompanies(response.data);
+      console.log(response.data); // Verificar los datos recibidos
+      setCompanies(response.data);
+      setAllCompanies(response.data);
     } catch (error) {
       console.error("Error fetching companies:", error);
     }
@@ -58,14 +66,23 @@ const CompanyList = () => {
   };
 
   const handleSearch = () => {
-    if (searchRut === "") {
-      setCompanies(allCompanies); // Muestra todas las compañías si no hay búsqueda
-    } else {
-      const filteredCompanies = allCompanies.filter((company) =>
-        company.rut.includes(searchRut)
-      );
-      setCompanies(filteredCompanies);
+    let filteredCompanies = allCompanies;
+
+    if (searchTerm !== "") {
+      filteredCompanies = filteredCompanies.filter((company) => {
+        if (filterOption === "giro") {
+          return company.giro_descripcion
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        } else {
+          return company[filterOption]
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        }
+      });
     }
+
+    setCompanies(filteredCompanies);
   };
 
   const handleSave = () => {
@@ -79,15 +96,25 @@ const CompanyList = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
-      <h2 className="text-xl font-bold mb-2 text-center">
+      <h2 className="text-xl font-bold mb-2 text-align">
         Gestión de Compañías
       </h2>
       <div className="mb-2 flex justify-center">
+        <select
+          value={filterOption}
+          onChange={(e) => setFilterOption(e.target.value)}
+          className="p-2 rounded bg-gray-200 text-black w-full mr-2"
+        >
+          <option value="rut">RUT</option>
+          <option value="comuna">Comuna</option>
+          <option value="ciudad">Ciudad</option>
+          <option value="giro">Descripción del Giro</option>
+        </select>
         <input
           type="text"
-          value={searchRut}
-          onChange={(e) => setSearchRut(e.target.value)}
-          placeholder="Buscar por RUT"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={`Filtrar por ${filterOption}`}
           className="p-2 rounded bg-gray-200 text-black w-full"
         />
         <button
@@ -100,43 +127,58 @@ const CompanyList = () => {
       <table className="w-full bg-gray-100 rounded-lg overflow-hidden">
         <thead className="bg-gray-300">
           <tr>
-            <th className="p-2 text-center border-b border-gray-400">RUT</th>
-            <th className="p-2 text-center border-b border-gray-400">
-              Razon Social
+            <th className="p-2 text-left border-b border-gray-400">RUT</th>
+            <th className="p-2 text-left border-b border-gray-400">
+              Razón Social
             </th>
-            <th className="p-2 text-center border-b border-gray-400">Comuna</th>
+            <th className="p-2 text-left border-b border-gray-400">Comuna</th>
+            <th className="p-2 text-left border-b border-gray-400">Ciudad</th>
+            <th className="p-2 text-left border-b border-gray-400">
+              Descripcion del Giro
+            </th>
             <th className="p-2 text-right border-b border-gray-400">
-              Acciones
+              Operaciones
             </th>
           </tr>
         </thead>
         <tbody>
           {companies.map((company) => (
             <tr key={company.rut} className="border-b border-gray-300">
-              <td className="p-2 text-center">{company.rut}</td>
-              <td className="p-2 text-center">{company.razon_social}</td>
-              <td className="p-2 text-center text-sm">{company.comuna}</td>
+              <td className="p-2 text-align">{company.rut}</td>
+              <td className="p-2 text-align">{company.razon_social}</td>
+              <td className="p-2 text-align text-sm">{company.comuna}</td>
+              <td className="p-2 text-align text-sm">{company.ciudad}</td>
+              <td className="p-2 text-align text-sm">
+                {company.giro_descripcion}
+              </td>
               <td className="p-2 text-right">
-                <div className="flex justify-between">
+                <div className="flex justify-end items-center space-x-2">
                   <div>
                     <button
                       onClick={() => handleEdit(company)}
-                      className="mr-1 p-2 bg-yellow-500 hover:bg-yellow-600 rounded text-white"
+                      className="mr-1 p-2 bg-transparent"
+                      title="Editar"
                     >
-                      Editar
+                      <img src={editIcon} alt="Editar" className="w-9 h-9" />
                     </button>
                     <button
                       onClick={() => handleDelete(company.rut)}
-                      className="mr-1 p-2 bg-red-500 hover:bg-red-600 rounded text-white"
+                      className="mr-1 p-2 bg-transparent"
+                      title="Eliminar"
                     >
-                      Eliminar
+                      <img src={trashIcon} alt="Eliminar" className="w-9 h-9" />
                     </button>
                   </div>
                   <button
                     onClick={() => setViewingCompany(company)}
-                    className="p-2 bg-green-500 hover:bg-green-600 rounded text-white"
+                    className="p-2 bg-transparent"
+                    title="Ver Detalles"
                   >
-                    Ver
+                    <img
+                      src={userIcon}
+                      alt="Ver Detalles"
+                      className="w-9 h-9"
+                    />
                   </button>
                 </div>
               </td>
