@@ -4,9 +4,7 @@ import Swal from "sweetalert2";
 import EditUserForm from "./EditUserForm";
 import UserDetails from "./userDetails"; // Asegúrate de que el nombre del archivo es correcto
 import { AuthContext } from "../context/Contexto";
-import trashIcon from "../assets/images/Basura1.png"; // Ruta correcta
-import editIcon from "../assets/images/Usuario1.png"; // Ruta correcta
-import expandIcon from "../assets/images/Expandir1.png"; // Ruta correcta
+import { FaTrashAlt, FaUserEdit, FaExpandAlt } from "react-icons/fa";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -120,25 +118,21 @@ const UserList = () => {
                   className="p-2 bg-transparent"
                   title="Editar"
                 >
-                  <img src={editIcon} alt="Editar" className="w-9 h-9" />
+                  <FaUserEdit className="text-blue-500 w-6 h-6" />
                 </button>
                 <button
                   onClick={() => handleDelete(user.rut)}
                   className="p-2 bg-transparent"
                   title="Eliminar"
                 >
-                  <img src={trashIcon} alt="Eliminar" className="w-9 h-9" />
+                  <FaTrashAlt className="text-red-500 w-6 h-6" />
                 </button>
                 <button
                   onClick={() => setViewingUser(user)}
                   className="p-2 bg-transparent"
                   title="Ver Detalles"
                 >
-                  <img
-                    src={expandIcon}
-                    alt="Ver Detalles"
-                    className="w-9 h-9"
-                  />
+                  <FaExpandAlt className="text-green-500 w-6 h-6" />
                 </button>
               </td>
             </tr>

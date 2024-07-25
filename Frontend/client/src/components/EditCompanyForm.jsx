@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { updateCompany, listGiros } from "../services/api";
 import Swal from "sweetalert2";
+import { FaTrash, FaPlus, FaTimes, FaSave } from "react-icons/fa";
 
 const EditCompanyForm = ({ company, onClose, onSave }) => {
   const [rut, setRut] = useState(company.rut);
@@ -123,9 +124,9 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
               <button
                 type="button"
                 onClick={() => handleRemoveEmail(index)}
-                className="ml-2 p-1 bg-red-500 hover:bg-red-600 rounded text-white text-sm"
+                className="ml-2 p-1 bg-red-500 hover:bg-red-600 rounded text-white text-sm flex items-center"
               >
-                Eliminar
+                <FaTrash />
               </button>
             </div>
           </div>
@@ -133,8 +134,9 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
         <button
           type="button"
           onClick={handleAddEmail}
-          className="mb-2 p-2 bg-blue-500 hover:bg-blue-600 rounded text-white text-sm"
+          className="mb-2 p-2 bg-blue-500 hover:bg-blue-600 rounded text-white text-sm flex items-center"
         >
+          <FaPlus className="mr-1" />
           Añadir Email
         </button>
         <div className="mb-2">
@@ -172,6 +174,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
             onChange={(e) => setGiroCodigo(e.target.value)}
             className="p-1 rounded bg-gray-200 text-black w-full text-sm"
           >
+            <option value="">Seleccione un giro</option>
             {filteredGiros.map((giro) => (
               <option key={giro.codigo} value={giro.codigo}>
                 {giro.descripcion}
@@ -215,18 +218,20 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
             className="p-1 rounded bg-gray-200 text-black w-full text-sm"
           />
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-end mt-4">
           <button
             type="button"
             onClick={onClose}
-            className="mr-2 p-2 bg-gray-500 hover:bg-gray-600 rounded text-white text-sm"
+            className="mr-2 p-2 bg-red-500 hover:bg-red-600 rounded text-white text-sm flex items-center"
           >
+            <FaTimes className="mr-1" />
             Cancelar
           </button>
           <button
             type="submit"
-            className="p-2 bg-blue-500 hover:bg-blue-600 rounded text-white text-sm"
+            className="p-2 bg-blue-500 hover:bg-blue-600 rounded text-white text-sm flex items-center"
           >
+            <FaSave className="mr-1" />
             Guardar
           </button>
         </div>

@@ -4,9 +4,7 @@ import Swal from "sweetalert2";
 import EditCompanyForm from "./EditCompanyForm";
 import Modal from "./Modal";
 import CompanyDetails from "./CompanyDetails";
-import trashIcon from "../assets/images/Basura1.png";
-import editIcon from "../assets/images/EmpresaEditar.png";
-import userIcon from "../assets/images/Expandir1.png";
+import { FaRegEdit, FaRegTrashAlt, FaExpandAlt } from "react-icons/fa";
 
 const CompanyList = () => {
   const [companies, setCompanies] = useState([]);
@@ -134,7 +132,7 @@ const CompanyList = () => {
             <th className="p-2 text-left border-b border-gray-400">Comuna</th>
             <th className="p-2 text-left border-b border-gray-400">Ciudad</th>
             <th className="p-2 text-left border-b border-gray-400">
-              Descripcion del Giro
+              Codigo del Giro
             </th>
             <th className="p-2 text-right border-b border-gray-400">
               Operaciones
@@ -148,9 +146,7 @@ const CompanyList = () => {
               <td className="p-2 text-align">{company.razon_social}</td>
               <td className="p-2 text-align text-sm">{company.comuna}</td>
               <td className="p-2 text-align text-sm">{company.ciudad}</td>
-              <td className="p-2 text-align text-sm">
-                {company.giro_descripcion}
-              </td>
+              <td className="p-2 text-align text-sm">{company.giro_codigo}</td>
               <td className="p-2 text-right">
                 <div className="flex justify-end items-center space-x-2">
                   <div>
@@ -159,14 +155,14 @@ const CompanyList = () => {
                       className="mr-1 p-2 bg-transparent"
                       title="Editar"
                     >
-                      <img src={editIcon} alt="Editar" className="w-9 h-9" />
+                      <FaRegEdit className="text-blue-500" size={20} />
                     </button>
                     <button
                       onClick={() => handleDelete(company.rut)}
                       className="mr-1 p-2 bg-transparent"
                       title="Eliminar"
                     >
-                      <img src={trashIcon} alt="Eliminar" className="w-9 h-9" />
+                      <FaRegTrashAlt className="text-red-500" size={20} />
                     </button>
                   </div>
                   <button
@@ -174,11 +170,7 @@ const CompanyList = () => {
                     className="p-2 bg-transparent"
                     title="Ver Detalles"
                   >
-                    <img
-                      src={userIcon}
-                      alt="Ver Detalles"
-                      className="w-9 h-9"
-                    />
+                    <FaExpandAlt className="text-green-500" size={20} />
                   </button>
                 </div>
               </td>

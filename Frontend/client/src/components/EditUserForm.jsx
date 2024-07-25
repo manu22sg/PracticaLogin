@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { updateUser } from "../services/api";
 import Swal from "sweetalert2";
+import { FaSave, FaTrash } from "react-icons/fa";
 
 const EditUserForm = ({ user, onClose, onSave }) => {
   const [name, setName] = useState(user.name);
@@ -14,6 +15,13 @@ const EditUserForm = ({ user, onClose, onSave }) => {
   const [email, setEmail] = useState(user.email);
   const [email_opcional, setEmailOpcional] = useState(user.email_opcional);
   const [role, setRole] = useState(user.role);
+  const rolesDisponibles = [
+    "Administrador Interno",
+    "Gerente",
+    "Personal Contable",
+    "Persona Administrativa",
+    "Administrador Externo",
+  ];
 
   useEffect(() => {
     setName(user.name);
@@ -120,28 +128,36 @@ const EditUserForm = ({ user, onClose, onSave }) => {
             className="p-1 rounded bg-gray-200 text-black w-full"
           />
         </div>
-        <div className="mb-2">
-          <label className="block mb-1">Rol:</label>
-          <input
-            type="text"
+        <div className="mb-4">
+          <label className="block mb-2">Rol:</label>
+          <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="p-1 rounded bg-gray-200 text-black w-full"
-          />
+            className="w-full p-2 rounded bg-gray-200 text-black"
+          >
+            <option value="">Selecciona un rol</option>
+            {rolesDisponibles.map((rol) => (
+              <option key={rol} value={rol}>
+                {rol}
+              </option>
+            ))}
+          </select>
         </div>
-        <button
-          type="submit"
-          className="w-full p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
-        >
-          Guardar
-        </button>
-        <button
-          type="button"
-          onClick={onClose}
-          className="w-full mt-2 p-2 bg-red-500 hover:bg-red-600 rounded text-white"
-        >
-          Cancelar
-        </button>
+        <div className="flex justify-between">
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-1/2 p-2 bg-red-500 hover:bg-red-600 rounded text-white mr-2 flex justify-center items-center"
+          >
+            <FaTrash className="mr-2" /> Cancelar
+          </button>
+          <button
+            type="submit"
+            className="w-1/2 p-2 bg-blue-500 hover:bg-blue-600 rounded text-white ml-2 flex justify-center items-center"
+          >
+            <FaSave className="mr-2" /> Guardar
+          </button>
+        </div>
       </form>
     </div>
   );

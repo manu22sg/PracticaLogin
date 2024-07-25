@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { registerUser } from "../services/api";
 import Swal from "sweetalert2";
+import { FaUserPlus } from "react-icons/fa6";
 
 const CreateUserForm = () => {
   const [rut, setRut] = useState("");
@@ -100,8 +101,10 @@ const CreateUserForm = () => {
   };
 
   return (
-    <div className=" create-user-form p-4 bg-white text-black rounded-lg shadow-md max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Crear Usuario</h2>
+    <div className="create-user-form p-4 bg-white text-black rounded-lg shadow-md max-w-md mx-auto">
+      <h2 className="text-2xl font-bold mb-4 flex items-center">
+        Crear Usuario
+      </h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block mb-2">RUT:</label>
@@ -210,9 +213,10 @@ const CreateUserForm = () => {
         </div>
         <button
           type="submit"
-          className="w-full p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
+          className="w-full p-2 bg-blue-500 hover:bg-blue-600 rounded text-white flex items-center justify-center"
         >
-          Crear
+          <FaUserPlus className="mr-2" />
+          Crear Usuario
         </button>
       </form>
     </div>
