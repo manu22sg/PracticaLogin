@@ -12,6 +12,8 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   const [ciudad, setCiudad] = useState(company.ciudad);
   const [telefono, setTelefono] = useState(company.telefono);
   const [giros, setGiros] = useState([]);
+  const [filteredGiros, setFilteredGiros] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [email_factura, setEmailFactura] = useState(company.email_factura);
 
   useEffect(() => {
@@ -19,6 +21,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
       try {
         const response = await listGiros();
         setGiros(response.data);
+        setFilteredGiros(response.data);
       } catch (error) {
         console.error("Error fetching giros:", error);
       }
@@ -28,7 +31,6 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   }, []);
 
   useEffect(() => {
-    console.log("Company data updated:", company);
     setRut(company.rut);
     setEmails(company.emails || []);
     setRazonSocial(company.razon_social);
@@ -44,33 +46,28 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
     const newEmails = [...emails];
     newEmails[index] = value;
     setEmails(newEmails);
-    console.log("Emails updated:", newEmails);
   };
 
   const handleAddEmail = () => {
     const newEmails = [...emails, ""];
     setEmails(newEmails);
-    console.log("Email added:", newEmails);
   };
 
   const handleRemoveEmail = (index) => {
     const newEmails = emails.filter((_, i) => i !== index);
     setEmails(newEmails);
-    console.log("Email removed:", newEmails);
+  };
+
+  const handleSearch = (e) => {
+    const term = e.target.value.toLowerCase();
+    setSearchTerm(term);
+    setFilteredGiros(
+      giros.filter((giro) => giro.descripcion.toLowerCase().includes(term))
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting form with data:", {
-      razon_social,
-      giro_codigo: giroCodigo,
-      direccion,
-      comuna,
-      ciudad,
-      telefono,
-      email_factura,
-      emails,
-    });
     try {
       await updateCompany(company.rut, {
         razon_social,
@@ -156,7 +153,16 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
             value={email_factura}
             onChange={(e) => setEmailFactura(e.target.value)}
             className="p-1 rounded bg-gray-200 text-black w-full text-sm"
-            disabled
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Buscar Giro:</label>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={handleSearch}
+            className="p-1 rounded bg-gray-200 text-black w-full text-sm"
+            placeholder="Buscar giro..."
           />
         </div>
         <div className="mb-2">
@@ -166,7 +172,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
             onChange={(e) => setGiroCodigo(e.target.value)}
             className="p-1 rounded bg-gray-200 text-black w-full text-sm"
           >
-            {giros.map((giro) => (
+            {filteredGiros.map((giro) => (
               <option key={giro.codigo} value={giro.codigo}>
                 {giro.descripcion}
               </option>

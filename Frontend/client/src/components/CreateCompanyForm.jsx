@@ -13,7 +13,8 @@ const CreateCompanyForm = () => {
   const [giroCodigo, setGiroCodigo] = useState("");
   const [emails, setEmails] = useState([""]);
   const [giros, setGiros] = useState([]);
-  const [email_factura, setEmailFactura] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [emailFactura, setEmailFactura] = useState("");
 
   useEffect(() => {
     listGiros()
@@ -45,7 +46,7 @@ const CreateCompanyForm = () => {
       !ciudad ||
       !telefono ||
       !giroCodigo ||
-      !email_factura ||
+      !emailFactura ||
       emails.length === 0 ||
       !emails[0]
     ) {
@@ -66,7 +67,7 @@ const CreateCompanyForm = () => {
         ciudad,
         telefono,
         giro_codigo: giroCodigo,
-        email_factura,
+        email_factura: emailFactura,
         emails,
       });
       Swal.fire({
@@ -92,6 +93,11 @@ const CreateCompanyForm = () => {
       });
     }
   };
+
+  // Filtrar giros según el término de búsqueda
+  const filteredGiros = giros.filter((giro) =>
+    giro.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <form
@@ -132,7 +138,7 @@ const CreateCompanyForm = () => {
         <label className="block text-black">Email de Facturas:</label>
         <input
           type="email"
-          value={email_factura}
+          value={emailFactura}
           onChange={(e) => setEmailFactura(e.target.value)}
           className="p-2 rounded bg-gray-200 text-black w-full"
         />
@@ -178,15 +184,21 @@ const CreateCompanyForm = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-black">Giro:</label>
+        <label className="block text-black">Buscar Giro:</label>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 rounded bg-gray-200 text-black w-full"
+        />
         <select
           value={giroCodigo}
           onChange={(e) => setGiroCodigo(e.target.value)}
-          className="p-2 rounded bg-gray-200 text-black w-full"
+          className="p-2 rounded bg-gray-200 text-black w-full mt-2"
           required
         >
           <option value="">Seleccione un giro</option>
-          {giros.map((giro) => (
+          {filteredGiros.map((giro) => (
             <option key={giro.codigo} value={giro.codigo}>
               {giro.descripcion}
             </option>
