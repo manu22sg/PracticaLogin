@@ -15,6 +15,9 @@ const CompanyDetails = ({ company, onClose }) => {
           <strong>Nombre Fantasía:</strong> {company.nombre_fantasia}
         </p>
         <p>
+          <strong>Email de Facturas:</strong> {company.email_factura}
+        </p>
+        <p>
           <strong>Dirección:</strong> {company.direccion}
         </p>
         <p>

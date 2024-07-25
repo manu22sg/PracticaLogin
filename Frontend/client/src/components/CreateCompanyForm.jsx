@@ -13,6 +13,7 @@ const CreateCompanyForm = () => {
   const [giroCodigo, setGiroCodigo] = useState("");
   const [emails, setEmails] = useState([""]);
   const [giros, setGiros] = useState([]);
+  const [email_factura, setEmailFactura] = useState("");
 
   useEffect(() => {
     listGiros()
@@ -44,6 +45,7 @@ const CreateCompanyForm = () => {
       !ciudad ||
       !telefono ||
       !giroCodigo ||
+      !email_factura ||
       emails.length === 0 ||
       !emails[0]
     ) {
@@ -64,6 +66,7 @@ const CreateCompanyForm = () => {
         ciudad,
         telefono,
         giro_codigo: giroCodigo,
+        email_factura,
         emails,
       });
       Swal.fire({
@@ -79,6 +82,7 @@ const CreateCompanyForm = () => {
       setCiudad("");
       setTelefono("");
       setGiroCodigo("");
+      setEmailFactura("");
       setEmails([""]);
     } catch (error) {
       Swal.fire({
@@ -121,6 +125,15 @@ const CreateCompanyForm = () => {
           type="text"
           value={nombreFantasia}
           onChange={(e) => setNombreFantasia(e.target.value)}
+          className="p-2 rounded bg-gray-200 text-black w-full"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-black">Email de Facturas:</label>
+        <input
+          type="email"
+          value={email_factura}
+          onChange={(e) => setEmailFactura(e.target.value)}
           className="p-2 rounded bg-gray-200 text-black w-full"
         />
       </div>

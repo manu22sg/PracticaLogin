@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS companies (
     rut VARCHAR(12) NOT NULL UNIQUE,
     razon_social VARCHAR(100) NOT NULL,
     nombre_fantasia VARCHAR(100),
+    email_factura VARCHAR(100) UNIQUE,
     direccion VARCHAR(100) NOT NULL,
     comuna VARCHAR(100) NOT NULL,
     ciudad VARCHAR(100) NOT NULL,

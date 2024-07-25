@@ -6,6 +6,7 @@ export const createCompany = async (req, res) => {
       rut,
       razon_social,
       nombre_fantasia,
+      email_factura,
       direccion,
       comuna,
       ciudad,
@@ -22,6 +23,7 @@ export const createCompany = async (req, res) => {
       !ciudad ||
       !telefono ||
       !giro_codigo ||
+      !email_factura ||
       !emails ||
       emails.length === 0
     ) {
@@ -33,11 +35,12 @@ export const createCompany = async (req, res) => {
       await connection.beginTransaction();
 
       const [companyResult] = await connection.query(
-        "INSERT INTO companies (rut, razon_social, nombre_fantasia, direccion, comuna, ciudad, telefono, giro_codigo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO companies (rut, razon_social, nombre_fantasia, email_factura, direccion, comuna, ciudad, telefono, giro_codigo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         [
           rut,
           razon_social,
           nombre_fantasia || null,
+          email_factura,
           direccion,
           comuna,
           ciudad,
@@ -104,6 +107,7 @@ export const listCompanies = async (req, res) => {
         telefono,
         giro_codigo,
         giro_descripcion,
+        email_factura,
         email,
       } = row;
 
@@ -120,6 +124,7 @@ export const listCompanies = async (req, res) => {
           telefono,
           giro_codigo,
           giro_descripcion,
+          email_factura,
           emails: [],
         };
       }
@@ -196,6 +201,7 @@ export const updateCompany = async (req, res) => {
       ciudad,
       telefono,
       giro_codigo,
+      email_factura,
       emails,
     } = req.body;
 
@@ -204,7 +210,7 @@ export const updateCompany = async (req, res) => {
       await connection.beginTransaction();
 
       const [result] = await connection.query(
-        "UPDATE companies SET razon_social = IFNULL(?, razon_social), nombre_fantasia = IFNULL(?, nombre_fantasia), direccion = IFNULL(?, direccion), comuna = IFNULL(?, comuna), ciudad = IFNULL(?, ciudad), telefono = IFNULL(?, telefono), giro_codigo = IFNULL(?, giro_codigo) WHERE rut = ?",
+        "UPDATE companies SET razon_social = IFNULL(?, razon_social), nombre_fantasia = IFNULL(?, nombre_fantasia), direccion = IFNULL(?, direccion), comuna = IFNULL(?, comuna), ciudad = IFNULL(?, ciudad), telefono = IFNULL(?, telefono), giro_codigo = IFNULL(?, giro_codigo), email_factura= IFNULL(?, email_factura) WHERE rut = ?",
         [
           razon_social,
           nombre_fantasia || null,
@@ -213,6 +219,7 @@ export const updateCompany = async (req, res) => {
           ciudad,
           telefono,
           giro_codigo,
+          email_factura,
           rut,
         ]
       );

@@ -12,6 +12,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   const [ciudad, setCiudad] = useState(company.ciudad);
   const [telefono, setTelefono] = useState(company.telefono);
   const [giros, setGiros] = useState([]);
+  const [email_factura, setEmailFactura] = useState(company.email_factura);
 
   useEffect(() => {
     const fetchGiros = async () => {
@@ -36,6 +37,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
     setComuna(company.comuna);
     setCiudad(company.ciudad);
     setTelefono(company.telefono);
+    setEmailFactura(company.email_factura);
   }, [company]);
 
   const handleEmailChange = (index, value) => {
@@ -66,6 +68,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
       comuna,
       ciudad,
       telefono,
+      email_factura,
       emails,
     });
     try {
@@ -76,6 +79,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
         comuna,
         ciudad,
         telefono,
+        email_factura,
         emails,
       });
       onSave(); // Actualiza la lista de empresas
@@ -143,6 +147,16 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
             value={razon_social}
             onChange={(e) => setRazonSocial(e.target.value)}
             className="p-1 rounded bg-gray-200 text-black w-full text-sm"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Email de Factura:</label>
+          <input
+            type="email"
+            value={email_factura}
+            onChange={(e) => setEmailFactura(e.target.value)}
+            className="p-1 rounded bg-gray-200 text-black w-full text-sm"
+            disabled
           />
         </div>
         <div className="mb-2">
