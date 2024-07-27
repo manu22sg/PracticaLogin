@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { createCompany, listGiros } from "../services/api";
+import { createCompany, listGiros } from "../services/company.services";
 import Swal from "sweetalert2";
+import Select from "react-select";
+import AsyncSelect from "react-select/async";
 
 const CreateCompanyForm = () => {
   const [rut, setRut] = useState("");
@@ -10,20 +12,12 @@ const CreateCompanyForm = () => {
   const [comuna, setComuna] = useState("");
   const [ciudad, setCiudad] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [giroCodigo, setGiroCodigo] = useState("");
+  const [giroCodigo, setGiroCodigo] = useState(null);
   const [emails, setEmails] = useState([""]);
-  const [giros, setGiros] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [emailFactura, setEmailFactura] = useState("");
 
   useEffect(() => {
-    listGiros()
-      .then((response) => {
-        setGiros(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching giros:", error);
-      });
+    // Puedes cargar giros aquí si es necesario
   }, []);
 
   const handleEmailChange = (index, event) => {
@@ -82,7 +76,7 @@ const CreateCompanyForm = () => {
       setComuna("");
       setCiudad("");
       setTelefono("");
-      setGiroCodigo("");
+      setGiroCodigo(null);
       setEmailFactura("");
       setEmails([""]);
     } catch (error) {
@@ -94,10 +88,22 @@ const CreateCompanyForm = () => {
     }
   };
 
-  // Filtrar giros según el término de búsqueda
-  const filteredGiros = giros.filter((giro) =>
-    giro.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Función para cargar giros
+  const loadGiros = async (inputValue) => {
+    try {
+      const response = await listGiros();
+      const filteredGiros = response.data.filter((giro) =>
+        giro.descripcion.toLowerCase().includes(inputValue.toLowerCase())
+      );
+      return filteredGiros.map((giro) => ({
+        value: giro.codigo,
+        label: giro.descripcion,
+      }));
+    } catch (error) {
+      console.error("Error fetching giros:", error);
+      return [];
+    }
+  };
 
   return (
     <form
@@ -185,25 +191,17 @@ const CreateCompanyForm = () => {
       </div>
       <div className="mb-4">
         <label className="block text-black">Buscar Giro:</label>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 rounded bg-gray-200 text-black w-full"
+        <AsyncSelect
+          cacheOptions
+          loadOptions={loadGiros}
+          onChange={(selectedOption) =>
+            setGiroCodigo(selectedOption ? selectedOption.value : null)
+          }
+          maxMenuHeight={150}
+          isClearable={true}
+          className="basic-single"
+          classNamePrefix="select"
         />
-        <select
-          value={giroCodigo}
-          onChange={(e) => setGiroCodigo(e.target.value)}
-          className="p-2 rounded bg-gray-200 text-black w-full mt-2"
-          required
-        >
-          <option value="">Seleccione un giro</option>
-          {filteredGiros.map((giro) => (
-            <option key={giro.codigo} value={giro.codigo}>
-              {giro.descripcion}
-            </option>
-          ))}
-        </select>
       </div>
       <div className="mb-4">
         <label className="block text-black">Emails:</label>

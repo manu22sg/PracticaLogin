@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { updateCompany, listGiros } from "../services/api";
+import { updateCompany, listGiros } from "../services/company.services";
 import Swal from "sweetalert2";
 import { FaTrash, FaPlus, FaTimes, FaSave } from "react-icons/fa";
+import AsyncSelect from "react-select/async";
 
 const EditCompanyForm = ({ company, onClose, onSave }) => {
   const [rut, setRut] = useState(company.rut);
@@ -18,20 +19,6 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   const [email_factura, setEmailFactura] = useState(company.email_factura);
 
   useEffect(() => {
-    const fetchGiros = async () => {
-      try {
-        const response = await listGiros();
-        setGiros(response.data);
-        setFilteredGiros(response.data);
-      } catch (error) {
-        console.error("Error fetching giros:", error);
-      }
-    };
-
-    fetchGiros();
-  }, []);
-
-  useEffect(() => {
     setRut(company.rut);
     setEmails(company.emails || []);
     setRazonSocial(company.razon_social);
@@ -42,6 +29,22 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
     setTelefono(company.telefono);
     setEmailFactura(company.email_factura);
   }, [company]);
+
+  const loadGiros = async (inputValue) => {
+    try {
+      const response = await listGiros();
+      const filteredGiros = response.data.filter((giro) =>
+        giro.descripcion.toLowerCase().includes(inputValue.toLowerCase())
+      );
+      return filteredGiros.map((giro) => ({
+        value: giro.codigo,
+        label: giro.descripcion,
+      }));
+    } catch (error) {
+      console.error("Error fetching giros:", error);
+      return [];
+    }
+  };
 
   const handleEmailChange = (index, value) => {
     const newEmails = [...emails];
@@ -159,28 +162,21 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
         </div>
         <div className="mb-2">
           <label className="block mb-1">Buscar Giro:</label>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={handleSearch}
-            className="p-1 rounded bg-gray-200 text-black w-full text-sm"
-            placeholder="Buscar giro..."
+          <AsyncSelect
+            cacheOptions
+            loadOptions={loadGiros}
+            onChange={(selectedOption) =>
+              setGiroCodigo(selectedOption ? selectedOption.value : null)
+            }
+            defaultOptions
+            defaultValue={{
+              value: company.giro_codigo,
+              label: company.giro_descripcion,
+            }}
+            isClearable={true}
+            className="basic-single"
+            classNamePrefix="select"
           />
-        </div>
-        <div className="mb-2">
-          <label className="block mb-1">Giro:</label>
-          <select
-            value={giroCodigo}
-            onChange={(e) => setGiroCodigo(e.target.value)}
-            className="p-1 rounded bg-gray-200 text-black w-full text-sm"
-          >
-            <option value="">Seleccione un giro</option>
-            {filteredGiros.map((giro) => (
-              <option key={giro.codigo} value={giro.codigo}>
-                {giro.descripcion}
-              </option>
-            ))}
-          </select>
         </div>
         <div className="mb-2">
           <label className="block mb-1">Dirección:</label>

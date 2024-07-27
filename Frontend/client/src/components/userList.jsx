@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { getUsers, deleteUser } from "../services/api";
+import { getUsers, deleteUser } from "../services/user.services";
 import Swal from "sweetalert2";
 import EditUserForm from "./EditUserForm";
 import UserDetails from "./userDetails"; // Asegúrate de que el nombre del archivo es correcto

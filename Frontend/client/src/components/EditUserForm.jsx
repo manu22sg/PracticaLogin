@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { updateUser } from "../services/api";
+import { updateUser } from "../services/user.services";
 import Swal from "sweetalert2";
 import { FaSave, FaTrash } from "react-icons/fa";
 

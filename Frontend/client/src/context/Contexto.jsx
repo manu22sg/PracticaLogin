@@ -1,27 +1,34 @@
 import React, { createContext, useState, useEffect } from "react";
 import getUserFromToken from "../utils/authUtils";
+import Cookies from "cookie-universal";
 
 export const AuthContext = createContext();
+const cookies = Cookies();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Añadir estado de carga
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const user = getUserFromToken();
-    setUser(user);
-    setLoading(false); // Cambiar el estado de carga a false después de obtener el usuario
+    const getUser = async () => {
+      const user = getUserFromToken();
+      setUser(user);
+      setLoading(false);
+    };
+
+    getUser();
   }, []);
 
-  const login = (token) => {
-    localStorage.setItem("token", token);
+  const login = (token, refreshToken) => {
+    localStorage.setItem("accessToken", token);
+    cookies.set("refreshToken", refreshToken, { httpOnly: true });
     const user = getUserFromToken();
-    console.log(user);
     setUser(user);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+    cookies.remove("refreshToken");
     setUser(null);
   };
 

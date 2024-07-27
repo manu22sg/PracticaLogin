@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getCompanies, deleteCompany } from "../services/api";
+import { getCompanies, deleteCompany } from "../services/company.services";
 import Swal from "sweetalert2";
 import EditCompanyForm from "./EditCompanyForm";
 import Modal from "./Modal";
@@ -63,19 +63,22 @@ const CompanyList = () => {
     });
   };
 
-  const handleSearch = () => {
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
     let filteredCompanies = allCompanies;
 
-    if (searchTerm !== "") {
+    if (value !== "") {
       filteredCompanies = filteredCompanies.filter((company) => {
         if (filterOption === "giro") {
           return company.giro_descripcion
             .toLowerCase()
-            .includes(searchTerm.toLowerCase());
+            .includes(value.toLowerCase());
         } else {
           return company[filterOption]
             .toLowerCase()
-            .includes(searchTerm.toLowerCase());
+            .includes(value.toLowerCase());
         }
       });
     }
@@ -111,16 +114,16 @@ const CompanyList = () => {
         <input
           type="text"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearchChange}
           placeholder={`Filtrar por ${filterOption}`}
           className="p-2 rounded bg-gray-200 text-black w-full"
-        />
-        <button
-          onClick={handleSearch}
+        />{" "}
+        {/* <button
+          onClick={handleSearchChange}
           className="ml-1 p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
         >
           Buscar
-        </button>
+        </button>*/}
       </div>
       <table className="w-full bg-gray-100 rounded-lg overflow-hidden">
         <thead className="bg-gray-300">

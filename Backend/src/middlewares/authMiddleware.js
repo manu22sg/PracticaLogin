@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { SECRET_KEY } from "../config/envConfig.js";
+import { SECRET_KEY, REFRESH_SECRET } from "../config/envConfig.js";
 // Función para generar el token
 export const generateToken = (user) => {
   const payload = {
@@ -21,18 +21,54 @@ export const generateToken = (user) => {
 
 // Middleware para autenticar el token
 export const authenticateToken = (req, res, next) => {
-  const token = req.header("Authorization").replace("Bearer ", "");
+  const authHeader = req.header("Authorization");
+  const token = authHeader && authHeader.replace("Bearer ", "");
 
-  if (!token) {
-    return res.status(401).json({ message: "Acceso denegado" });
+  // Check access token first
+  if (token) {
+    try {
+      const verified = jwt.verify(token, SECRET_KEY);
+      req.user = verified;
+      return next();
+    } catch (err) {
+      // Token expira
+      if (err.name === "JsonWebTokenError") {
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) {
+          return res.status(401).json({ message: "No hay refresh token" });
+        }
+
+        try {
+          const refreshPayload = jwt.verify(refreshToken, REFRESH_SECRET);
+          const user = { id: refreshPayload.userId }; //
+          const newAccessToken = generateToken(user);
+          res.cookie("refreshToken", generateRefreshToken(user), {
+            httpOnly: true,
+          }); // Update refresh token
+          req.user = jwt.verify(newAccessToken, SECRET_KEY); //
+          req.headers["authorization"] = `Bearer ${newAccessToken}`;
+          return next();
+        } catch (err) {
+          return res.status(401).json({ message: "Refresh Token invalido" });
+        }
+      }
+    }
   }
 
+  return res.status(401).json({ message: "Acceso denegado" });
+};
+
+export const generateRefreshToken = (user) => {
+  const payload = { userId: user.id }; // Use a unique identifier for the user
+  const options = { expiresIn: "7d" }; // Set expiry to 7 days
+  return jwt.sign(payload, REFRESH_SECRET, options);
+};
+export const verifyRefreshToken = (refreshToken) => {
   try {
-    const verified = jwt.verify(token, SECRET_KEY);
-    req.user = verified;
-    next();
-  } catch (err) {
-    res.status(400).json({ message: "Token inválido" });
+    const decoded = jwt.verify(refreshToken, REFRESH_SECRET);
+    return decoded;
+  } catch (error) {
+    return console.error("Error decoding token:", error);
   }
 };
 

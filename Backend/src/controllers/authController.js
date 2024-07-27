@@ -1,6 +1,9 @@
 import { pool } from "../utils/db.js";
 
-import { generateToken } from "../middlewares/authMiddleware.js";
+import {
+  generateToken,
+  generateRefreshToken,
+} from "../middlewares/authMiddleware.js";
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -23,9 +26,10 @@ export const login = async (req, res) => {
 
     const user = rows[0];
 
-    const token = generateToken(user);
-
-    res.json({ token });
+    const accessToken = generateToken(user);
+    const refreshToken = generateRefreshToken(user);
+    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+    res.json({ accessToken });
   } catch (error) {
     res
       .status(500)

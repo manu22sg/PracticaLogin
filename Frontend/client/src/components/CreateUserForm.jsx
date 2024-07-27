@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registerUser } from "../services/api";
+import { registerUser } from "../services/auth.services";
 import Swal from "sweetalert2";
 import { FaUserPlus } from "react-icons/fa6";
 

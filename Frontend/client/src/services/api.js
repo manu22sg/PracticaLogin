@@ -1,41 +1,63 @@
 import axios from "axios";
+import cookies from "cookie-universal";
 
-const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+const API_URL = import.meta.env.VITE_API_URL;
+
+const instance = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+instance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("accessToken");
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
-api.interceptors.response.use(
+instance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem("token"); // Limpia el token expirado
-      window.location.href = "/login"; // Redirige al login
+      // Intentar renovar el token
+      const refreshToken = cookies.get("refreshToken");
+      if (refreshToken) {
+        return instance
+          .post("/api/auth/refreshtoken", { refreshToken })
+          .then((response) => {
+            const newAccessToken = response.data.accessToken;
+            localStorage.setItem("accessToken", newAccessToken);
+            // Repetir la solicitud original
+            const retryOriginalRequest = new Promise((resolve, reject) => {
+              const retryConfig = error.config;
+              retryConfig.headers["Authorization"] = `Bearer ${newAccessToken}`;
+              resolve(instance(retryConfig));
+            });
+            return retryOriginalRequest;
+          })
+          .catch((error) => {
+            // Manejar error de renovación
+            localStorage.removeItem("accessToken");
+            cookies.remove("refreshToken");
+            window.location.href = "/login";
+            return Promise.reject(error);
+          });
+      } else {
+        // No hay refresh token, redireccionar al login
+        localStorage.removeItem("accessToken");
+        cookies.remove("refreshToken");
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }
 );
 
-export const getCompanies = () => api.get("/companies");
-export const createCompany = (data) => api.post("/companies", data);
-export const updateCompany = (email, data) =>
-  api.patch(`/companies/${email}`, data);
-export const deleteCompany = (email) => api.delete(`/companies/${email}`);
-export const listGiros = () => api.get("/giros");
-
-// Puedes añadir más funciones para otras entidades como usuarios
-export const getUsers = () => api.get("/users");
-export const createUser = (data) => api.post("/users", data);
-export const updateUser = (rut, data) => api.patch(`/users/${rut}`, data);
-export const deleteUser = (rut) => api.delete(`/users/${rut}`);
-//login y register
-export const loginUser = (credentials) => api.post("/auth/login", credentials);
-export const registerUser = (data) => api.post("/auth/register", data);
-export const logout = () => api.post("/auth/logout");
+export default instance;

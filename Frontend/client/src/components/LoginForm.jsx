@@ -1,9 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../services/api";
+import { loginUser } from "../services/auth.services";
 import { jwtDecode } from "jwt-decode"; // Importa jwt-decode correctamente
 import { AuthContext } from "../context/Contexto"; // Importa el contexto
 import Swal from "sweetalert2";
+import Cookies from "cookie-universal"; // Importa cookie-universal
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -20,14 +21,16 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Agrega la función handleSubmit
     try {
-      const response = await loginUser({ email, password });
+      const { accessToken, refreshToken } = await loginUser({
+        email,
+        password,
+      });
 
-      const token = response.data.token;
-      console.log("Token recibido:", token); // Verifica que el token se reciba correctamente
-      login(token); // Usa la función login del contexto
+      console.log("AccessToken recibido:", accessToken); // Verifica la recepción del accessToken
+      console.log("RefreshToken recibido:", refreshToken); // Verifica la recepción del refreshToken
 
-      // Decodificar el token para verificar el rol del usuario
-      const decoded = jwtDecode(token);
+      login(accessToken, refreshToken); // Usa la función login del contexto para actualizar el estado del usuario
+      const decoded = jwtDecode(accessToken);
       const userRole = decoded.role;
 
       // Redirigir al dashboard si el rol es Administrador Interno
@@ -38,6 +41,7 @@ const LoginForm = () => {
         navigate("/algunaotrapagina");
       }
     } catch (error) {
+      console.error("Error al iniciar sesión:", error);
       Swal.fire({
         icon: "error",
         title: "Error",

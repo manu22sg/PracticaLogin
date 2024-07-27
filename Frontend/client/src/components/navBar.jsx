@@ -10,7 +10,7 @@ const Navbar = ({ toggleSidebar }) => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
   useEffect(() => {
-    console.log("User in Navbar:", user); // Verifica si el usuario está siendo recibido
+    //console.log("User in Navbar:", user); // Verifica si el usuario está siendo recibido}
   }, [user]);
 
   const handleLogout = () => {
