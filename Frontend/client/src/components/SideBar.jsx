@@ -15,8 +15,13 @@ const Sidebar = () => {
     setShowCompanyOptions(!showCompanyOptions);
   };
 
-  if (!user || user.role !== "Administrador Interno") {
-    return null; // No mostrar la barra lateral si el usuario no está autenticado o no tiene el rol adecuado
+  if (
+    !user ||
+    !(
+      user.role === "Administrador Interno" || user.role === "Personal Contable"
+    )
+  ) {
+    return null; // No renderiza el Sidebar si el rol no es permitido
   }
 
   return (

@@ -34,7 +34,10 @@ const LoginForm = () => {
       const userRole = decoded.role;
 
       // Redirigir al dashboard si el rol es Administrador Interno
-      if (userRole === "Administrador Interno") {
+      if (
+        userRole === "Administrador Interno" ||
+        userRole === "Personal Contable"
+      ) {
         navigate("/dashboard");
       } else {
         // Redirigir a una página diferente si el rol no es Administrador Interno

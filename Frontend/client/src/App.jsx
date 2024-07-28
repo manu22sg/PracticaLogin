@@ -62,7 +62,9 @@ const AppContent = () => {
             <Route
               path="/dashboard/*"
               element={
-                <PrivateRoute roles={["Administrador Interno"]}>
+                <PrivateRoute
+                  roles={["Administrador Interno", "Personal Contable"]}
+                >
                   <AdminDashboard />
                 </PrivateRoute>
               }
@@ -86,7 +88,9 @@ const AppContent = () => {
             <Route
               path="/create-user"
               element={
-                <PrivateRoute roles={["Administrador Interno"]}>
+                <PrivateRoute
+                  roles={["Administrador Interno", "Personal Contable"]}
+                >
                   <CreateUserForm />
                 </PrivateRoute>
               }
@@ -95,7 +99,9 @@ const AppContent = () => {
             <Route
               path="/view-users"
               element={
-                <PrivateRoute roles={["Administrador Interno"]}>
+                <PrivateRoute
+                  roles={["Administrador Interno", "Personal Contable"]}
+                >
                   <UserList />
                 </PrivateRoute>
               }
@@ -103,7 +109,9 @@ const AppContent = () => {
             <Route
               path="/create-company"
               element={
-                <PrivateRoute roles={["Administrador Interno"]}>
+                <PrivateRoute
+                  roles={["Administrador Interno", "Personal Contable"]}
+                >
                   <CreateCompanyForm />
                 </PrivateRoute>
               }
@@ -112,7 +120,9 @@ const AppContent = () => {
             <Route
               path="/view-companies"
               element={
-                <PrivateRoute roles={["Administrador Interno"]}>
+                <PrivateRoute
+                  roles={["Administrador Interno", "Personal Contable"]}
+                >
                   <CompanyList />
                 </PrivateRoute>
               }

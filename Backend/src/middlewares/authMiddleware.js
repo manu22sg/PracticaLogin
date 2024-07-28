@@ -73,11 +73,13 @@ export const verifyRefreshToken = (refreshToken) => {
 };
 
 // Middleware para verificar el rol del usuario
-export const checkRole = (role) => (req, res, next) => {
-  if (req.user.role !== role) {
-    return res
-      .status(403)
-      .json({ message: "No tiene los permisos suficientes" });
-  }
-  next();
-};
+export const checkRole =
+  (...roles) =>
+  (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res
+        .status(403)
+        .json({ message: "No tiene los permisos suficientes" });
+    }
+    next();
+  };

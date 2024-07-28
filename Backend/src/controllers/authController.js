@@ -109,12 +109,12 @@ export const register = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-  tr;
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ message: "Error al cerrar sesión" });
     }
-    res.clearCookie("sessionID");
+
+    res.clearCookie("refreshToken", { httpOnly: true });
     res.json({ message: "Sesión cerrada exitosamente" });
   });
 };
