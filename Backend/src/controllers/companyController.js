@@ -1,4 +1,5 @@
 import { pool } from "../utils/db.js";
+import XlsxPopulate from "xlsx-populate";
 
 export const createCompany = async (req, res) => {
   try {
@@ -144,7 +145,6 @@ export const listCompanies = async (req, res) => {
       .json({ message: "Error al obtener las empresas", error: error.message });
   }
 };
-
 export const listCompany = async (req, res) => {
   try {
     const { rut } = req.params;
