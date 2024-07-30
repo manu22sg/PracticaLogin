@@ -34,12 +34,12 @@ const CompanyDetails = ({ company, onClose }) => {
         </p>
         <p>
           <strong>Emails:</strong>
-          <ul>
-            {company.emails.map((email, index) => (
-              <li key={index}>{email}</li>
-            ))}
-          </ul>
         </p>
+        <ul>
+          {company.emails.map((email, index) => (
+            <li key={index}>{email}</li>
+          ))}
+        </ul>
         <button
           onClick={onClose}
           className="mt-4 p-2 bg-red-500 hover:bg-red-600 rounded text-white"

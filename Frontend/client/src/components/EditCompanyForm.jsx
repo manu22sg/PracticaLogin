@@ -8,6 +8,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   const [rut, setRut] = useState(company.rut);
   const [emails, setEmails] = useState(company.emails || []);
   const [razon_social, setRazonSocial] = useState(company.razon_social);
+  const [nombre_fantasia, setNombreFantasia] = useState(company.nombre_fantasia || ""); // Nuevo estado
   const [giroCodigo, setGiroCodigo] = useState(company.giro_codigo);
   const [direccion, setDireccion] = useState(company.direccion);
   const [comuna, setComuna] = useState(company.comuna);
@@ -19,6 +20,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
     setRut(company.rut);
     setEmails(company.emails || []);
     setRazonSocial(company.razon_social);
+    setNombreFantasia(company.nombre_fantasia || ""); // Actualiza el estado
     setGiroCodigo(company.giro_codigo);
     setDireccion(company.direccion);
     setComuna(company.comuna);
@@ -37,11 +39,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
         label: giro.descripcion,
       }));
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Error al cargar giros",
-      })
+      console.error("Error fetching giros:", error);
       return [];
     }
   };
@@ -65,6 +63,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
     try {
       await updateCompany(company.rut, {
         razon_social,
+        nombre_fantasia, // Incluye nombre_fantasia en la actualización
         giro_codigo: giroCodigo,
         direccion,
         comuna,
@@ -138,6 +137,15 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
             type="text"
             value={razon_social}
             onChange={(e) => setRazonSocial(e.target.value)}
+            className="p-1 rounded bg-gray-200 text-black w-full text-sm"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Nombre Fantasía:</label> {/* Nuevo campo */}
+          <input
+            type="text"
+            value={nombre_fantasia}
+            onChange={(e) => setNombreFantasia(e.target.value)}
             className="p-1 rounded bg-gray-200 text-black w-full text-sm"
           />
         </div>
