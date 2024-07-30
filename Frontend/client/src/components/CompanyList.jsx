@@ -5,6 +5,7 @@ import EditCompanyForm from "./EditCompanyForm";
 import Modal from "./Modal";
 import CompanyDetails from "./CompanyDetails";
 import { excelCompanies } from "../services/excel.services";
+
 import {
   FaRegEdit,
   FaRegTrashAlt,
@@ -16,10 +17,10 @@ const CompanyList = () => {
   const [companies, setCompanies] = useState([]);
   const [allCompanies, setAllCompanies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterOption, setFilterOption] = useState("rut");
+  const [filterOption, setFilterOption] = useState("Rut");
   const [editingCompany, setEditingCompany] = useState(null);
   const [viewingCompany, setViewingCompany] = useState(null);
-  const [error, setError] = useState(null);
+  
 
   useEffect(() => {
     fetchCompanies();
@@ -53,7 +54,12 @@ const CompanyList = () => {
       if (result.isConfirmed) {
         try {
           await deleteCompany(companyRut);
-          fetchCompanies();
+  
+          // Actualiza el estado local para eliminar la compañía eliminada
+          setCompanies((prevCompanies) =>
+            prevCompanies.filter((company) => company.rut !== companyRut)
+          );
+  
           Swal.fire("¡Eliminado!", "La compañía ha sido eliminada.", "success");
         } catch (error) {
           Swal.fire(
@@ -107,17 +113,21 @@ const CompanyList = () => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "companies.xlsx");
+      link.setAttribute("download", "Empresas.xlsx");
       document.body.appendChild(link);
       link.click();
     } catch (error) {
-      setError("Error al exportar las compañías");
+       Swal.fire ({
+        icon: "error",
+        title: "Error",
+        text: "Hubo un problema al exportar las empresas",
+       })
     }
   };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
-      <h2 className="text-xl font-bold mb-4">Gestión de Compañías</h2>
+      <h2 className="text-xl font-bold mb-4">Gestión de Empresas</h2>
       <div className="flex justify-between items-center mb-4">
         <div className="flex flex-grow">
           <select
@@ -125,7 +135,7 @@ const CompanyList = () => {
             onChange={(e) => setFilterOption(e.target.value)}
             className="p-2 rounded bg-gray-200 text-black w-1/2 mr-2"
           >
-            <option value="rut">RUT</option>
+            <option value="rut">Rut</option>
             <option value="comuna">Comuna</option>
             <option value="ciudad">Ciudad</option>
             <option value="giro">Descripción del Giro</option>
@@ -149,7 +159,7 @@ const CompanyList = () => {
       <table className="min-w-full bg-gray-100 rounded-lg overflow-hidden">
         <thead className="bg-gray-300">
           <tr>
-            <th className="p-2 text-left border-b border-gray-400">RUT</th>
+            <th className="p-2 text-left border-b border-gray-400">Rut</th>
             <th className="p-2 text-left border-b border-gray-400">
               Razón Social
             </th>

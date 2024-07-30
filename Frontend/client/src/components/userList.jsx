@@ -24,7 +24,7 @@ const UserList = () => {
       setUsers(response.data);
       setAllUsers(response.data); // Guarda todos los usuarios originales
     } catch (error) {
-      console.error("Error fetching users: ", error);
+      Swal.fire("Error", "Error al cargar los usuarios", "error");
     }
   };
 

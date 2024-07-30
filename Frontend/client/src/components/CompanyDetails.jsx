@@ -4,9 +4,9 @@ const CompanyDetails = ({ company, onClose }) => {
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-15 flex justify-center items-center">
       <div className="bg-white p-4 rounded-lg shadow-lg w-11/12 max-w-lg">
-        <h2 className="text-xl font-bold mb-2">Detalles de la Compañía</h2>
+        <h2 className="text-xl font-bold mb-2">Detalles de la Empresa</h2>
         <p>
-          <strong>RUT:</strong> {company.rut}
+          <strong>Rut:</strong> {company.rut}
         </p>
         <p>
           <strong>Razón Social:</strong> {company.razon_social}

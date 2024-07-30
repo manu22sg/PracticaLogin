@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createCompany, listGiros } from "../services/company.services";
 import Swal from "sweetalert2";
-import Select from "react-select";
 import AsyncSelect from "react-select/async";
 
 const CreateCompanyForm = () => {
@@ -16,9 +15,7 @@ const CreateCompanyForm = () => {
   const [emails, setEmails] = useState([""]);
   const [emailFactura, setEmailFactura] = useState("");
 
-  useEffect(() => {
-    // Puedes cargar giros aquí si es necesario
-  }, []);
+ 
 
   const handleEmailChange = (index, event) => {
     const newEmails = emails.slice();
@@ -112,7 +109,7 @@ const CreateCompanyForm = () => {
     >
       <h2 className="text-2xl font-bold mb-4 text-center">Crear Empresa</h2>
       <div className="mb-4">
-        <label className="block text-black">RUT:</label>
+        <label className="block text-black">Rut:</label>
         <input
           type="text"
           value={rut}
@@ -225,7 +222,7 @@ const CreateCompanyForm = () => {
         </button>
       </div>
       <button type="submit" className="p-2 bg-green-500 text-white rounded">
-        Crear Compañía
+        Crear Empresa
       </button>
     </form>
   );

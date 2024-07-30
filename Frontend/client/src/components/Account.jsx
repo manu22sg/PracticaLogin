@@ -8,15 +8,7 @@ const Account = () => {
   if (!user) {
     return <p className="text-black">Cargando...</p>; // Muestra un mensaje de carga si no hay usuario
   }
-  const formattedDate = new Date(user.fecha_nacimiento).toLocaleDateString(
-    // Formatea la fecha de nacimiento
-    "es-CL",
-    {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }
-  );
+ 
 
   return (
     <div className="p-4 bg-white text-black rounded-lg shadow-md max-w-md mx-auto">

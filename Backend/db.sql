@@ -6,7 +6,7 @@ PRIMARY KEY (id, rut),
 name VARCHAR(100) NOT NULL,
     apellido_paterno VARCHAR(100) NOT NULL,
     apellido_materno VARCHAR(100) NOT NULL,
-    celular INT NOT NULL UNIQUE,
+    celular VARCHAR(20) NOT NULL UNIQUE,
     fecha_nacimiento DATE NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     email_opcional VARCHAR(100),
@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS companies (
     email_factura VARCHAR(100) UNIQUE,
     direccion VARCHAR(100) NOT NULL,
     comuna VARCHAR(100) NOT NULL,
-    ciudad VARCHAR(100) NOT NULL,
-    telefono VARCHAR(100) NOT NULL,
+    ciudad VARCHAR(20) NOT NULL,
+    telefono VARCHAR(25) NOT NULL UNIQUE,
     giro_codigo VARCHAR(10),
     CONSTRAINT fk_giro FOREIGN KEY (giro_codigo) REFERENCES giros(codigo)
 );
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS emails (
     id INT AUTO_INCREMENT PRIMARY KEY,
     company_id INT NOT NULL,
     email VARCHAR(100) NOT NULL,
-    CONSTRAINT fk_company FOREIGN KEY (company_id) REFERENCES companies(id)
+    CONSTRAINT fk_company FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
 );
 
 

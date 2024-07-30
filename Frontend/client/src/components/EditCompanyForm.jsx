@@ -13,9 +13,6 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   const [comuna, setComuna] = useState(company.comuna);
   const [ciudad, setCiudad] = useState(company.ciudad);
   const [telefono, setTelefono] = useState(company.telefono);
-  const [giros, setGiros] = useState([]);
-  const [filteredGiros, setFilteredGiros] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [email_factura, setEmailFactura] = useState(company.email_factura);
 
   useEffect(() => {
@@ -33,15 +30,18 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   const loadGiros = async (inputValue) => {
     try {
       const response = await listGiros();
-      const filteredGiros = response.data.filter((giro) =>
+      return response.data.filter((giro) =>
         giro.descripcion.toLowerCase().includes(inputValue.toLowerCase())
-      );
-      return filteredGiros.map((giro) => ({
+      ).map((giro) => ({
         value: giro.codigo,
         label: giro.descripcion,
       }));
     } catch (error) {
-      console.error("Error fetching giros:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error al cargar giros",
+      })
       return [];
     }
   };
@@ -53,21 +53,11 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   };
 
   const handleAddEmail = () => {
-    const newEmails = [...emails, ""];
-    setEmails(newEmails);
+    setEmails([...emails, ""]);
   };
 
   const handleRemoveEmail = (index) => {
-    const newEmails = emails.filter((_, i) => i !== index);
-    setEmails(newEmails);
-  };
-
-  const handleSearch = (e) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
-    setFilteredGiros(
-      giros.filter((giro) => giro.descripcion.toLowerCase().includes(term))
-    );
+    setEmails(emails.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -83,8 +73,8 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
         email_factura,
         emails,
       });
-      onSave(); // Actualiza la lista de empresas
-      onClose(); // Cierra el formulario
+      onSave();
+      onClose();
       Swal.fire({
         icon: "success",
         title: "¡Empresa actualizada!",
@@ -105,7 +95,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
       <h2 className="text-xl font-bold mb-2">Editar Empresa</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-2">
-          <label className="block mb-1">RUT:</label>
+          <label className="block mb-1">Rut:</label>
           <input
             type="text"
             value={rut}
