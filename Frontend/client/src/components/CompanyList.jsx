@@ -5,7 +5,6 @@ import EditCompanyForm from "./EditCompanyForm";
 import Modal from "./Modal";
 import CompanyDetails from "./CompanyDetails";
 import { excelCompanies } from "../services/excel.services";
-
 import {
   FaRegEdit,
   FaRegTrashAlt,
@@ -17,10 +16,10 @@ const CompanyList = () => {
   const [companies, setCompanies] = useState([]);
   const [allCompanies, setAllCompanies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterOption, setFilterOption] = useState("Rut");
+  const [filterOption, setFilterOption] = useState("rut");
   const [editingCompany, setEditingCompany] = useState(null);
   const [viewingCompany, setViewingCompany] = useState(null);
-  
+ 
 
   useEffect(() => {
     fetchCompanies();
@@ -54,12 +53,7 @@ const CompanyList = () => {
       if (result.isConfirmed) {
         try {
           await deleteCompany(companyRut);
-  
-          // Actualiza el estado local para eliminar la compañía eliminada
-          setCompanies((prevCompanies) =>
-            prevCompanies.filter((company) => company.rut !== companyRut)
-          );
-  
+          fetchCompanies();
           Swal.fire("¡Eliminado!", "La compañía ha sido eliminada.", "success");
         } catch (error) {
           Swal.fire(
@@ -113,15 +107,11 @@ const CompanyList = () => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "Empresas.xlsx");
+      link.setAttribute("download", "empresas.xlsx");
       document.body.appendChild(link);
       link.click();
     } catch (error) {
-       Swal.fire ({
-        icon: "error",
-        title: "Error",
-        text: "Hubo un problema al exportar las empresas",
-       })
+     Swal.fire("Error", "Error al exportar las empresas", "error");
     }
   };
 

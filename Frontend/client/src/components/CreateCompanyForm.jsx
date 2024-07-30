@@ -15,7 +15,9 @@ const CreateCompanyForm = () => {
   const [emails, setEmails] = useState([""]);
   const [emailFactura, setEmailFactura] = useState("");
 
- 
+  useEffect(() => {
+    // Puedes cargar giros aquí si es necesario
+  }, []);
 
   const handleEmailChange = (index, event) => {
     const newEmails = emails.slice();
