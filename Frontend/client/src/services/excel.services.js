@@ -1,6 +1,6 @@
-import axios from "./api";
+import api from "./api";
 export const excelCompanies = async () => {
-  return await axios.get("/excelCompanies", {
+  return await api.get("/excelCompanies", {
     responseType: "blob", // Asegúrate de que la respuesta es tratada como un blob
   });
 };

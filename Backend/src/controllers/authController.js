@@ -1,8 +1,7 @@
 import { pool } from "../utils/db.js";
 
 import {
-  generateToken,
-  generateRefreshToken,
+  generateToken
 } from "../middlewares/authMiddleware.js";
 
 export const login = async (req, res) => { // Exportamos una función asíncrona para iniciar sesión
@@ -27,8 +26,7 @@ export const login = async (req, res) => { // Exportamos una función asíncrona
     const user = rows[0]; // Obtenemos el primer usuario de la lista
 
     const accessToken = generateToken(user); // Generamos un token de acceso
-    const refreshToken = generateRefreshToken(user); // Generamos un token de actualización
-    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+    
     res.json({ accessToken });
   } catch (error) {
     res
@@ -113,8 +111,7 @@ export const logout = (req, res) => {
     if (err) {
       return res.status(500).json({ message: "Error al cerrar sesión" }); // Si hay un error al cerrar la sesión, devolver un mensaje de error
     }
-    
-    res.clearCookie("refreshToken", { httpOnly: true }); // Limpiamos la cookie del refresh token
+     // Limpiamos la cookie del refresh token
     res.json({ message: "Sesión cerrada exitosamente" });
   });
 };

@@ -1,9 +1,9 @@
 import React, { createContext, useState, useEffect } from "react";
 import getUserFromToken from "../utils/authUtils";
-import Cookies from "cookie-universal";
+
 
 export const AuthContext = createContext();
-const cookies = Cookies();
+
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -19,16 +19,14 @@ export const AuthProvider = ({ children }) => {
     getUser();
   }, []);
 
-  const login = (token, refreshToken) => {
+  const login = (token) => {
     localStorage.setItem("accessToken", token);
-    cookies.set("refreshToken", refreshToken, { httpOnly: true });
     const user = getUserFromToken();
     setUser(user);
   };
 
   const logout = () => {
     localStorage.removeItem("accessToken");
-    cookies.remove("refreshToken");
     setUser(null);
   };
   

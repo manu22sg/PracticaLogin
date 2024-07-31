@@ -1,18 +1,12 @@
-import axios from "./api";
-import Cookies from "cookie-universal";
-const cookies = Cookies();
+import api from "./api";
 export const loginUser = async function loginUser(credentials) {
   try {
-    const response = await axios.post("/auth/login", credentials);
-    const { accessToken, refreshToken } = response.data;
+    const response = await api.post("/auth/login", credentials);
+    const { accessToken } = response.data;
     localStorage.setItem("accessToken", accessToken);
-    cookies.set("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict", // Para prevenir ataques CSRF
-    }); // Almacena el refreshToken en una cookie
-    console.log({ refreshToken });
-    return { accessToken, refreshToken }; // Almacena el refreshToken en una cookie
+    
+    
+    return { accessToken }; // Almacena el refreshToken en una cookie
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
     return { error: error.response.data.message };
@@ -20,5 +14,5 @@ export const loginUser = async function loginUser(credentials) {
 };
 
 export const registerUser = async (data) =>
-  await axios.post("/auth/register", data);
-export const logout = async () => await axios.post("/auth/logout");
+  await api.post("/auth/register", data);
+export const logout = async () => await api.post("/auth/logout");

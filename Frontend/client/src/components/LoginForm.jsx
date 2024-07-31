@@ -4,7 +4,7 @@ import { loginUser } from "../services/auth.services";
 import { jwtDecode } from "jwt-decode"; // Importa jwt-decode correctamente
 import { AuthContext } from "../context/Contexto"; // Importa el contexto
 import Swal from "sweetalert2";
-import Cookies from "cookie-universal"; // Importa cookie-universal
+ // Importa cookie-universal
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -21,15 +21,15 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Agrega la función handleSubmit
     try {
-      const { accessToken, refreshToken } = await loginUser({
+      const { accessToken } = await loginUser({
         email,
         password,
       });
 
       console.log("AccessToken recibido:", accessToken); // Verifica la recepción del accessToken
-      console.log("RefreshToken recibido:", refreshToken); // Verifica la recepción del refreshToken
+      
 
-      login(accessToken, refreshToken); // Usa la función login del contexto para actualizar el estado del usuario
+      login(accessToken); // Usa la función login del contexto para actualizar el estado del usuario
       const decoded = jwtDecode(accessToken);
       const userRole = decoded.role;
 

@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
-import { SECRET_KEY, REFRESH_SECRET } from "../config/envConfig.js";
+import { SECRET_KEY } from "../config/envConfig.js";
+
 // Función para generar el token
 export const generateToken = (user) => {
   const payload = {
@@ -32,44 +33,11 @@ export const authenticateToken = (req, res, next) => {
       return next();
     } catch (err) {
       // Token expira
-      if (err.name === "JsonWebTokenError") {
-        const refreshToken = req.cookies.refreshToken;
-        if (!refreshToken) {
-          return res.status(401).json({ message: "No hay refresh token" });
-        }
-
-        try {
-          const refreshPayload = jwt.verify(refreshToken, REFRESH_SECRET);
-          const user = { id: refreshPayload.userId }; //
-          const newAccessToken = generateToken(user);
-          res.cookie("refreshToken", generateRefreshToken(user), {
-            httpOnly: true,
-          }); // Actualizamos el refresh token
-          req.user = jwt.verify(newAccessToken, SECRET_KEY); //
-          req.headers["authorization"] = `Bearer ${newAccessToken}`;
-          return next();
-        } catch (err) {
-          return res.status(401).json({ message: "Refresh Token invalido" });
-        }
-      }
+      return res.status(401).json({ message: "Token inválido o expirado" });
     }
   }
 
   return res.status(401).json({ message: "Acceso denegado" });
-};
-
-export const generateRefreshToken = (user) => {
-  const payload = { userId: user.id }; // el usuario es un objeto con un id
-  const options = { expiresIn: "7d" }; // 7 días de expiración
-  return jwt.sign(payload, REFRESH_SECRET, options);
-};
-export const verifyRefreshToken = (refreshToken) => {
-  try {
-    const decoded = jwt.verify(refreshToken, REFRESH_SECRET);
-    return decoded;
-  } catch (error) {
-    return console.error("Error decoding token:", error);
-  }
 };
 
 // Middleware para verificar el rol del usuario
