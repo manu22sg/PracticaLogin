@@ -112,11 +112,13 @@ const EditUserForm = ({ user, onClose, onSave }) => {
         </div>
         <div className="mb-2">
           <label className="block mb-1">Email:</label>
+          
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="p-1 rounded bg-gray-200 text-black w-full"
+            disabled
           />
         </div>
         <div className="mb-2">
