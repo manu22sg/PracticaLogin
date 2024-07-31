@@ -2,13 +2,13 @@ import React, { useEffect, useState, useContext } from "react";
 import { getUsers, deleteUser } from "../services/user.services";
 import Swal from "sweetalert2";
 import EditUserForm from "./EditUserForm";
-import UserDetails from "./userDetails"; // Asegúrate de que el nombre del archivo es correcto
+import UserDetails from "./userDetails";
 import { AuthContext } from "../context/Contexto";
 import { FaTrashAlt, FaUserEdit, FaExpandAlt } from "react-icons/fa";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
-  const [allUsers, setAllUsers] = useState([]); // Estado para todos los usuarios
+  const [allUsers, setAllUsers] = useState([]);
   const [searchRut, setSearchRut] = useState("");
   const [editingUser, setEditingUser] = useState(null);
   const [viewingUser, setViewingUser] = useState(null);
@@ -22,7 +22,7 @@ const UserList = () => {
     try {
       const response = await getUsers();
       setUsers(response.data);
-      setAllUsers(response.data); // Guarda todos los usuarios originales
+      setAllUsers(response.data);
     } catch (error) {
       Swal.fire("Error", "Error al cargar los usuarios", "error");
     }
@@ -66,12 +66,14 @@ const UserList = () => {
     });
   };
 
-  const handleSearch = () => {
-    if (searchRut === "") {
-      setUsers(allUsers); // Muestra todos los usuarios si no hay búsqueda
+  const handleSearch = (e) => {
+    const searchValue = e.target.value;
+    setSearchRut(searchValue);
+    if (searchValue === "") {
+      setUsers(allUsers);
     } else {
       const filteredUsers = allUsers.filter((user) =>
-        user.rut.includes(searchRut)
+        user.rut.includes(searchValue)
       );
       setUsers(filteredUsers);
     }
@@ -84,16 +86,10 @@ const UserList = () => {
         <input
           type="text"
           value={searchRut}
-          onChange={(e) => setSearchRut(e.target.value)}
-          placeholder="Buscar por RUT"
+          onChange={handleSearch}
+          placeholder="Buscar por Rut"
           className="p-2 rounded bg-gray-200 text-black w-full"
         />
-        <button
-          onClick={handleSearch}
-          className="ml-1 p-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
-        >
-          Buscar
-        </button>
       </div>
       <table className="w-full bg-gray-100 rounded-lg overflow-hidden">
         <thead className="bg-gray-300">

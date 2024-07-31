@@ -1,9 +1,9 @@
 import { pool } from "../utils/db.js";
 import ExcelJS from "exceljs";
 
-const excelCompanies = async (req, res) => {
-  try {
-    const [rows] = await pool.query(`
+const excelCompanies = async (req, res) => { // Exportamos una función asíncrona para exportar las empresas a un archivo Excel
+  try { // Realizamos una consulta a la base de datos para seleccionar todas las empresas
+    const [rows] = await pool.query(` 
         SELECT c.*, g.descripcion AS giro_descripcion, e.email
         FROM companies c
         LEFT JOIN giros g ON c.giro_codigo = g.codigo
@@ -74,7 +74,7 @@ const excelCompanies = async (req, res) => {
   }
 };
 
-const createExcelFile = async (companies) => {
+const createExcelFile = async (companies) => { // Exportamos una función asíncrona para crear un archivo Excel con las empresas
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet("Datos_Empresas");
 
@@ -93,17 +93,17 @@ const createExcelFile = async (companies) => {
     "Emails",
   ];
 
-  sheet.addRow(headers);
+  sheet.addRow(headers); // Agregamos la fila de encabezado al archivo Excel
   sheet.getRow(1).font = { bold: true };
   sheet.getRow(1).eachCell({ includeEmpty: true }, (cell) => {
-    cell.fill = {
+    cell.fill = { // Aplicamos un color de fondo a las celdas de la fila de encabezado
       type: "pattern",
       pattern: "solid",
       fgColor: { argb: "FFFF00" },
     };
   });
 
-  sheet.columns = [
+  sheet.columns = [ // Definimos el ancho de las columnas
     { width: 10 },
     { width: 15 },
     { width: 25 },
@@ -118,7 +118,7 @@ const createExcelFile = async (companies) => {
     { width: 40 },
   ];
 
-  companies.forEach((company) => {
+  companies.forEach((company) => { // Iteramos sobre cada empresa para agregarla al archivo Excel
     sheet.addRow([
       company.id,
       company.rut,
@@ -141,7 +141,7 @@ const createExcelFile = async (companies) => {
     to: "L1",
   };
 
-  return await workbook.xlsx.writeBuffer();
+  return await workbook.xlsx.writeBuffer(); // Retornamos el archivo Excel como un buffer
 };
 
 export default excelCompanies;

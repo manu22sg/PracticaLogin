@@ -15,9 +15,7 @@ const CreateCompanyForm = () => {
   const [emails, setEmails] = useState([""]);
   const [emailFactura, setEmailFactura] = useState("");
 
-  useEffect(() => {
-    // Puedes cargar giros aquí si es necesario
-  }, []);
+
 
   const handleEmailChange = (index, event) => {
     const newEmails = emails.slice();
@@ -99,7 +97,7 @@ const CreateCompanyForm = () => {
         label: giro.descripcion,
       }));
     } catch (error) {
-      console.error("Error fetching giros:", error);
+      Swal.fire("Error", "Error al cargar los giros", "error");
       return [];
     }
   };
@@ -199,6 +197,7 @@ const CreateCompanyForm = () => {
           maxMenuHeight={150}
           isClearable={true}
           className="basic-single"
+          placeholder="Seleccione giro" 
           classNamePrefix="select"
         />
       </div>

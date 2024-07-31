@@ -173,6 +173,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
             }}
             isClearable={true}
             className="basic-single"
+            placeholder="Seleccione giro"
             classNamePrefix="select"
           />
         </div>

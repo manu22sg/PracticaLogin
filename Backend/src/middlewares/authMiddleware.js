@@ -24,7 +24,7 @@ export const authenticateToken = (req, res, next) => {
   const authHeader = req.header("Authorization");
   const token = authHeader && authHeader.replace("Bearer ", "");
 
-  // Check access token first
+  // Primero verificamos si el token existe
   if (token) {
     try {
       const verified = jwt.verify(token, SECRET_KEY);
@@ -44,7 +44,7 @@ export const authenticateToken = (req, res, next) => {
           const newAccessToken = generateToken(user);
           res.cookie("refreshToken", generateRefreshToken(user), {
             httpOnly: true,
-          }); // Update refresh token
+          }); // Actualizamos el refresh token
           req.user = jwt.verify(newAccessToken, SECRET_KEY); //
           req.headers["authorization"] = `Bearer ${newAccessToken}`;
           return next();
@@ -59,8 +59,8 @@ export const authenticateToken = (req, res, next) => {
 };
 
 export const generateRefreshToken = (user) => {
-  const payload = { userId: user.id }; // Use a unique identifier for the user
-  const options = { expiresIn: "7d" }; // Set expiry to 7 days
+  const payload = { userId: user.id }; // el usuario es un objeto con un id
+  const options = { expiresIn: "7d" }; // 7 días de expiración
   return jwt.sign(payload, REFRESH_SECRET, options);
 };
 export const verifyRefreshToken = (refreshToken) => {
@@ -74,7 +74,7 @@ export const verifyRefreshToken = (refreshToken) => {
 
 // Middleware para verificar el rol del usuario
 export const checkRole =
-  (...roles) =>
+  (...roles) => // Recibimos los roles que pueden acceder a la ruta
   (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return res

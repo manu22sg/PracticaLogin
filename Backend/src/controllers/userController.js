@@ -1,17 +1,17 @@
 import { pool } from "../utils/db.js";
 
-export const listUsers = async (req, res) => {
+export const listUsers = async (req, res) => { 
   try {
-    const [rows] = await pool.query("SELECT * FROM users");
+    const [rows] = await pool.query("SELECT * FROM users"); // Realizamos una consulta a la base de datos para seleccionar todos los usuarios
     res.json(rows);
   } catch (error) {
     console.error("Error al obtener usuarios: ", error);
   }
 };
-export const listUser = async (req, res) => {
+export const listUser = async (req, res) => { 
   try {
     const { rut } = req.params;
-    const [rows] = await pool.query("SELECT * FROM users WHERE rut = ?", [rut]);
+    const [rows] = await pool.query("SELECT * FROM users WHERE rut = ?", [rut]); // Consulta para seleccionar un usuario por su Rut
     if (rows.length === 0) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     } else {
@@ -22,7 +22,7 @@ export const listUser = async (req, res) => {
   }
 };
 
-export const updateUser = async (req, res) => {
+export const updateUser = async (req, res) => { // Exportamos una función asíncrona para actualizar un usuario
   const { rut } = req.params;
   const {
     name,
@@ -61,7 +61,7 @@ export const updateUser = async (req, res) => {
   }
 };
 
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => { // Exportamos una función asíncrona para eliminar un usuario
   try {
     const { rut } = req.params;
     await pool.query("DELETE FROM users WHERE rut = ?", [rut]);

@@ -5,7 +5,7 @@ const router = express.Router();
 router.get(
   "/giros",
   authenticateToken,
-  checkRole("Administrador Interno", "Personal Contable"),
+  checkRole("Administrador Interno", "Personal Contable"), /// Definimos los roles que pueden acceder a la ruta
   listGiros
 );
 

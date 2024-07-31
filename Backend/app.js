@@ -11,16 +11,16 @@ import excelCompanies from "./src/routes/excelRoutes.js";
 
 const app = express();
 
-app.use(
+app.use( // Configur el CORS
   cors({
     origin: true,
     credentials: true,
   })
-);
-app.use(cookieParser());
-app.use(express.json());
+); 
+app.use(cookieParser()); // Configuramos el uso de cookies
+app.use(express.json()); // Configuramos el uso de JSON
 
-app.use(
+app.use( // Configuramos el uso de sesiones
   session({
     secret: "secret",
     resave: true,
@@ -28,16 +28,16 @@ app.use(
   })
 );
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/companies", companyRoutes);
-app.use("/api", giroRoutes);
+app.use("/api/auth", authRoutes); // Definimos la ruta para autenticación 
+app.use("/api/users", userRoutes); // Definimos la ruta para los usuarios
+app.use("/api/companies", companyRoutes);  // Definimos la ruta para las empresas
+app.use("/api", giroRoutes); // Definimos la ruta para los giros
 app.use("/api", excelCompanies);
 
-app.use((req, res) => {
+app.use((req, res) => { // Definimos una ruta para manejar errores 404
   res.status(404).json({ message: "Ruta no encontrada" });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, () => { // Inicializamos el servidor en el puerto
   console.log("Servidor escuchando en el puerto", PORT);
 });

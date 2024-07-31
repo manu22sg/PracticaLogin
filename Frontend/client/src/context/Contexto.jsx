@@ -31,11 +31,9 @@ export const AuthProvider = ({ children }) => {
     cookies.remove("refreshToken");
     setUser(null);
   };
-  const updateUser = (updatedUser) => {
-    setUser(updatedUser);
-  };
+  
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

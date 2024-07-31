@@ -5,10 +5,10 @@ import { authenticateToken, checkRole } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.get(
+router.get( // Definimos la ruta para exportar las empresas a un archivo excel
   "/excelCompanies",
   authenticateToken,
-  checkRole("Administrador Interno", "Personal Contable"),
+  checkRole("Administrador Interno", "Personal Contable"), /// Definimos los roles que pueden acceder a la ruta
   excelCompanies
 );
 

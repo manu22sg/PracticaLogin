@@ -1,7 +1,6 @@
 import { pool } from "../utils/db.js";
-import XlsxPopulate from "xlsx-populate";
 
-export const createCompany = async (req, res) => {
+export const createCompany = async (req, res) => { // Exportamos una función asíncrona para crear una empresa
   try {
     const {
       rut,
@@ -35,7 +34,7 @@ export const createCompany = async (req, res) => {
     try {
       await connection.beginTransaction();
 
-      const [companyResult] = await connection.query(
+      const [companyResult] = await connection.query( // Insertamos una nueva empresa en la base de datos
         "INSERT INTO companies (rut, razon_social, nombre_fantasia, email_factura, direccion, comuna, ciudad, telefono, giro_codigo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         [
           rut,
@@ -81,14 +80,14 @@ export const createCompany = async (req, res) => {
   }
 };
 
-export const listCompanies = async (req, res) => {
-  try {
-    const [rows] = await pool.query(`
+export const listCompanies = async (req, res) => { // Exportamos una función asíncrona para obtener todas las empresas
+  try { // Manejamos cualquier error que pueda ocurrir en la función
+    const [rows] = await pool.query(`                                
       SELECT c.*, g.descripcion AS giro_descripcion, e.email
       FROM companies c
       LEFT JOIN giros g ON c.giro_codigo = g.codigo
       LEFT JOIN emails e ON c.id = e.company_id
-    `);
+    `); // Realizamos una consulta a la base de datos para seleccionar todas las empresas
 
     if (rows.length <= 0) {
       return res.status(404).json({ message: "No hay empresas registradas" });
@@ -145,35 +144,35 @@ export const listCompanies = async (req, res) => {
       .json({ message: "Error al obtener las empresas", error: error.message });
   }
 };
-export const listCompany = async (req, res) => {
+export const listCompany = async (req, res) => { // Exportamos una función asíncrona para obtener una empresa por su Rut
   try {
     const { rut } = req.params;
-    const [companyRows] = await pool.query(
+    const [companyRows] = await pool.query( // Realizamos una consulta a la base de datos para seleccionar una empresa por su Rut
       "SELECT * FROM companies WHERE rut = ?",
       [rut]
     );
     if (companyRows.length <= 0) {
-      return res.status(404).json({ message: "Empresa no encontrada" });
+      return res.status(404).json({ message: "Empresa no encontrada" }); // Si no se encuentra la empresa, devolver un mensaje de error
     }
 
-    const [emailRows] = await pool.query(
+    const [emailRows] = await pool.query( // Realizamos una consulta a la base de datos para seleccionar los correos electrónicos de la empresa
       "SELECT email FROM emails WHERE company_id = ?",
       [companyRows[0].id]
     );
     const company = {
       ...companyRows[0],
-      emails: emailRows.map((row) => row.email),
+      emails: emailRows.map((row) => row.email), // Mapear los correos electrónicos
     };
 
     res.json(company);
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error al obtener la empresa", error: error.message });
+      .json({ message: "Error al obtener la empresa", error: error.message }); // Si ocurre un error, devolver un mensaje de error
   }
 };
 
-export const deleteCompany = async (req, res) => {
+export const deleteCompany = async (req, res) => { // Exportamos una función asíncrona para eliminar una empresa por su Rut
   try {
     const { rut } = req.params;
     const [result] = await pool.query("DELETE FROM companies WHERE rut = ?", [
@@ -190,7 +189,7 @@ export const deleteCompany = async (req, res) => {
   }
 };
 
-export const updateCompany = async (req, res) => {
+export const updateCompany = async (req, res) => { // Exportamos una función asíncrona para actualizar una empresa por su Rut
   try {
     const { rut } = req.params;
     const {
@@ -205,11 +204,11 @@ export const updateCompany = async (req, res) => {
       emails,
     } = req.body;
 
-    const connection = await pool.getConnection();
+    const connection = await pool.getConnection(); // Establecer una conexión a la base de datos
     try {
-      await connection.beginTransaction();
+      await connection.beginTransaction(); // Iniciar una transacción
 
-      const [result] = await connection.query(
+      const [result] = await connection.query( // Actualizar la empresa especificada por el Rut
         "UPDATE companies SET razon_social = IFNULL(?, razon_social), nombre_fantasia = IFNULL(?, nombre_fantasia), direccion = IFNULL(?, direccion), comuna = IFNULL(?, comuna), ciudad = IFNULL(?, ciudad), telefono = IFNULL(?, telefono), giro_codigo = IFNULL(?, giro_codigo), email_factura= IFNULL(?, email_factura) WHERE rut = ?",
         [
           razon_social,
@@ -224,7 +223,7 @@ export const updateCompany = async (req, res) => {
         ]
       );
 
-      if (result.affectedRows === 0) {
+      if (result.affectedRows === 0) { // Si no se encuentra la empresa, devolver un mensaje de error
         await connection.rollback();
         return res.status(404).json({ message: "Empresa no encontrada" });
       }
@@ -242,24 +241,24 @@ export const updateCompany = async (req, res) => {
       if (emails && emails.length > 0) {
         const emailPromises = emails.map((email) => {
           return connection.query(
-            "INSERT INTO emails (company_id, email) VALUES (?, ?)",
+            "INSERT INTO emails (company_id, email) VALUES (?, ?)", // Insertar los correos electrónicos de la empresa
             [companyId, email]
           );
         });
 
-        await Promise.all(emailPromises);
+        await Promise.all(emailPromises); // Esperar a que todas las promesas se resuelvan
       }
 
-      await connection.commit();
-      res.json({ message: "Empresa actualizada exitosamente" });
+      await connection.commit(); // Confirmar la transacción
+      res.json({ message: "Empresa actualizada exitosamente" }); // Devolver un mensaje de éxito
     } catch (error) {
-      await connection.rollback();
+      await connection.rollback(); // Revertir la transacción en caso de error
       res.status(500).json({
         message: "Error al actualizar empresa",
         error: error.message,
       });
     } finally {
-      connection.release();
+      connection.release(); // Liberar la conexión
     }
   } catch (error) {
     res

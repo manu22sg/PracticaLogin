@@ -5,16 +5,16 @@ import {
   generateRefreshToken,
 } from "../middlewares/authMiddleware.js";
 
-export const login = async (req, res) => {
-  const { email, password } = req.body;
+export const login = async (req, res) => { // Exportamos una función asíncrona para iniciar sesión
+  const { email, password } = req.body; // Obtenemos el correo electrónico y la contraseña del cuerpo de la solicitud
   if (!email || !password) {
     return res
       .status(400)
-      .json({ message: "Email y contraseña son requeridos" });
+      .json({ message: "Email y contraseña son requeridos" }); // Validamos si el correo electrónico y la contraseña están presentes 
   }
 
   try {
-    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
+    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [ 
       email,
     ]);
 
@@ -24,10 +24,10 @@ export const login = async (req, res) => {
         .json({ message: "Email o contraseña incorrectos" });
     }
 
-    const user = rows[0];
+    const user = rows[0]; // Obtenemos el primer usuario de la lista
 
-    const accessToken = generateToken(user);
-    const refreshToken = generateRefreshToken(user);
+    const accessToken = generateToken(user); // Generamos un token de acceso
+    const refreshToken = generateRefreshToken(user); // Generamos un token de actualización
     res.cookie("refreshToken", refreshToken, { httpOnly: true });
     res.json({ accessToken });
   } catch (error) {
@@ -37,7 +37,7 @@ export const login = async (req, res) => {
   }
 };
 
-export const register = async (req, res) => {
+export const register = async (req, res) => { // Exportamos una función asíncrona para registrar un usuario
   const {
     rut,
     name,
@@ -61,7 +61,7 @@ export const register = async (req, res) => {
     !password ||
     !role
   ) {
-    return res
+    return res // Validamos si los campos requeridos están presentes
       .status(400)
       .json({ message: "Por favor, llenar los campos vacios" });
   }
@@ -100,21 +100,21 @@ export const register = async (req, res) => {
       ]
     );
 
-    res.status(201).json({ message: "Usuario registrado exitosamente" });
+    res.status(201).json({ message: "Usuario registrado exitosamente" }); // Respondemos con un mensaje de éxito
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error al registrar usuario", error: error.message });
+      .json({ message: "Error al registrar usuario", error: error.message }); 
   }
 };
 
 export const logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      return res.status(500).json({ message: "Error al cerrar sesión" });
+      return res.status(500).json({ message: "Error al cerrar sesión" }); // Si hay un error al cerrar la sesión, devolver un mensaje de error
     }
-
-    res.clearCookie("refreshToken", { httpOnly: true });
+    
+    res.clearCookie("refreshToken", { httpOnly: true }); // Limpiamos la cookie del refresh token
     res.json({ message: "Sesión cerrada exitosamente" });
   });
 };
