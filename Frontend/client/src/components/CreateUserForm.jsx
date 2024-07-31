@@ -107,7 +107,7 @@ const CreateUserForm = () => {
       </h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block mb-2">RUT:</label>
+          <label className="block mb-2">Rut<span className="text-red-500"> *</span></label>
           <input
             type="text"
             value={rut}
@@ -116,7 +116,7 @@ const CreateUserForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Nombre:</label>
+          <label className="block mb-2">Nombre<span className="text-red-500"> *</span></label>
           <input
             type="text"
             value={name}
@@ -125,7 +125,7 @@ const CreateUserForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Apellido Paterno:</label>
+          <label className="block mb-2">Apellido Paterno<span className="text-red-500"> *</span></label>
           <input
             type="text"
             value={apellido_paterno}
@@ -134,7 +134,7 @@ const CreateUserForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Apellido Materno:</label>
+          <label className="block mb-2">Apellido Materno<span className="text-red-500"> *</span></label>
           <input
             type="text"
             value={apellido_materno}
@@ -143,7 +143,7 @@ const CreateUserForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Celular:</label>
+          <label className="block mb-2">Celular<span className="text-red-500"> *</span></label>
           <input
             type="text"
             value={celular}
@@ -152,7 +152,7 @@ const CreateUserForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Fecha de Nacimiento:</label>
+          <label className="block mb-2">Fecha de Nacimiento<span className="text-red-500"> *</span></label>
           <input
             type="date"
             value={fecha_nacimiento}
@@ -161,7 +161,7 @@ const CreateUserForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Email:</label>
+          <label className="block mb-2">Email<span className="text-red-500"> *</span></label>
           <input
             type="email"
             value={email}
@@ -170,7 +170,7 @@ const CreateUserForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Email Opcional:</label>
+          <label className="block mb-2">Email Opcional</label>
           <input
             type="email"
             value={email_opcional}
@@ -179,7 +179,7 @@ const CreateUserForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Contraseña:</label>
+          <label className="block mb-2">Contraseña<span className="text-red-500"> *</span></label>
           <input
             type="password"
             value={password}
@@ -188,7 +188,7 @@ const CreateUserForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Confirmar Contraseña:</label>
+          <label className="block mb-2">Confirmar Contraseña<span className="text-red-500"> *</span></label>
           <input
             type="password"
             value={confirmPassword}
@@ -197,13 +197,13 @@ const CreateUserForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Rol:</label>
+          <label className="block mb-2">Rol<span className="text-red-500"> *</span></label>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
             className="w-full p-2 rounded bg-gray-200 text-black"
           >
-            <option value="">Selecciona un rol</option>
+            <option value="">Seleccione un rol</option>
             {rolesDisponibles.map((rol) => (
               <option key={rol} value={rol}>
                 {rol}

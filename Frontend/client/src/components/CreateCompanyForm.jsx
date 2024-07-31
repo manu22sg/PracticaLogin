@@ -109,7 +109,7 @@ const CreateCompanyForm = () => {
     >
       <h2 className="text-2xl font-bold mb-4 text-center">Crear Empresa</h2>
       <div className="mb-4">
-        <label className="block text-black">Rut:</label>
+        <label className="block text-black">Rut <span className="text-red-500"> *</span></label>
         <input
           type="text"
           value={rut}
@@ -119,7 +119,7 @@ const CreateCompanyForm = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-black">Razón Social:</label>
+        <label className="block text-black">Razón Social <span className="text-red-500"> *</span></label>
         <input
           type="text"
           value={razonSocial}
@@ -129,7 +129,7 @@ const CreateCompanyForm = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-black">Nombre Fantasía:</label>
+        <label className="block text-black">Nombre Fantasía</label>
         <input
           type="text"
           value={nombreFantasia}
@@ -138,7 +138,7 @@ const CreateCompanyForm = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-black">Email de Facturas:</label>
+        <label className="block text-black">Email de Facturas <span className="text-red-500"> *</span></label>
         <input
           type="email"
           value={emailFactura}
@@ -147,7 +147,7 @@ const CreateCompanyForm = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-black">Dirección:</label>
+        <label className="block text-black">Dirección <span className="text-red-500"> *</span></label>
         <input
           type="text"
           value={direccion}
@@ -157,7 +157,7 @@ const CreateCompanyForm = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-black">Comuna:</label>
+        <label className="block text-black">Comuna <span className="text-red-500"> *</span></label>
         <input
           type="text"
           value={comuna}
@@ -167,7 +167,7 @@ const CreateCompanyForm = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-black">Ciudad:</label>
+        <label className="block text-black">Ciudad <span className="text-red-500"> *</span></label>
         <input
           type="text"
           value={ciudad}
@@ -177,7 +177,7 @@ const CreateCompanyForm = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-black">Teléfono:</label>
+        <label className="block text-black">Teléfono <span className="text-red-500"> *</span></label>
         <input
           type="text"
           value={telefono}
@@ -187,7 +187,7 @@ const CreateCompanyForm = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-black">Buscar Giro:</label>
+        <label className="block text-black">Giro  <span className="text-red-500"> *</span></label>
         <AsyncSelect
           cacheOptions
           loadOptions={loadGiros}
@@ -202,7 +202,7 @@ const CreateCompanyForm = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-black">Emails:</label>
+        <label className="block text-black">Emails <span className="text-red-500"> *</span></label>
         {emails.map((email, index) => (
           <div key={index} className="mb-2">
             <input
