@@ -7,7 +7,7 @@ import giroRoutes from "./src/routes/giroRoutes.js";
 import cors from "cors";
 import { PORT } from "./src/config/envConfig.js";
 import cookieParser from "cookie-parser";
-import excelCompanies from "./src/routes/excelRoutes.js";
+import excelRoutes from "./src/routes/excelRoutes.js";
 
 const app = express();
 
@@ -32,7 +32,7 @@ app.use("/api/auth", authRoutes); // Definimos la ruta para autenticación
 app.use("/api/users", userRoutes); // Definimos la ruta para los usuarios
 app.use("/api/companies", companyRoutes);  // Definimos la ruta para las empresas
 app.use("/api", giroRoutes); // Definimos la ruta para los giros
-app.use("/api", excelCompanies);
+app.use("/api", excelRoutes); // Definimos la ruta para exportar a Excel
 
 app.use((req, res) => { // Definimos una ruta para manejar errores 404
   res.status(404).json({ message: "Ruta no encontrada" });

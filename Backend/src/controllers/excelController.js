@@ -1,7 +1,7 @@
 import { pool } from "../utils/db.js";
 import ExcelJS from "exceljs";
 
-const excelCompanies = async (req, res) => { // Exportamos una función asíncrona para exportar las empresas a un archivo Excel
+export const excelCompanies = async (req, res) => { // Exportamos una función asíncrona para exportar las empresas a un archivo Excel
   try { // Realizamos una consulta a la base de datos para seleccionar todas las empresas
     const [rows] = await pool.query(` 
         SELECT c.*, g.descripcion AS giro_descripcion, e.email
@@ -144,4 +144,98 @@ const createExcelFile = async (companies) => { // Exportamos una función asínc
   return await workbook.xlsx.writeBuffer(); // Retornamos el archivo Excel como un buffer
 };
 
-export default excelCompanies;
+
+export const excelUsers = async (req, res) => {
+  try {
+    // Realizamos una consulta a la base de datos para seleccionar todos los usuarios
+    const [rows] = await pool.query(`
+      SELECT id, rut, name, apellido_paterno, apellido_materno, celular, fecha_nacimiento, email, email_opcional, role
+      FROM users
+    `);
+
+    if (rows.length <= 0) {
+      return res.status(404).json({ message: "No hay usuarios registrados" });
+    }
+
+    // Crear el archivo Excel
+    const fileBuffer = await createExcelUsers(rows);
+
+    // Enviar el archivo como respuesta
+    res.setHeader("Content-Disposition", "attachment; filename=usuarios.xlsx");
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.send(fileBuffer);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener los usuarios", error: error.message });
+  }
+};
+const createExcelUsers = async (users) => {
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet("Datos_Usuarios");
+
+  const headers = [
+    "ID",
+    "RUT",
+    "Nombre",
+    "Apellido Paterno",
+    "Apellido Materno",
+    "Celular",
+    "Fecha de Nacimiento",
+    "Email",
+    "Email Opcional",
+    "Rol",
+  ];
+
+  sheet.addRow(headers); // Agregamos la fila de encabezado al archivo Excel
+  sheet.getRow(1).font = { bold: true };
+  sheet.getRow(1).eachCell({ includeEmpty: true }, (cell) => {
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FFFF00" },
+    };
+  });
+
+  sheet.columns = [ // Definimos el ancho de las columnas
+    { width: 10 },
+    { width: 20 },
+    { width: 30 },
+    { width: 30 },
+    { width: 30 },
+    { width: 20 },
+    { width: 20 }, // Ajustar el ancho según el formato de la fecha
+    { width: 30 },
+    { width: 30 },
+    { width: 25 },
+  ];
+
+  users.forEach((user) => {
+    sheet.addRow([
+      user.id,
+      user.rut,
+      user.name,
+      user.apellido_paterno,
+      user.apellido_materno,
+      user.celular,
+      user.fecha_nacimiento, // Directamente como objeto Date
+      user.email,
+      user.email_opcional || '',
+      user.role,
+    ]);
+  });
+
+  // Aplicar formato de fecha a la columna de Fecha de Nacimiento
+  sheet.getColumn(7).numFmt = 'DD/MM/YYYY'; // Cambia el formato a DD/MM/YYYY
+
+  // Aplicar filtro a toda la fila de encabezado
+  sheet.autoFilter = {
+    from: "A1",
+    to: "J1",
+  };
+
+  return await workbook.xlsx.writeBuffer(); // Retornamos el archivo Excel como un buffer
+};
