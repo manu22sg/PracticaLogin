@@ -8,3 +8,6 @@ export const DB_PASSWORD = process.env.DB_PASSWORD;
 export const DB_DATABASE = process.env.DB_DATABASE;
 export const DB_PORT = process.env.DB_PORT;
 export const SECRET_KEY = process.env.JWT_SECRET;
+export const CORREO = process.env.CORREO;
+export const PASSWORD = process.env.PASSWORD_CORREO;
+export const FRONTEND_URL = process.env.FRONTEND_URL;

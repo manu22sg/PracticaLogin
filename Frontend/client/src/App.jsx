@@ -5,6 +5,8 @@ import {
   Routes,
   useLocation,
 } from "react-router-dom";
+import ForgotPasswordPage from './components/ForgotPasswordPage';
+import ResetPasswordPage from './components/ResetPasswordPage';
 
 import CreateCompanyForm from "./components/CreateCompanyForm";
 import { AuthProvider, AuthContext } from "./context/Contexto";
@@ -19,6 +21,7 @@ import Navbar from "./components/navBar";
 import Sidebar from "./components/SideBar"; // Importa tu Sidebar
 import CompanyList from "./components/CompanyList";
 import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const AppContent = () => {
   const location = useLocation();
@@ -127,6 +130,8 @@ const AppContent = () => {
                 </PrivateRoute>
               }
             />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Routes>
         </div>
       </div>

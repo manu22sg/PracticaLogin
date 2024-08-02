@@ -1,6 +1,6 @@
 import { pool } from "../utils/db.js";
 
-export const createCompany = async (req, res) => { // Exportamos una función asíncrona para crear una empresa
+export const createCompany = async (req, res) => {
   try {
     const {
       rut,
@@ -12,9 +12,10 @@ export const createCompany = async (req, res) => { // Exportamos una función as
       ciudad,
       telefono,
       giro_codigo,
-      emails,
+      emails, // emails ahora incluye { email, nombre, cargo }
     } = req.body;
 
+    // Verificar que todos los campos obligatorios estén presentes
     if (
       !rut ||
       !razon_social ||
@@ -30,11 +31,19 @@ export const createCompany = async (req, res) => { // Exportamos una función as
       return res.status(400).json({ message: "Faltan campos por llenar" });
     }
 
+    // Verificar que cada email tenga nombre y cargo
+    for (const email of emails) {
+      if (!email.email || !email.nombre || !email.cargo) {
+        return res.status(400).json({ message: "Cada email debe tener un nombre y un cargo" });
+      }
+    }
+
     const connection = await pool.getConnection();
     try {
       await connection.beginTransaction();
 
-      const [companyResult] = await connection.query( // Insertamos una nueva empresa en la base de datos
+      // Insertar la nueva empresa
+      const [companyResult] = await connection.query(
         "INSERT INTO companies (rut, razon_social, nombre_fantasia, email_factura, direccion, comuna, ciudad, telefono, giro_codigo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         [
           rut,
@@ -51,10 +60,11 @@ export const createCompany = async (req, res) => { // Exportamos una función as
 
       const companyId = companyResult.insertId;
 
+      // Insertar los correos electrónicos
       const emailPromises = emails.map((email) => {
         return connection.query(
-          "INSERT INTO emails (company_id, email) VALUES (?, ?)",
-          [companyId, email]
+          "INSERT INTO emails (company_id, email, nombre, cargo) VALUES (?, ?, ?, ?)",
+          [companyId, email.email, email.nombre, email.cargo]
         );
       });
 
@@ -65,29 +75,25 @@ export const createCompany = async (req, res) => { // Exportamos una función as
     } catch (error) {
       await connection.rollback();
       console.error("Error al crear empresa:", error);
-      res
-        .status(500)
-        .json({ message: "Error al crear empresa", error: error.message });
+      res.status(500).json({ message: "Error al crear empresa", error: error.message });
     } finally {
       connection.release();
     }
   } catch (error) {
     console.error("Error al conectar a la base de datos:", error);
-    res.status(500).json({
-      message: "Error al conectar a la base de datos",
-      error: error.message,
-    });
+    res.status(500).json({ message: "Error al conectar a la base de datos", error: error.message });
   }
 };
 
-export const listCompanies = async (req, res) => { // Exportamos una función asíncrona para obtener todas las empresas
-  try { // Manejamos cualquier error que pueda ocurrir en la función
-    const [rows] = await pool.query(`                                
-      SELECT c.*, g.descripcion AS giro_descripcion, e.email
+
+export const listCompanies = async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT c.*, g.descripcion AS giro_descripcion, e.email, e.nombre, e.cargo
       FROM companies c
       LEFT JOIN giros g ON c.giro_codigo = g.codigo
       LEFT JOIN emails e ON c.id = e.company_id
-    `); // Realizamos una consulta a la base de datos para seleccionar todas las empresas
+    `);
 
     if (rows.length <= 0) {
       return res.status(404).json({ message: "No hay empresas registradas" });
@@ -95,7 +101,6 @@ export const listCompanies = async (req, res) => { // Exportamos una función as
 
     // Agrupar correos electrónicos bajo cada empresa
     const companiesMap = rows.reduce((acc, row) => {
-      // Convertir el arreglo en un mapa
       const {
         id,
         rut,
@@ -109,10 +114,11 @@ export const listCompanies = async (req, res) => { // Exportamos una función as
         giro_descripcion,
         email_factura,
         email,
+        nombre,
+        cargo
       } = row;
 
       if (!acc[id]) {
-        // Si la empresa no existe en el mapa, agregarla
         acc[id] = {
           id,
           rut,
@@ -125,71 +131,78 @@ export const listCompanies = async (req, res) => { // Exportamos una función as
           giro_codigo,
           giro_descripcion,
           email_factura,
-          emails: [],
+          emails: []
         };
       }
 
       if (email) {
-        // Si hay un correo electrónico, agregarlo a la empresa
-        acc[id].emails.push(email); // Agregar el correo electrónico a la empresa
+        acc[id].emails.push({ email, nombre, cargo }); // Agregar el correo electrónico como objeto
       }
 
       return acc;
     }, {});
 
-    res.json(Object.values(companiesMap)); // Convertir el mapa en un arreglo
+    res.json(Object.values(companiesMap));
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al obtener las empresas", error: error.message });
+    res.status(500).json({ message: "Error al obtener las empresas", error: error.message });
   }
 };
-export const listCompany = async (req, res) => { // Exportamos una función asíncrona para obtener una empresa por su Rut
+export const listCompany = async (req, res) => {
   try {
     const { rut } = req.params;
-    const [companyRows] = await pool.query( // Realizamos una consulta a la base de datos para seleccionar una empresa por su Rut
+
+    // Verificar si la empresa existe
+    const [companyRows] = await pool.query(
       "SELECT * FROM companies WHERE rut = ?",
       [rut]
     );
-    if (companyRows.length <= 0) {
-      return res.status(404).json({ message: "Empresa no encontrada" }); // Si no se encuentra la empresa, devolver un mensaje de error
+    if (companyRows.length === 0) {
+      return res.status(404).json({ message: "Empresa no encontrada" });
     }
 
-    const [emailRows] = await pool.query( // Realizamos una consulta a la base de datos para seleccionar los correos electrónicos de la empresa
+    // Obtener correos electrónicos de la empresa
+    const companyId = companyRows[0].id;
+    const [emailRows] = await pool.query(
       "SELECT email FROM emails WHERE company_id = ?",
-      [companyRows[0].id]
+      [companyId]
     );
+
+    // Construir el objeto de respuesta
     const company = {
       ...companyRows[0],
-      emails: emailRows.map((row) => row.email), // Mapear los correos electrónicos
+      emails: emailRows.map((row) => row.email),
     };
 
     res.json(company);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al obtener la empresa", error: error.message }); // Si ocurre un error, devolver un mensaje de error
+    console.error('Error al obtener la empresa:', error); // Añadir un log para depuración
+    res.status(500).json({ message: "Error al obtener la empresa", error: error.message });
   }
 };
 
-export const deleteCompany = async (req, res) => { // Exportamos una función asíncrona para eliminar una empresa por su Rut
+export const deleteCompany = async (req, res) => {
   try {
     const { rut } = req.params;
-    const [result] = await pool.query("DELETE FROM companies WHERE rut = ?", [
-      rut,
-    ]);
-    if (result.affectedRows <= 0) {
+
+    // Verificar si la empresa existe
+    const [company] = await pool.query("SELECT * FROM companies WHERE rut = ?", [rut]);
+    if (company.length === 0) {
       return res.status(404).json({ message: "Empresa no encontrada" });
     }
+
+    // Eliminar la empresa
+    const [result] = await pool.query("DELETE FROM companies WHERE rut = ?", [rut]);
+    if (result.affectedRows <= 0) {
+      return res.status(404).json({ message: "No se pudo eliminar la empresa" });
+    }
+
     res.json({ message: "Empresa eliminada exitosamente" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al eliminar empresa", error: error.message });
+    res.status(500).json({ message: "Error al eliminar empresa", error: error.message });
   }
 };
 
-export const updateCompany = async (req, res) => { // Exportamos una función asíncrona para actualizar una empresa por su Rut
+export const updateCompany = async (req, res) => {
   try {
     const { rut } = req.params;
     const {
@@ -201,15 +214,24 @@ export const updateCompany = async (req, res) => { // Exportamos una función as
       telefono,
       giro_codigo,
       email_factura,
-      emails,
+      emails, // Debería ser una lista de objetos { email, nombre, cargo }
     } = req.body;
 
     const connection = await pool.getConnection(); // Establecer una conexión a la base de datos
     try {
       await connection.beginTransaction(); // Iniciar una transacción
 
-      const [result] = await connection.query( // Actualizar la empresa especificada por el Rut
-        "UPDATE companies SET razon_social = IFNULL(?, razon_social), nombre_fantasia = IFNULL(?, nombre_fantasia), direccion = IFNULL(?, direccion), comuna = IFNULL(?, comuna), ciudad = IFNULL(?, ciudad), telefono = IFNULL(?, telefono), giro_codigo = IFNULL(?, giro_codigo), email_factura= IFNULL(?, email_factura) WHERE rut = ?",
+      const [result] = await connection.query(
+        `UPDATE companies SET 
+          razon_social = IFNULL(?, razon_social), 
+          nombre_fantasia = IFNULL(?, nombre_fantasia), 
+          direccion = IFNULL(?, direccion), 
+          comuna = IFNULL(?, comuna), 
+          ciudad = IFNULL(?, ciudad), 
+          telefono = IFNULL(?, telefono), 
+          giro_codigo = IFNULL(?, giro_codigo), 
+          email_factura = IFNULL(?, email_factura) 
+        WHERE rut = ?`,
         [
           razon_social,
           nombre_fantasia || null,
@@ -223,7 +245,7 @@ export const updateCompany = async (req, res) => { // Exportamos una función as
         ]
       );
 
-      if (result.affectedRows === 0) { // Si no se encuentra la empresa, devolver un mensaje de error
+      if (result.affectedRows === 0) {
         await connection.rollback();
         return res.status(404).json({ message: "Empresa no encontrada" });
       }
@@ -234,15 +256,17 @@ export const updateCompany = async (req, res) => { // Exportamos una función as
       );
       const companyId = companyRows[0].id;
 
+      // Eliminar correos electrónicos existentes
       await connection.query("DELETE FROM emails WHERE company_id = ?", [
         companyId,
       ]);
 
+      // Insertar nuevos correos electrónicos
       if (emails && emails.length > 0) {
         const emailPromises = emails.map((email) => {
           return connection.query(
-            "INSERT INTO emails (company_id, email) VALUES (?, ?)", // Insertar los correos electrónicos de la empresa
-            [companyId, email]
+            "INSERT INTO emails (company_id, email, nombre, cargo) VALUES (?, ?, ?, ?)",
+            [companyId, email.email, email.nombre || null, email.cargo || null]
           );
         });
 
@@ -250,7 +274,7 @@ export const updateCompany = async (req, res) => { // Exportamos una función as
       }
 
       await connection.commit(); // Confirmar la transacción
-      res.json({ message: "Empresa actualizada exitosamente" }); // Devolver un mensaje de éxito
+      res.json({ message: "Empresa actualizada exitosamente" });
     } catch (error) {
       await connection.rollback(); // Revertir la transacción en caso de error
       res.status(500).json({
@@ -261,8 +285,6 @@ export const updateCompany = async (req, res) => { // Exportamos una función as
       connection.release(); // Liberar la conexión
     }
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al actualizar empresa", error: error.message });
+    res.status(500).json({ message: "Error al actualizar empresa", error: error.message });
   }
 };

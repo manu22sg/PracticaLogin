@@ -1,4 +1,7 @@
 import { pool } from "../utils/db.js";
+import nodemailer from "nodemailer";
+import { v4 as uuidv4 } from "uuid";
+import {CORREO, PASSWORD, FRONTEND_URL} from "../config/envConfig.js";
 
 export const listUsers = async (req, res) => { 
   try {
@@ -68,5 +71,86 @@ export const deleteUser = async (req, res) => { // Exportamos una función asín
     res.json({ message: "Usuario eliminado exitosamente" });
   } catch (error) {
     res.status(400).json({ message: "Error al eliminar usuario" });
+  }
+};
+
+
+
+export const requestResetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Verificar si el correo electrónico está registrado
+    const [userRows] = await pool.query(
+      'SELECT id FROM users WHERE email = ?',
+      [email]
+    );
+
+    if (userRows.length === 0) {
+      return res.status(404).json({ message: 'Correo electrónico no registrado' });
+    }
+
+    const userId = userRows[0].id;
+    const token = uuidv4(); // Generar un token único
+    const expiration = new Date();
+    expiration.setHours(expiration.getHours() + 1); // Token válido por 1 hora
+
+    // Actualizar el registro del usuario con el token y la fecha de expiración
+    await pool.query(
+      'UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE id = ?',
+      [token, expiration, userId]
+    );
+
+    // Configurar el transporte de correo electrónico
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: CORREO,
+        pass: PASSWORD
+      }
+    });
+
+    const resetLink = `${FRONTEND_URL}/reset-password?token=${token}`;
+
+
+    // Enviar el correo electrónico
+    await transporter.sendMail({
+      to: email,
+      subject: 'Restablecimiento de Contraseña',
+      text: `Haga clic en el siguiente enlace para restablecer su contraseña: ${resetLink}`
+    });
+
+    res.json({ message: 'Correo electrónico de restablecimiento enviado' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al procesar la solicitud', error: error.message });
+  }
+};
+export const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    // Verificar el token
+    const [userRows] = await pool.query(
+      'SELECT id FROM users WHERE reset_token = ? AND reset_token_expiry > NOW()',
+      [token]
+    );
+
+    if (userRows.length === 0) {
+      return res.status(400).json({ message: 'Token inválido o expirado' });
+    }
+
+    const userId = userRows[0].id;
+
+    
+
+    // Actualizar la contraseña y limpiar el token
+    await pool.query(
+      'UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE id = ?',
+      [newPassword, userId]
+    );
+
+    res.json({ message: 'Contraseña actualizada exitosamente' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al restablecer la contraseña', error: error.message });
   }
 };

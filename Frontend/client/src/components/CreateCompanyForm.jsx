@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { createCompany, listGiros } from "../services/company.services";
 import Swal from "sweetalert2";
 import AsyncSelect from "react-select/async";
@@ -12,19 +12,20 @@ const CreateCompanyForm = () => {
   const [ciudad, setCiudad] = useState("");
   const [telefono, setTelefono] = useState("");
   const [giroCodigo, setGiroCodigo] = useState(null);
-  const [emails, setEmails] = useState([""]);
+  const [emails, setEmails] = useState([{ email: "", nombre: "", cargo: "" }]);
   const [emailFactura, setEmailFactura] = useState("");
 
-
-
+  // Función para manejar cambios en los campos de email
   const handleEmailChange = (index, event) => {
-    const newEmails = emails.slice();
-    newEmails[index] = event.target.value;
+    const { name, value } = event.target;
+    const newEmails = [...emails];
+    newEmails[index][name] = value;
     setEmails(newEmails);
   };
 
+  // Función para agregar un nuevo campo de email
   const addEmailField = () => {
-    setEmails([...emails, ""]);
+    setEmails([...emails, { email: "", nombre: "", cargo: "" }]);
   };
 
   const handleSubmit = async (e) => {
@@ -39,7 +40,9 @@ const CreateCompanyForm = () => {
       !giroCodigo ||
       !emailFactura ||
       emails.length === 0 ||
-      !emails[0]
+      !emails[0].email ||
+      !emails[0].nombre ||
+      !emails[0].cargo
     ) {
       Swal.fire({
         icon: "warning",
@@ -75,7 +78,7 @@ const CreateCompanyForm = () => {
       setTelefono("");
       setGiroCodigo(null);
       setEmailFactura("");
-      setEmails([""]);
+      setEmails([{ email: "", nombre: "", cargo: "" }]);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -144,6 +147,7 @@ const CreateCompanyForm = () => {
           value={emailFactura}
           onChange={(e) => setEmailFactura(e.target.value)}
           className="p-2 rounded bg-gray-200 text-black w-full"
+          required
         />
       </div>
       <div className="mb-4">
@@ -194,6 +198,7 @@ const CreateCompanyForm = () => {
           onChange={(selectedOption) =>
             setGiroCodigo(selectedOption ? selectedOption.value : null)
           }
+          defaultOptions
           maxMenuHeight={150}
           isClearable={true}
           className="basic-single"
@@ -207,17 +212,37 @@ const CreateCompanyForm = () => {
           <div key={index} className="mb-2">
             <input
               type="email"
-              value={email}
+              name="email"
+              value={email.email}
               onChange={(e) => handleEmailChange(index, e)}
               className="p-2 rounded bg-gray-200 text-black w-full"
-              required={index === 0} // El primer correo es obligatorio
+              placeholder="Email"
+              required
+            />
+            <input
+              type="text"
+              name="nombre"
+              value={email.nombre}
+              onChange={(e) => handleEmailChange(index, e)}
+              className="p-2 rounded bg-gray-200 text-black w-full mt-2"
+              placeholder="Nombre"
+              required
+            />
+            <input
+              type="text"
+              name="cargo"
+              value={email.cargo}
+              onChange={(e) => handleEmailChange(index, e)}
+              className="p-2 rounded bg-gray-200 text-black w-full mt-2"
+              placeholder="Cargo"
+              required
             />
           </div>
         ))}
         <button
           type="button"
           onClick={addEmailField}
-          className="p-2 bg-blue-500 text-white rounded"
+          className="p-2 bg-blue-500 text-white rounded mt-2"
         >
           Agregar otro email
         </button>

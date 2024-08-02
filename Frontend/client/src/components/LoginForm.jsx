@@ -1,46 +1,33 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/auth.services";
-import { jwtDecode } from "jwt-decode"; // Importa jwt-decode correctamente
-import { AuthContext } from "../context/Contexto"; // Importa el contexto
+import {jwtDecode} from "jwt-decode";
+import { AuthContext } from "../context/Contexto";
 import Swal from "sweetalert2";
- // Importa cookie-universal
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { user, login } = useContext(AuthContext); // Usa el contexto
+  const { user, login } = useContext(AuthContext);
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard"); // Redirige al dashboard si el usuario ya está autenticado
+      navigate("/dashboard");
     }
   }, [user, navigate]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Agrega la función handleSubmit
+    e.preventDefault();
     try {
-      const { accessToken } = await loginUser({
-        email,
-        password,
-      });
-
-      console.log("AccessToken recibido:", accessToken); // Verifica la recepción del accessToken
-      
-
-      login(accessToken); // Usa la función login del contexto para actualizar el estado del usuario
+      const { accessToken } = await loginUser({ email, password });
+      login(accessToken);
       const decoded = jwtDecode(accessToken);
       const userRole = decoded.role;
 
-      // Redirigir al dashboard si el rol es Administrador Interno
-      if (
-        userRole === "Administrador Interno" ||
-        userRole === "Personal Contable"
-      ) {
+      if (userRole === "Administrador Interno" || userRole === "Personal Contable") {
         navigate("/dashboard");
       } else {
-        // Redirigir a una página diferente si el rol no es Administrador Interno
         navigate("/algunaotrapagina");
       }
     } catch (error) {
@@ -92,6 +79,14 @@ const LoginForm = () => {
         >
           Regístrate
         </button>
+        <p className="mt-4">
+          <button
+            onClick={() => navigate("/forgot-password")}
+            className="text-blue-500 hover:underline"
+          >
+            ¿Has olvidado tu contraseña?
+          </button>
+        </p>
       </div>
     </div>
   );

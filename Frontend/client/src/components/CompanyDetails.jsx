@@ -37,7 +37,17 @@ const CompanyDetails = ({ company, onClose }) => {
         </p>
         <ul>
           {company.emails.map((email, index) => (
-            <li key={index}>{email}</li>
+            <li key={index} className="mb-2">
+              <div>
+                <strong>Email {index + 1}:</strong> {email.email}
+              </div>
+              <div>
+                <strong>Nombre:</strong> {email.nombre}
+              </div>
+              <div>
+                <strong>Cargo:</strong> {email.cargo}
+              </div>
+            </li>
           ))}
         </ul>
         <button

@@ -35,8 +35,10 @@ CREATE TABLE IF NOT EXISTS companies (
 CREATE TABLE IF NOT EXISTS emails (
     id INT AUTO_INCREMENT PRIMARY KEY,
     company_id INT NOT NULL,
-    email VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
     CONSTRAINT fk_company FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+    nombre VARCHAR(255),
+    cargo VARCHAR(255);
 );
 
 

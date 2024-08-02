@@ -4,6 +4,8 @@ import {
   updateUser,
   deleteUser,
   listUser,
+  resetPassword,
+  requestResetPassword,
 } from "../controllers/userController.js";
 import { authenticateToken, checkRole } from "../middlewares/authMiddleware.js";
 
@@ -37,5 +39,10 @@ router.delete(
   checkRole("Administrador Interno", "Personal Contable"),
   deleteUser
 );
+
+router.post('/request-reset-password', requestResetPassword);
+
+// Ruta para restablecer la contraseña
+router.post('/reset-password', resetPassword);
 
 export default router;

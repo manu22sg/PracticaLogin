@@ -8,7 +8,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   const [rut, setRut] = useState(company.rut);
   const [emails, setEmails] = useState(company.emails || []);
   const [razon_social, setRazonSocial] = useState(company.razon_social);
-  const [nombre_fantasia, setNombreFantasia] = useState(company.nombre_fantasia || ""); // Nuevo estado
+  const [nombre_fantasia, setNombreFantasia] = useState(company.nombre_fantasia || "");
   const [giroCodigo, setGiroCodigo] = useState(company.giro_codigo);
   const [direccion, setDireccion] = useState(company.direccion);
   const [comuna, setComuna] = useState(company.comuna);
@@ -20,7 +20,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
     setRut(company.rut);
     setEmails(company.emails || []);
     setRazonSocial(company.razon_social);
-    setNombreFantasia(company.nombre_fantasia || ""); // Actualiza el estado
+    setNombreFantasia(company.nombre_fantasia || "");
     setGiroCodigo(company.giro_codigo);
     setDireccion(company.direccion);
     setComuna(company.comuna);
@@ -39,19 +39,19 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
         label: giro.descripcion,
       }));
     } catch (error) {
-      console.error("Error fetching giros:", error);
+      console.error("Error cargando giros:", error);
       return [];
     }
   };
 
-  const handleEmailChange = (index, value) => {
+  const handleEmailChange = (index, field, value) => {
     const newEmails = [...emails];
-    newEmails[index] = value;
+    newEmails[index] = { ...newEmails[index], [field]: value };
     setEmails(newEmails);
   };
 
   const handleAddEmail = () => {
-    setEmails([...emails, ""]);
+    setEmails([...emails, { email: "", nombre: "", cargo: "" }]);
   };
 
   const handleRemoveEmail = (index) => {
@@ -61,16 +61,27 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const validEmails = emails.filter(
+        (email) => email.email.trim() !== "" && email.nombre.trim() !== "" && email.cargo.trim() !== ""
+      );
+      if (validEmails.length !== emails.length) {
+        Swal.fire({
+          icon: "error",
+          title: "Campos Incompletos",
+          text: "Todos los correos electrónicos deben tener nombre y cargo.",
+        });
+        return;
+      }
       await updateCompany(company.rut, {
         razon_social,
-        nombre_fantasia, // Incluye nombre_fantasia en la actualización
+        nombre_fantasia,
         giro_codigo: giroCodigo,
         direccion,
         comuna,
         ciudad,
         telefono,
         email_factura,
-        emails,
+        emails: validEmails,
       });
       onSave();
       onClose();
@@ -87,6 +98,10 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
         text: "Error al actualizar la empresa",
       });
     }
+  };
+
+  const handleGiroChange = (selectedOption) => {
+    setGiroCodigo(selectedOption ? selectedOption.value : null);
   };
 
   return (
@@ -109,17 +124,34 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
             <div className="flex">
               <input
                 type="email"
-                value={email}
-                onChange={(e) => handleEmailChange(index, e.target.value)}
+                placeholder="Email"
+                value={email.email}
+                onChange={(e) => handleEmailChange(index, "email", e.target.value)}
                 className="p-1 rounded bg-gray-200 text-black w-full text-sm"
               />
-              <button
-                type="button"
-                onClick={() => handleRemoveEmail(index)}
-                className="ml-2 p-1 bg-red-500 hover:bg-red-600 rounded text-white text-sm flex items-center"
-              >
-                <FaTrash />
-              </button>
+              <input
+                type="text"
+                placeholder="Nombre"
+                value={email.nombre}
+                onChange={(e) => handleEmailChange(index, "nombre", e.target.value)}
+                className="p-1 rounded bg-gray-200 text-black w-full text-sm ml-2"
+              />
+              <input
+                type="text"
+                placeholder="Cargo"
+                value={email.cargo}
+                onChange={(e) => handleEmailChange(index, "cargo", e.target.value)}
+                className="p-1 rounded bg-gray-200 text-black w-full text-sm ml-2"
+              />
+              {index > 0 && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveEmail(index)}
+                  className="ml-2 p-1 bg-red-500 hover:bg-red-600 rounded text-white text-sm flex items-center"
+                >
+                  <FaTrash />
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -141,7 +173,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
           />
         </div>
         <div className="mb-2">
-          <label className="block mb-1">Nombre Fantasía:</label> {/* Nuevo campo */}
+          <label className="block mb-1">Nombre Fantasía:</label>
           <input
             type="text"
             value={nombre_fantasia}
@@ -150,16 +182,7 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
           />
         </div>
         <div className="mb-2">
-          <label className="block mb-1">Email de Factura:</label>
-          <input
-            type="email"
-            value={email_factura}
-            onChange={(e) => setEmailFactura(e.target.value)}
-            className="p-1 rounded bg-gray-200 text-black w-full text-sm"
-          />
-        </div>
-        <div className="mb-2">
-          <label className="block mb-1">Buscar Giro:</label>
+          <label className="block mb-1">Giro:</label>
           <AsyncSelect
             cacheOptions
             loadOptions={loadGiros}
@@ -213,18 +236,27 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
             className="p-1 rounded bg-gray-200 text-black w-full text-sm"
           />
         </div>
-        <div className="flex justify-end mt-4">
+        <div className="mb-2">
+          <label className="block mb-1">Email Factura:</label>
+          <input
+            type="email"
+            value={email_factura}
+            onChange={(e) => setEmailFactura(e.target.value)}
+            className="p-1 rounded bg-gray-200 text-black w-full text-sm"
+          />
+        </div>
+        <div className="flex justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="mr-2 p-2 bg-red-500 hover:bg-red-600 rounded text-white text-sm flex items-center"
+            className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded flex items-center"
           >
             <FaTimes className="mr-1" />
             Cancelar
           </button>
           <button
             type="submit"
-            className="p-2 bg-blue-500 hover:bg-blue-600 rounded text-white text-sm flex items-center"
+            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded flex items-center"
           >
             <FaSave className="mr-1" />
             Guardar
