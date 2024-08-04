@@ -15,7 +15,7 @@ export const generateToken = (user) => {
     role: user.role,
   };
 
-  const options = { expiresIn: "1h" };
+  const options = { expiresIn: "3h" };
 
   return jwt.sign(payload, SECRET_KEY, options);
 };

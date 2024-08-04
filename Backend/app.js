@@ -8,6 +8,8 @@ import cors from "cors";
 import { PORT } from "./src/config/envConfig.js";
 import cookieParser from "cookie-parser";
 import excelRoutes from "./src/routes/excelRoutes.js";
+import dataRoutes from "./src/routes/dataRoutes.js";
+
 
 const app = express();
 
@@ -33,6 +35,9 @@ app.use("/api/users", userRoutes); // Definimos la ruta para los usuarios
 app.use("/api/companies", companyRoutes);  // Definimos la ruta para las empresas
 app.use("/api", giroRoutes); // Definimos la ruta para los giros
 app.use("/api", excelRoutes); // Definimos la ruta para exportar a Excel
+app.use("/api", dataRoutes); // Definimos la ruta para obtener datos de regiones, provincias y comunas
+
+
 
 app.use((req, res) => { // Definimos una ruta para manejar errores 404
   res.status(404).json({ message: "Ruta no encontrada" });

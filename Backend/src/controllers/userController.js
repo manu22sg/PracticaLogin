@@ -2,6 +2,7 @@ import { pool } from "../utils/db.js";
 import nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
 import {CORREO, PASSWORD, FRONTEND_URL} from "../config/envConfig.js";
+import bcrypt from "bcrypt";
 
 export const listUsers = async (req, res) => { 
   try {
@@ -141,12 +142,14 @@ export const resetPassword = async (req, res) => {
 
     const userId = userRows[0].id;
 
-    
+    const saltRounds = 10; // Número de rondas de sal
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
 
     // Actualizar la contraseña y limpiar el token
     await pool.query(
       'UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE id = ?',
-      [newPassword, userId]
+      [hashedPassword, userId]
     );
 
     res.json({ message: 'Contraseña actualizada exitosamente' });

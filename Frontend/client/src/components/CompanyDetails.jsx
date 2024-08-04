@@ -24,7 +24,10 @@ const CompanyDetails = ({ company, onClose }) => {
           <strong>Comuna:</strong> {company.comuna}
         </p>
         <p>
-          <strong>Ciudad:</strong> {company.ciudad}
+          <strong>Provincia:</strong> {company.provincia}
+        </p>
+        <p>
+          <strong>Región:</strong> {company.region}
         </p>
         <p>
           <strong>Teléfono:</strong> {company.telefono}
@@ -36,16 +39,16 @@ const CompanyDetails = ({ company, onClose }) => {
           <strong>Emails:</strong>
         </p>
         <ul>
-          {company.emails.map((email, index) => (
+          {company.emails.map((emailObj, index) => (
             <li key={index} className="mb-2">
               <div>
-                <strong>Email {index + 1}:</strong> {email.email}
+                <strong>Email {index + 1}:</strong> {emailObj.email}
               </div>
               <div>
-                <strong>Nombre:</strong> {email.nombre}
+                <strong>Nombre:</strong> {emailObj.nombre}
               </div>
               <div>
-                <strong>Cargo:</strong> {email.cargo}
+                <strong>Cargo:</strong> {emailObj.cargo}
               </div>
             </li>
           ))}

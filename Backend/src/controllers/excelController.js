@@ -3,12 +3,24 @@ import ExcelJS from "exceljs";
 
 export const excelCompanies = async (req, res) => { // Exportamos una función asíncrona para exportar las empresas a un archivo Excel
   try { // Realizamos una consulta a la base de datos para seleccionar todas las empresas
-    const [rows] = await pool.query(` 
-        SELECT c.*, g.descripcion AS giro_descripcion, e.email
-        FROM companies c
-        LEFT JOIN giros g ON c.giro_codigo = g.codigo
-        LEFT JOIN emails e ON c.id = e.company_id
-      `);
+    const [rows] = await pool.query(`
+      SELECT 
+        c.*, 
+        g.descripcion AS giro_descripcion, 
+        e.email,
+        e.nombre AS user_nombre,   
+        e.cargo AS user_cargo,      
+        r.str_descripcion AS region,
+        p.str_descripcion AS provincia,
+        com.str_descripcion AS comuna
+      FROM companies c
+      LEFT JOIN giros g ON c.giro_codigo = g.codigo
+      LEFT JOIN emails e ON c.id = e.company_id
+      LEFT JOIN comuna_cl com ON c.comuna_id = com.id_co AND com.id_pr = (SELECT id_pr FROM provincia_cl WHERE id_pr = com.id_pr)
+      LEFT JOIN provincia_cl p ON com.id_pr = p.id_pr
+      LEFT JOIN region_cl r ON p.id_re = r.id_re
+    `);
+    
 
     if (rows.length <= 0) {
       return res.status(404).json({ message: "No hay empresas registradas" });
@@ -23,14 +35,17 @@ export const excelCompanies = async (req, res) => { // Exportamos una función a
         nombre_fantasia,
         direccion,
         comuna,
-        ciudad,
         telefono,
         giro_codigo,
         giro_descripcion,
         email_factura,
         email,
+        region,      // Añadido
+        provincia,   // Añadido
+        user_nombre, // Nueva columna
+        user_cargo   // Nueva columna
       } = row;
-
+    
       if (!acc[id]) {
         acc[id] = {
           id,
@@ -39,23 +54,29 @@ export const excelCompanies = async (req, res) => { // Exportamos una función a
           nombre_fantasia,
           direccion,
           comuna,
-          ciudad,
+          provincia,   // Añadido
+          region,      // Añadido
           telefono,
           giro_codigo,
           giro_descripcion,
           email_factura,
           emails: [],
+          user_names: [],  // Nueva columna para múltiples nombres
+          user_cargos: []     // Nueva
         };
       }
-
+    
       if (email) {
         acc[id].emails.push(email);
+        acc[id].user_names.push(user_nombre);  // Añadir nombre del usuario
+    acc[id].user_cargos.push(user_cargo);  
       }
-
+    
       return acc;
     }, {});
-
+    
     const companies = Object.values(companiesMap);
+    
 
     // Crear el archivo Excel
     const fileBuffer = await createExcelFile(companies);
@@ -74,7 +95,7 @@ export const excelCompanies = async (req, res) => { // Exportamos una función a
   }
 };
 
-const createExcelFile = async (companies) => { // Exportamos una función asíncrona para crear un archivo Excel con las empresas
+const createExcelFile = async (companies) => {
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet("Datos_Empresas");
 
@@ -85,12 +106,15 @@ const createExcelFile = async (companies) => { // Exportamos una función asínc
     "Nombre Fantasía",
     "Dirección",
     "Comuna",
-    "Ciudad",
+    "Provincia",
+    "Región",      // Añadido
     "Teléfono",
     "Giro Código",
     "Giro Descripción",
     "Email Factura",
     "Emails",
+    "Nombre",    // Nueva columna
+    "Cargo"      // Nueva columna
   ];
 
   sheet.addRow(headers); // Agregamos la fila de encabezado al archivo Excel
@@ -113,9 +137,13 @@ const createExcelFile = async (companies) => { // Exportamos una función asínc
     { width: 15 },
     { width: 15 },
     { width: 15 },
+    { width: 15 },
+    { width: 15 },
     { width: 35 },
     { width: 35 },
     { width: 40 },
+    { width: 25 },     // Nueva columna
+    { width: 25 } 
   ];
 
   companies.forEach((company) => { // Iteramos sobre cada empresa para agregarla al archivo Excel
@@ -126,23 +154,27 @@ const createExcelFile = async (companies) => { // Exportamos una función asínc
       company.nombre_fantasia,
       company.direccion,
       company.comuna,
-      company.ciudad,
+      company.provincia,  // Añadido
+      company.region,     // Añadido
       company.telefono,
       company.giro_codigo,
       company.giro_descripcion,
       company.email_factura,
       company.emails.join(", "),
+      company.user_names.join(", "),    // Nueva columna
+      company.user_cargos.join(", ")    
     ]);
   });
 
   // Aplicar filtro a toda la fila de encabezado
   sheet.autoFilter = {
     from: "A1",
-    to: "L1",
+    to: "O1",
   };
 
   return await workbook.xlsx.writeBuffer(); // Retornamos el archivo Excel como un buffer
 };
+
 
 
 export const excelUsers = async (req, res) => {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { updateCompany, listGiros } from "../services/company.services";
+import { getRegiones, getProvincias, getComunas } from "../services/data.services";
 import Swal from "sweetalert2";
 import { FaTrash, FaPlus, FaTimes, FaSave } from "react-icons/fa";
 import AsyncSelect from "react-select/async";
@@ -11,8 +12,9 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   const [nombre_fantasia, setNombreFantasia] = useState(company.nombre_fantasia || "");
   const [giroCodigo, setGiroCodigo] = useState(company.giro_codigo);
   const [direccion, setDireccion] = useState(company.direccion);
-  const [comuna, setComuna] = useState(company.comuna);
-  const [ciudad, setCiudad] = useState(company.ciudad);
+  const [region, setRegion] = useState(company.region_id || null);
+  const [provincia, setProvincia] = useState(company.provincia_id || null);
+  const [comuna, setComuna] = useState(company.comuna_id || null);
   const [telefono, setTelefono] = useState(company.telefono);
   const [email_factura, setEmailFactura] = useState(company.email_factura);
 
@@ -23,8 +25,9 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
     setNombreFantasia(company.nombre_fantasia || "");
     setGiroCodigo(company.giro_codigo);
     setDireccion(company.direccion);
-    setComuna(company.comuna);
-    setCiudad(company.ciudad);
+    setRegion(company.region_id || null);
+    setProvincia(company.provincia_id || null);
+    setComuna(company.comuna_id || null);
     setTelefono(company.telefono);
     setEmailFactura(company.email_factura);
   }, [company]);
@@ -32,14 +35,55 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
   const loadGiros = async (inputValue) => {
     try {
       const response = await listGiros();
-      return response.data.filter((giro) =>
-        giro.descripcion.toLowerCase().includes(inputValue.toLowerCase())
-      ).map((giro) => ({
-        value: giro.codigo,
-        label: giro.descripcion,
-      }));
+      return response.data
+        .filter((giro) => giro.descripcion.toLowerCase().includes(inputValue.toLowerCase()))
+        .map((giro) => ({
+          value: giro.codigo,
+          label: giro.descripcion,
+        }));
     } catch (error) {
       console.error("Error cargando giros:", error);
+      return [];
+    }
+  };
+
+  const loadRegiones = async (inputValue) => {
+    try {
+      const response = await getRegiones();
+      return response.data
+        .filter((region) => region.str_descripcion.toLowerCase().includes(inputValue.toLowerCase()))
+        .map((region) => ({
+          value: region.id_re,
+          label: region.str_descripcion,
+        }));
+    } catch (error) {
+      console.error("Error cargando regiones:", error);
+      return [];
+    }
+  };
+
+  const loadProvincias = async (regionId) => {
+    try {
+      const response = await getProvincias(regionId);
+      return response.data.map((provincia) => ({
+        value: provincia.id_pr,
+        label: provincia.str_descripcion,
+      }));
+    } catch (error) {
+      console.error("Error cargando provincias:", error);
+      return [];
+    }
+  };
+
+  const loadComunas = async (provinciaId) => {
+    try {
+      const response = await getComunas(provinciaId);
+      return response.data.map((comuna) => ({
+        value: comuna.id_co,
+        label: comuna.str_descripcion,
+      }));
+    } catch (error) {
+      console.error("Error cargando comunas:", error);
       return [];
     }
   };
@@ -77,8 +121,9 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
         nombre_fantasia,
         giro_codigo: giroCodigo,
         direccion,
-        comuna,
-        ciudad,
+        region: region ? region.label : null,
+        provincia: provincia ? provincia.label : null,
+        comuna: comuna ? comuna.label : null,
         telefono,
         email_factura,
         emails: validEmails,
@@ -100,6 +145,20 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
     }
   };
 
+  const handleRegionChange = async (selectedOption) => {
+    setRegion(selectedOption);
+    setProvincia(null);
+    setComuna(null);
+  };
+
+  const handleProvinciaChange = async (selectedOption) => {
+    setProvincia(selectedOption);
+    setComuna(null);
+  };
+
+  const handleComunaChange = (selectedOption) => {
+    setComuna(selectedOption);
+  };
   const handleGiroChange = (selectedOption) => {
     setGiroCodigo(selectedOption ? selectedOption.value : null);
   };
@@ -186,16 +245,14 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
           <AsyncSelect
             cacheOptions
             loadOptions={loadGiros}
-            onChange={(selectedOption) =>
-              setGiroCodigo(selectedOption ? selectedOption.value : null)
-            }
+            onChange={handleGiroChange}
             defaultOptions
             defaultValue={{
               value: company.giro_codigo,
               label: company.giro_descripcion,
             }}
             isClearable={true}
-            className="basic-single"
+            className="w-full text-sm"
             placeholder="Seleccione giro"
             classNamePrefix="select"
           />
@@ -210,23 +267,51 @@ const EditCompanyForm = ({ company, onClose, onSave }) => {
           />
         </div>
         <div className="mb-2">
-          <label className="block mb-1">Comuna:</label>
-          <input
-            type="text"
-            value={comuna}
-            onChange={(e) => setComuna(e.target.value)}
-            className="p-1 rounded bg-gray-200 text-black w-full text-sm"
+          <label className="block mb-1">Región:</label>
+          <AsyncSelect
+            cacheOptions
+            loadOptions={loadRegiones}
+            onChange={handleRegionChange}
+            defaultOptions
+            defaultValue={region && { value: region.id_re, label: region.str_descripcion }}
+            isClearable={true}
+            className="w-full text-sm"
+            placeholder="Seleccione región"
+            classNamePrefix="select"
           />
         </div>
-        <div className="mb-2">
-          <label className="block mb-1">Ciudad:</label>
-          <input
-            type="text"
-            value={ciudad}
-            onChange={(e) => setCiudad(e.target.value)}
-            className="p-1 rounded bg-gray-200 text-black w-full text-sm"
-          />
-        </div>
+        {region && (
+          <div className="mb-2">
+            <label className="block mb-1">Provincia:</label>
+            <AsyncSelect
+              cacheOptions
+              loadOptions={() => loadProvincias(region.value)}
+              onChange={handleProvinciaChange}
+              defaultOptions
+              defaultValue={provincia && { value: provincia.id_pr, label: provincia.str_descripcion }}
+              isClearable={true}
+              className="w-full text-sm"
+              placeholder="Seleccione provincia"
+              classNamePrefix="select"
+            />
+          </div>
+        )}
+        {provincia && (
+          <div className="mb-2">
+            <label className="block mb-1">Comuna:</label>
+            <AsyncSelect
+              cacheOptions
+              loadOptions={() => loadComunas(provincia.value)}
+              onChange={handleComunaChange}
+              defaultOptions
+              defaultValue={comuna && { value: comuna.id_co, label: comuna.str_descripcion }}
+              isClearable={true}
+              className="w-full text-sm"
+              placeholder="Seleccione comuna"
+              classNamePrefix="select"
+            />
+          </div>
+        )}
         <div className="mb-2">
           <label className="block mb-1">Teléfono:</label>
           <input

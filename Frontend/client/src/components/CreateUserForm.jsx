@@ -23,6 +23,22 @@ const CreateUserForm = () => {
     "Persona Administrativa",
     "Administrador Externo",
   ];
+  const formatRut = (value) => {
+    // Eliminar caracteres no numéricos
+    const cleaned = value.replace(/\D/g, "");
+    
+    // Añadir el guion antes del último dígito
+    if (cleaned.length > 1) {
+      return cleaned.slice(0, -1) + "-" + cleaned.slice(-1);
+    }
+    
+    return cleaned;
+  };
+  const handleChangeRut = (e) => {
+    const formattedRut = formatRut(e.target.value);
+    setRut(formattedRut);
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -111,7 +127,7 @@ const CreateUserForm = () => {
           <input
             type="text"
             value={rut}
-            onChange={(e) => setRut(e.target.value)}
+            onChange={handleChangeRut}
             className="w-full p-2 rounded bg-gray-200 text-black"
           />
         </div>

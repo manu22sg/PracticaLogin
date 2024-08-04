@@ -1,87 +1,66 @@
 import { pool } from "../utils/db.js";
 
+import { getIdByDescription, isProvinciaInRegion, isComunaInProvincia } from "../utils/dbRegionProvinciaComuna.js";
+
+const validateHierarchy = async (region, provincia, comuna) => {
+  const regionId = await getIdByDescription('region_cl', region);
+  if (!regionId) throw new Error('Región no válida');
+
+  const provinciaId = await getIdByDescription('provincia_cl', provincia);
+  if (!provinciaId || !await isProvinciaInRegion(provinciaId, regionId)) {
+    throw new Error('Provincia no pertenece a la región seleccionada');
+  }
+
+  const comunaId = await getIdByDescription('comuna_cl', comuna);
+  if (!comunaId || !await isComunaInProvincia(comunaId, provinciaId)) {
+    throw new Error('Comuna no pertenece a la provincia seleccionada');
+  }
+
+  return { regionId, provinciaId, comunaId };
+};
+
 export const createCompany = async (req, res) => {
+  const { rut, razon_social, nombre_fantasia, email_factura, direccion, region, provincia, comuna, telefono, giro_codigo, emails } = req.body;
+
+  if (!rut || !razon_social || !direccion || !telefono || !giro_codigo || !email_factura || !emails || emails.length === 0) {
+    return res.status(400).json({ message: "Faltan campos por llenar" });
+  }
+
+  for (const email of emails) {
+    if (!email.email || !email.nombre || !email.cargo) {
+      return res.status(400).json({ message: "Cada email debe tener un nombre y un cargo" });
+    }
+  }
+
+  const connection = await pool.getConnection();
   try {
-    const {
-      rut,
-      razon_social,
-      nombre_fantasia,
-      email_factura,
-      direccion,
-      comuna,
-      ciudad,
-      telefono,
-      giro_codigo,
-      emails, // emails ahora incluye { email, nombre, cargo }
-    } = req.body;
+    await connection.beginTransaction();
 
-    // Verificar que todos los campos obligatorios estén presentes
-    if (
-      !rut ||
-      !razon_social ||
-      !direccion ||
-      !comuna ||
-      !ciudad ||
-      !telefono ||
-      !giro_codigo ||
-      !email_factura ||
-      !emails ||
-      emails.length === 0
-    ) {
-      return res.status(400).json({ message: "Faltan campos por llenar" });
-    }
+    const { regionId, provinciaId, comunaId } = await validateHierarchy(region, provincia, comuna);
 
-    // Verificar que cada email tenga nombre y cargo
-    for (const email of emails) {
-      if (!email.email || !email.nombre || !email.cargo) {
-        return res.status(400).json({ message: "Cada email debe tener un nombre y un cargo" });
-      }
-    }
+    const [companyResult] = await connection.query(
+      "INSERT INTO companies (rut, razon_social, nombre_fantasia, email_factura, direccion, region_id, provincia_id, comuna_id, telefono, giro_codigo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [rut, razon_social || null, nombre_fantasia || null, email_factura, direccion, regionId, provinciaId, comunaId, telefono, giro_codigo]
+    );
 
-    const connection = await pool.getConnection();
-    try {
-      await connection.beginTransaction();
+    const companyId = companyResult.insertId;
 
-      // Insertar la nueva empresa
-      const [companyResult] = await connection.query(
-        "INSERT INTO companies (rut, razon_social, nombre_fantasia, email_factura, direccion, comuna, ciudad, telefono, giro_codigo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [
-          rut,
-          razon_social,
-          nombre_fantasia || null,
-          email_factura,
-          direccion,
-          comuna,
-          ciudad,
-          telefono,
-          giro_codigo,
-        ]
+    const emailPromises = emails.map(email => {
+      return connection.query(
+        "INSERT INTO emails (company_id, email, nombre, cargo) VALUES (?, ?, ?, ?)",
+        [companyId, email.email, email.nombre, email.cargo]
       );
+    });
 
-      const companyId = companyResult.insertId;
-
-      // Insertar los correos electrónicos
-      const emailPromises = emails.map((email) => {
-        return connection.query(
-          "INSERT INTO emails (company_id, email, nombre, cargo) VALUES (?, ?, ?, ?)",
-          [companyId, email.email, email.nombre, email.cargo]
-        );
-      });
-
-      await Promise.all(emailPromises);
-
-      await connection.commit();
-      res.json({ message: "Empresa creada exitosamente" });
-    } catch (error) {
-      await connection.rollback();
-      console.error("Error al crear empresa:", error);
-      res.status(500).json({ message: "Error al crear empresa", error: error.message });
-    } finally {
-      connection.release();
-    }
+    await Promise.all(emailPromises);
+    await connection.commit();
+    res.json({ message: "Empresa creada exitosamente" });
   } catch (error) {
-    console.error("Error al conectar a la base de datos:", error);
-    res.status(500).json({ message: "Error al conectar a la base de datos", error: error.message });
+    await connection.rollback();
+    console.error("Error al crear empresa:", error);
+    res.status(500).json({ message: "Error al crear empresa", error: error.message });
+  } finally {
+    connection.release();
   }
 };
 
@@ -89,10 +68,21 @@ export const createCompany = async (req, res) => {
 export const listCompanies = async (req, res) => {
   try {
     const [rows] = await pool.query(`
-      SELECT c.*, g.descripcion AS giro_descripcion, e.email, e.nombre, e.cargo
+      SELECT 
+        c.*, 
+        g.descripcion AS giro_descripcion, 
+        e.email,
+        e.nombre AS user_nombre,   
+        e.cargo AS user_cargo,      
+        r.str_descripcion AS region,
+        p.str_descripcion AS provincia,
+        com.str_descripcion AS comuna
       FROM companies c
       LEFT JOIN giros g ON c.giro_codigo = g.codigo
       LEFT JOIN emails e ON c.id = e.company_id
+      LEFT JOIN comuna_cl com ON c.comuna_id = com.id_co
+      LEFT JOIN provincia_cl p ON com.id_pr = p.id_pr
+      LEFT JOIN region_cl r ON p.id_re = r.id_re
     `);
 
     if (rows.length <= 0) {
@@ -108,14 +98,15 @@ export const listCompanies = async (req, res) => {
         nombre_fantasia,
         direccion,
         comuna,
-        ciudad,
+        provincia,
+        region,
         telefono,
         giro_codigo,
         giro_descripcion,
         email_factura,
         email,
-        nombre,
-        cargo
+        user_nombre,
+        user_cargo
       } = row;
 
       if (!acc[id]) {
@@ -126,17 +117,18 @@ export const listCompanies = async (req, res) => {
           nombre_fantasia,
           direccion,
           comuna,
-          ciudad,
+          provincia,
+          region,
           telefono,
           giro_codigo,
           giro_descripcion,
           email_factura,
-          emails: []
+          emails: [] // Inicializar como array de objetos
         };
       }
 
       if (email) {
-        acc[id].emails.push({ email, nombre, cargo }); // Agregar el correo electrónico como objeto
+        acc[id].emails.push({ email, nombre: user_nombre, cargo: user_cargo });
       }
 
       return acc;
@@ -147,6 +139,7 @@ export const listCompanies = async (req, res) => {
     res.status(500).json({ message: "Error al obtener las empresas", error: error.message });
   }
 };
+
 export const listCompany = async (req, res) => {
   try {
     const { rut } = req.params;
@@ -209,25 +202,33 @@ export const updateCompany = async (req, res) => {
       razon_social,
       nombre_fantasia,
       direccion,
+      region,
+      provincia,
       comuna,
-      ciudad,
       telefono,
       giro_codigo,
       email_factura,
-      emails, // Debería ser una lista de objetos { email, nombre, cargo }
+      emails,
     } = req.body;
 
-    const connection = await pool.getConnection(); // Establecer una conexión a la base de datos
+
+
+    const region_id = await getIdByDescription('region_cl', region);
+    const provincia_id = await getIdByDescription('provincia_cl', provincia);
+    const comuna_id = await getIdByDescription('comuna_cl', comuna);
+
+    const connection = await pool.getConnection();
     try {
-      await connection.beginTransaction(); // Iniciar una transacción
+      await connection.beginTransaction();
 
       const [result] = await connection.query(
         `UPDATE companies SET 
           razon_social = IFNULL(?, razon_social), 
           nombre_fantasia = IFNULL(?, nombre_fantasia), 
           direccion = IFNULL(?, direccion), 
-          comuna = IFNULL(?, comuna), 
-          ciudad = IFNULL(?, ciudad), 
+          region_id = IFNULL(?, region_id),
+          provincia_id = IFNULL(?, provincia_id),
+          comuna_id = IFNULL(?, comuna_id),
           telefono = IFNULL(?, telefono), 
           giro_codigo = IFNULL(?, giro_codigo), 
           email_factura = IFNULL(?, email_factura) 
@@ -236,8 +237,9 @@ export const updateCompany = async (req, res) => {
           razon_social,
           nombre_fantasia || null,
           direccion,
-          comuna,
-          ciudad,
+          region_id,
+          provincia_id,
+          comuna_id,
           telefono,
           giro_codigo,
           email_factura,
@@ -256,12 +258,8 @@ export const updateCompany = async (req, res) => {
       );
       const companyId = companyRows[0].id;
 
-      // Eliminar correos electrónicos existentes
-      await connection.query("DELETE FROM emails WHERE company_id = ?", [
-        companyId,
-      ]);
+      await connection.query("DELETE FROM emails WHERE company_id = ?", [companyId]);
 
-      // Insertar nuevos correos electrónicos
       if (emails && emails.length > 0) {
         const emailPromises = emails.map((email) => {
           return connection.query(
@@ -270,21 +268,19 @@ export const updateCompany = async (req, res) => {
           );
         });
 
-        await Promise.all(emailPromises); // Esperar a que todas las promesas se resuelvan
+        await Promise.all(emailPromises);
       }
 
-      await connection.commit(); // Confirmar la transacción
+      await connection.commit();
       res.json({ message: "Empresa actualizada exitosamente" });
     } catch (error) {
-      await connection.rollback(); // Revertir la transacción en caso de error
-      res.status(500).json({
-        message: "Error al actualizar empresa",
-        error: error.message,
-      });
+      await connection.rollback();
+      res.status(500).json({ message: "Error al actualizar empresa", error: error.message });
     } finally {
-      connection.release(); // Liberar la conexión
+      connection.release();
     }
   } catch (error) {
     res.status(500).json({ message: "Error al actualizar empresa", error: error.message });
   }
 };
+
