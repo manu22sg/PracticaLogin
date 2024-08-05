@@ -138,7 +138,7 @@ const createExcelFile = async (companies) => {
     { width: 15 },
     { width: 15 },
     { width: 15 },
-    { width: 15 },
+    { width: 35 },
     { width: 35 },
     { width: 35 },
     { width: 40 },

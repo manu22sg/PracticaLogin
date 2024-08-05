@@ -35,7 +35,9 @@ const AppContent = () => {
   useEffect(() => {
     localStorage.setItem("isSidebarVisible", JSON.stringify(isSidebarVisible));
   }, [isSidebarVisible]);
-
+  useEffect(() => {
+    setSidebarVisible(JSON.parse(localStorage.getItem("isSidebarVisible")) ?? true);
+  }, [user]);
   if (loading) {
     return <div className="text-white">Cargando...</div>; // Mostrar un mensaje de carga mientras se verifica la autenticación
   }

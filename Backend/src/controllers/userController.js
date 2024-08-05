@@ -3,6 +3,7 @@ import nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
 import {CORREO, PASSWORD, FRONTEND_URL} from "../config/envConfig.js";
 import bcrypt from "bcrypt";
+import { logUserEvent } from './logController.js'; 
 
 export const listUsers = async (req, res) => { 
   try {
@@ -59,6 +60,7 @@ export const updateUser = async (req, res) => { // Exportamos una función asín
 
     // Obtener el usuario actualizado
     const [rows] = await pool.query("SELECT * FROM users WHERE rut = ?", [rut]);
+    await logUserEvent(rows[0].id, 'update', req.ip, req.headers['user-agent']);
     res.json(rows[0]);
   } catch (error) {
     return res.status(400).json({ message: "Error al actualizar usuario" });
@@ -67,6 +69,7 @@ export const updateUser = async (req, res) => { // Exportamos una función asín
 
 export const deleteUser = async (req, res) => { // Exportamos una función asíncrona para eliminar un usuario
   try {
+    await logUserEvent(req.user.userId, 'delete', req.ip, req.headers['user-agent']);// Verifica el contenido
     const { rut } = req.params;
     await pool.query("DELETE FROM users WHERE rut = ?", [rut]);
     res.json({ message: "Usuario eliminado exitosamente" });
@@ -92,6 +95,7 @@ export const requestResetPassword = async (req, res) => {
     }
 
     const userId = userRows[0].id;
+    
     const token = uuidv4(); // Generar un token único
     const expiration = new Date();
     expiration.setHours(expiration.getHours() + 1); // Token válido por 1 hora
@@ -153,6 +157,7 @@ export const resetPassword = async (req, res) => {
     );
 
     res.json({ message: 'Contraseña actualizada exitosamente' });
+    await logUserEvent(userId, 'update', req.ip, req.headers['user-agent']);
   } catch (error) {
     res.status(500).json({ message: 'Error al restablecer la contraseña', error: error.message });
   }

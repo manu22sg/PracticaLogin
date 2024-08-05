@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/Contexto"; // Importa el contexto
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
+import { FaSignOutAlt } from "react-icons/fa";
+
 
 const Navbar = ({ toggleSidebar }) => {
   const navigate = useNavigate();
@@ -19,6 +21,7 @@ const Navbar = ({ toggleSidebar }) => {
       toggleSidebar();
     }
     logout();
+    
     navigate("/login");
   };
 
@@ -50,10 +53,11 @@ const Navbar = ({ toggleSidebar }) => {
             </Link>
             <button
               onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-            >
-              Logout
-            </button>
+              className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded flex items-center space-x-2"
+              >
+               <FaSignOutAlt className="w-5 h-5"/>
+               <span>Cerrar sesión</span>
+              </button>
           </>
         ) : (
           location.pathname !== "/login" && (

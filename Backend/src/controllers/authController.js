@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import {
   generateToken
 } from "../middlewares/authMiddleware.js";
+import { logUserEvent } from '../controllers/logController.js';
 
 
 export const login = async (req, res) => {
@@ -33,8 +34,10 @@ export const login = async (req, res) => {
 
     // Generar un token de acceso
     const accessToken = generateToken(user);
-
+    req.user = { id: user.id };
+    
     res.json({ accessToken });
+    await logUserEvent(user.id, 'connect', req.ip, req.headers['user-agent']);
   } catch (error) {
     res.status(500).json({ message: "Error al iniciar sesión", error: error.message });
   }
@@ -106,8 +109,10 @@ export const register = async (req, res) => {
         role,
       ]
     );
+    
 
     res.status(201).json({ message: "Usuario registrado exitosamente" });
+    
   } catch (error) {
     res
       .status(500)
@@ -115,7 +120,9 @@ export const register = async (req, res) => {
   }
 };
 
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
+   // Registramos el evento de cierre de sesión
+   await logUserEvent(req.user.userId, 'disconnect', req.ip, req.headers['user-agent']);
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ message: "Error al cerrar sesión" }); // Si hay un error al cerrar la sesión, devolver un mensaje de error

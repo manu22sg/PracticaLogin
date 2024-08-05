@@ -5,9 +5,9 @@ import { authenticateToken } from "../middlewares/authMiddleware.js"; // Importa
 
 const router = express.Router();
 
-router.post("/login", login);  // Definimos la ruta para iniciar sesión
+router.post("/login",login);  // Definimos la ruta para iniciar sesión
 router.post("/register", register); // Definimos la ruta para registrar un usuario
-router.post("/logout", authenticateToken, logout); // Definimos la ruta para cerrar sesión
+router.post("/logout",authenticateToken, logout); // Definimos la ruta para cerrar sesión
 
 
 export default router;

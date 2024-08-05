@@ -53,3 +53,8 @@
 .small-text {
   font-size: 0.20rem; /* Ajusta el tamaño según tus necesidades */
 }
+.main-content {
+  margin-left: 250px; /* Ancho de la Sidebar */
+  transition: margin-left 0.3s ease; /* Transición suave para el ajuste del margen */
+  padding: 1rem; /* Relleno opcional */
+}

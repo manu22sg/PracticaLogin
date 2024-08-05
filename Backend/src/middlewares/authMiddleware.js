@@ -4,6 +4,7 @@ import { SECRET_KEY } from "../config/envConfig.js";
 // Función para generar el token
 export const generateToken = (user) => {
   const payload = {
+    userId: user.id,
     rut: user.rut,
     name: user.name,
     apellido_paterno: user.apellido_paterno,

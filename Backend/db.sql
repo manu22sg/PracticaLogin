@@ -12,6 +12,10 @@ name VARCHAR(100) NOT NULL,
     email_opcional VARCHAR(100),
     password VARCHAR(255) NOT NULL,
     role ENUM("Administrador Interno", "Administrador Externo", "Gerente", "Personal Contable", "Persona Administrativa") NOT NULL
+    reset_token VARCHAR(255),
+    reset_token_expiry DATETIME,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS giros (
     codigo VARCHAR(10) NOT NULL,
@@ -56,12 +60,7 @@ CREATE TABLE `region_cl` (
   `num_provincias` int(11) NOT NULL COMMENT 'total provincias',
   `num_comunas` int(11) NOT NULL COMMENT 'Total de comunas',
   PRIMARY KEY (`id_re`) )
-  CREATE TABLE `comuna_cl` (
-  `id_co` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID unico de la comuna',
-  `id_pr` int(11) NOT NULL COMMENT 'ID de la provincia asociada',
-  `str_descripcion` varchar(30) COLLATE latin1_spanish_ci DEFAULT NULL COMMENT 'Nombre descriptivo de la comuna',
-  PRIMARY KEY (`id_co`,`id_pr`)
-) 
+  de
 CREATE TABLE `provincia_cl` (
   `id_pr` int(11) NOT NULL COMMENT 'ID provincia',
   `id_re` int(11) NOT NULL COMMENT 'ID region asociada',
@@ -69,4 +68,20 @@ CREATE TABLE `provincia_cl` (
   `num_comunas` int(11) NOT NULL COMMENT 'Numero de comunas',
   PRIMARY KEY (`id_pr`)
 )
+CREATE TABLE `comuna_cl` (
+  `id_co` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID unico de la comuna',
+  `id_pr` int(11) NOT NULL COMMENT 'ID de la provincia asociada',
+  `str_descripcion` varchar(30) COLLATE latin1_spanish_ci DEFAULT NULL COMMENT 'Nombre descriptivo de la comuna',
+  PRIMARY KEY (`id_co`,`id_pr`)
+) 
 
+CREATE TABLE IF NOT EXISTS user_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    event_type ENUM('connect', 'update', 'disconnect', 'delete') NOT NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    browser_info VARCHAR(255) NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

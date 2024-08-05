@@ -16,3 +16,5 @@ export const loginUser = async function loginUser(credentials) {
 export const registerUser = async (data) =>
   await api.post("/auth/register", data);
 export const logout = async () => await api.post("/auth/logout");
+
+
