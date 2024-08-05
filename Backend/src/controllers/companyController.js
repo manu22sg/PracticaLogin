@@ -2,31 +2,31 @@ import { pool } from "../utils/db.js";
 
 import { getIdByDescription, isProvinciaInRegion, isComunaInProvincia } from "../utils/dbRegionProvinciaComuna.js";
 
-const validateHierarchy = async (region, provincia, comuna) => {
+const validateHierarchy = async (region, provincia, comuna) => { // Función para validar la jerarquía de región, provincia y comuna
   const regionId = await getIdByDescription('region_cl', region);
   if (!regionId) throw new Error('Región no válida');
 
-  const provinciaId = await getIdByDescription('provincia_cl', provincia);
-  if (!provinciaId || !await isProvinciaInRegion(provinciaId, regionId)) {
+  const provinciaId = await getIdByDescription('provincia_cl', provincia); // Obtener el ID de la provincia
+  if (!provinciaId || !await isProvinciaInRegion(provinciaId, regionId)) {  // Verificar si la provincia pertenece a la región
     throw new Error('Provincia no pertenece a la región seleccionada');
   }
 
-  const comunaId = await getIdByDescription('comuna_cl', comuna);
-  if (!comunaId || !await isComunaInProvincia(comunaId, provinciaId)) {
+  const comunaId = await getIdByDescription('comuna_cl', comuna); // Obtener el ID de la comuna
+  if (!comunaId || !await isComunaInProvincia(comunaId, provinciaId)) { // Verificar si la comuna pertenece a la provincia
     throw new Error('Comuna no pertenece a la provincia seleccionada');
   }
 
   return { regionId, provinciaId, comunaId };
 };
 
-export const createCompany = async (req, res) => {
+export const createCompany = async (req, res) => { // Función para crear una empresa
   const { rut, razon_social, nombre_fantasia, email_factura, direccion, region, provincia, comuna, telefono, giro_codigo, emails } = req.body;
 
   if (!rut || !razon_social || !direccion || !telefono || !giro_codigo || !email_factura || !emails || emails.length === 0) {
-    return res.status(400).json({ message: "Faltan campos por llenar" });
+    return res.status(400).json({ message: "Faltan campos por llenar" }); // Verificar si faltan campos por llenar
   }
 
-  for (const email of emails) {
+  for (const email of emails) { // Verificar si cada email tiene un nombre y un cargo
     if (!email.email || !email.nombre || !email.cargo) {
       return res.status(400).json({ message: "Cada email debe tener un nombre y un cargo" });
     }
@@ -35,26 +35,34 @@ export const createCompany = async (req, res) => {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
-
+    const [existingCompany] = await pool.query(
+      "SELECT * FROM companies where rut = ?",
+      [rut]
+    );
+    if (existingCompany.length > 0) { // Verificar si la empresa ya está registrada
+      if (existingCompany[0].rut === rut) {
+        return res.status(410).json({ message: "El rut ya está registrado" });
+      }
+    }
     const { regionId, provinciaId, comunaId } = await validateHierarchy(region, provincia, comuna);
 
-    const [companyResult] = await connection.query(
+    const [companyResult] = await connection.query( // Insertar la empresa en la base de datos
       "INSERT INTO companies (rut, razon_social, nombre_fantasia, email_factura, direccion, region_id, provincia_id, comuna_id, telefono, giro_codigo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [rut, razon_social || null, nombre_fantasia || null, email_factura, direccion, regionId, provinciaId, comunaId, telefono, giro_codigo]
     );
+    
+    const companyId = companyResult.insertId; // Obtener el ID de la empresa creada
 
-    const companyId = companyResult.insertId;
-
-    const emailPromises = emails.map(email => {
+    const emailPromises = emails.map(email => { // Insertar los correos electrónicos en la base de datos
       return connection.query(
         "INSERT INTO emails (company_id, email, nombre, cargo) VALUES (?, ?, ?, ?)",
         [companyId, email.email, email.nombre, email.cargo]
       );
     });
 
-    await Promise.all(emailPromises);
+    await Promise.all(emailPromises); // Esperar a que se completen todas las inserciones
     await connection.commit();
-    res.json({ message: "Empresa creada exitosamente" });
+    res.json({ message: "Empresa creada exitosamente" }); // Responder con un mensaje de éxito
   } catch (error) {
     await connection.rollback();
     console.error("Error al crear empresa:", error);
@@ -65,9 +73,9 @@ export const createCompany = async (req, res) => {
 };
 
 
-export const listCompanies = async (req, res) => {
-  try {
-    const [rows] = await pool.query(`
+export const listCompanies = async (req, res) => { // Función para listar las empresas
+  try { // Realizar una consulta a la base de datos para seleccionar todas las empresas
+    const [rows] = await pool.query(` 
       SELECT 
         c.*, 
         g.descripcion AS giro_descripcion, 
@@ -78,7 +86,7 @@ export const listCompanies = async (req, res) => {
         p.str_descripcion AS provincia,
         com.str_descripcion AS comuna
       FROM companies c
-      LEFT JOIN giros g ON c.giro_codigo = g.codigo
+      LEFT JOIN giros g ON c.giro_codigo = g.codigo 
       LEFT JOIN emails e ON c.id = e.company_id
       LEFT JOIN comuna_cl com ON c.comuna_id = com.id_co
       LEFT JOIN provincia_cl p ON com.id_pr = p.id_pr
@@ -133,7 +141,7 @@ export const listCompanies = async (req, res) => {
 
       return acc;
     }, {});
-
+      
     res.json(Object.values(companiesMap));
   } catch (error) {
     res.status(500).json({ message: "Error al obtener las empresas", error: error.message });

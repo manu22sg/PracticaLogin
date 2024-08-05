@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { SECRET_KEY } from "../config/envConfig.js";
 
 // Función para generar el token
-export const generateToken = (user) => {
+export const generateToken = (user) => { // Generar token
   const payload = {
     userId: user.id,
     rut: user.rut,
@@ -16,7 +16,7 @@ export const generateToken = (user) => {
     role: user.role,
   };
 
-  const options = { expiresIn: "3h" };
+  const options = { expiresIn: "3h" }; // Expira en 3 horas
 
   return jwt.sign(payload, SECRET_KEY, options);
 };
@@ -29,8 +29,8 @@ export const authenticateToken = (req, res, next) => {
   // Primero verificamos si el token existe
   if (token) {
     try {
-      const verified = jwt.verify(token, SECRET_KEY);
-      req.user = verified;
+      const verified = jwt.verify(token, SECRET_KEY); // Verificamos el token
+      req.user = verified; // Guardamos el usuario en el request
       return next();
     } catch (err) {
       // Token expira

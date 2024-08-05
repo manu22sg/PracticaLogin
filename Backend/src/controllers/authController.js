@@ -127,7 +127,7 @@ export const logout = async (req, res) => {
     if (err) {
       return res.status(500).json({ message: "Error al cerrar sesión" }); // Si hay un error al cerrar la sesión, devolver un mensaje de error
     }
-     // Limpiamos la cookie del refresh token
+     
     res.json({ message: "Sesión cerrada exitosamente" });
   });
 };

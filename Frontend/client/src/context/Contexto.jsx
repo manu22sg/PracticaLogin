@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect } from "react";
-import {jwtDecode} from "jwt-decode";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import {jwtDecode} from "jwt-decode"; // Asegúrate de tener instalada la dependencia jwt-decode
 
 // Crear el contexto
 export const AuthContext = createContext();
@@ -15,6 +15,7 @@ export const getUserFromToken = () => {
     if (decoded.exp < currentTime) return null;
 
     return {
+      id: decoded.id,
       name: decoded.name,
       apellido_paterno: decoded.apellido_paterno,
       apellido_materno: decoded.apellido_materno,
@@ -47,7 +48,6 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("accessToken");
-    
     setUser(null);
   };
 
@@ -56,4 +56,9 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+// Hook personalizado para usar el contexto de autenticación
+export const useAuth = () => {
+  return useContext(AuthContext);
 };

@@ -1,5 +1,5 @@
 import { pool } from "./db.js"; // Importar el pool de conexiones
-const query = async (sql, params = []) => {
+const query = async (sql, params = []) => { // Crear una función asíncrona para realizar consultas SQL
     const connection = await pool.getConnection();
     try {
       const [rows] = await connection.query(sql, params);

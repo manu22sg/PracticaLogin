@@ -58,3 +58,14 @@
   transition: margin-left 0.3s ease; /* Transición suave para el ajuste del margen */
   padding: 1rem; /* Relleno opcional */
 }
+.admin-sidebar { @apply bg-blue-900; }
+.contable-sidebar {
+  @apply bg-green-900
+}
+.admin-button {
+  @apply bg-blue-700 hover:bg-blue-600;
+}
+
+.contable-button {
+@apply bg-green-700 hover:bg-green-600;
+}

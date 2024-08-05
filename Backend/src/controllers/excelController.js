@@ -95,9 +95,9 @@ export const excelCompanies = async (req, res) => { // Exportamos una función a
   }
 };
 
-const createExcelFile = async (companies) => {
+const createExcelFile = async (companies) => { // Función para crear el archivo Excel
   const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet("Datos_Empresas");
+  const sheet = workbook.addWorksheet("Datos_Empresas"); // Creamos una hoja de cálculo en el archivo Excel
 
   const headers = [
     "ID",
@@ -113,8 +113,8 @@ const createExcelFile = async (companies) => {
     "Giro Descripción",
     "Email Factura",
     "Emails",
-    "Nombre",    // Nueva columna
-    "Cargo"      // Nueva columna
+    "Nombre",    
+    "Cargo"      
   ];
 
   sheet.addRow(headers); // Agregamos la fila de encabezado al archivo Excel
@@ -177,7 +177,7 @@ const createExcelFile = async (companies) => {
 
 
 
-export const excelUsers = async (req, res) => {
+export const excelUsers = async (req, res) => { // Exportamos una función asíncrona para exportar los usuarios a un archivo Excel
   try {
     // Realizamos una consulta a la base de datos para seleccionar todos los usuarios
     const [rows] = await pool.query(`

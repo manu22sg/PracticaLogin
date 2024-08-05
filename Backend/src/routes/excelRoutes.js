@@ -12,6 +12,6 @@ router.get( // Definimos la ruta para exportar las empresas a un archivo excel
   excelCompanies
 );
 
-router.get("/excelUsers",authenticateToken,checkRole("Administrador Interno", "Personal Contable"), excelUsers) // definimos la ruta para exportar los usuarios a un archivo excel
+router.get("/excelUsers",authenticateToken,checkRole("Administrador Interno"), excelUsers) // definimos la ruta para exportar los usuarios a un archivo excel
 
 export default router;

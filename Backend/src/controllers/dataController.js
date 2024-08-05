@@ -1,6 +1,6 @@
 import  { pool } from "../utils/db.js";
 
-export const regiones = async (req, res) => {
+export const regiones = async (req, res) => { // Obtener regiones
     try {
         const [rows] = await pool.query('SELECT * FROM region_cl');
         res.json(rows);
@@ -10,7 +10,7 @@ export const regiones = async (req, res) => {
       }   
 }
 
-export const provincias = async (req, res) => {
+export const provincias = async (req, res) => { // Obtener provincias por región
     const { regionId } = req.query;
   try {
     const [rows] = await pool.query('SELECT * FROM provincia_cl WHERE id_re = ?', [regionId]);
@@ -20,7 +20,7 @@ export const provincias = async (req, res) => {
     res.status(500).json({ message: 'Error al obtener provincias', error: error.message });
   }
 }
-export const comunas = async (req, res) => {
+export const comunas = async (req, res) => { // Obtener comunas por provincia
     const { provinciaId } = req.query;
   try {
     const [rows] = await pool.query('SELECT * FROM comuna_cl WHERE id_pr = ?', [provinciaId]);

@@ -71,7 +71,8 @@ if ( !rut || !razonSocial || !emailFactura || !direccion ||
         text: "Debes completar todos los campos obligatorios",
       });
       return;
-}
+}   
+    
     try {
       await createCompany({
         rut,
@@ -107,12 +108,16 @@ if ( !rut || !razonSocial || !emailFactura || !direccion ||
       setComuna(null);
       setGiroCodigo(null);
     } catch (error) {
+      let errorMessage = "Error al registrar a la empresa";
+      if(error.response.status===410){
+        errorMessage = "El rut ya está registrado";
+      }
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Error al crear la empresa",
+        text: errorMessage,
       });
-      console.error("Error al crear la empresa:", error);
+      
     }
   };
 

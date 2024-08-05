@@ -6,9 +6,11 @@ import Swal from "sweetalert2";
 import EditCompanyForm from "./EditCompanyForm";
 import CompanyDetails from "./CompanyDetails";
 import { FaUserEdit, FaExpandAlt, FaFileExcel } from "react-icons/fa";
-
+import { useContext } from "react";
+import { AuthContext } from "../context/Contexto"; // Asegúrate de importar el contexto
 
 const CompanyList = () => {
+  const { user } = useContext(AuthContext); // Obtener el rol del contexto
   const [companies, setCompanies] = useState([]);
   const [allCompanies, setAllCompanies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -103,10 +105,15 @@ const CompanyList = () => {
   };
 
   const handleRowSelected = useCallback(state => {
-    setSelectedRows(state.selectedRows);
-  }, []);
+    if (user.role === "Administrador Interno") {
+      setSelectedRows(state.selectedRows);
+    }
+  }, [user.role]);
 
   const contextActions = useMemo(() => {
+    if (user.role === "Personal Contable") {
+      return null; // No muestra el botón de eliminar para Personal Contable
+    }
     return (
       <button
         key="delete"
@@ -116,7 +123,7 @@ const CompanyList = () => {
         Eliminar
       </button>
     );
-  }, [selectedRows, handleDelete]);
+  }, [selectedRows, handleDelete, user.role]);
 
   const columns = [
     {
@@ -143,13 +150,15 @@ const CompanyList = () => {
       name: "Operaciones",
       cell: row => (
         <div className="flex justify-end space-x-2">
-          <button
-            onClick={() => setEditingCompany(row)}
-            className="p-2 bg-transparent"
-            title="Editar"
-          >
-            <FaUserEdit className="text-blue-500" size={20} />
-          </button>
+          {user.role === "Administrador Interno" && (
+            <button
+              onClick={() => setEditingCompany(row)}
+              className="p-2 bg-transparent"
+              title="Editar"
+            >
+              <FaUserEdit className="text-blue-500" size={20} />
+            </button>
+          )}
           <button
             onClick={() => setViewingCompany(row)}
             className="p-2 bg-transparent"
@@ -186,7 +195,7 @@ const CompanyList = () => {
         title="Lista de Empresas"
         columns={columns}
         data={companies}
-        selectableRows
+        selectableRows={user.role === "Administrador Interno"} // Solo permite selección de filas si es Administrador Interno
         contextActions={contextActions}
         onSelectedRowsChange={handleRowSelected}
         clearSelectedRows={toggleCleared}
@@ -223,20 +232,21 @@ const CompanyList = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="relative bg-white p-4 rounded-lg shadow-md max-w-md w-full max-h-[80vh] overflow-y-auto">
             <button
-              onClick={() => setViewingCompany(null)}
-              className="absolute top-4 right-4 p-2 bg-gray-500 hover:bg-gray-600 rounded text-white"
-            >
-              X
-            </button>
-            <CompanyDetails
-              company={viewingCompany}
-              onClose={() => setViewingCompany(null)}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  );
+             
+             onClick={() => setViewingCompany(null)}
+             className="absolute top-4 right-4 p-2 bg-gray-500 hover:bg-gray-600 rounded text-white"
+           >
+             X
+           </button>
+           <CompanyDetails
+             company={viewingCompany}
+             onClose={() => setViewingCompany(null)}
+           />
+         </div>
+       </div>
+     )}
+   </div>
+ );
 };
 
 export default CompanyList;
