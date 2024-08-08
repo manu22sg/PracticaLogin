@@ -1,7 +1,7 @@
 import { pool } from "../utils/db.js";
 export const logUserEvent = async (userId, eventType, ipAddress, browser_info) => {
     if (!userId || !eventType || !ipAddress || !browser_info) {
-      throw new Error('Missing required parameters for logging event');
+      throw new Error('Falta un parametro requerido');
     }
   
     try {
@@ -10,8 +10,8 @@ export const logUserEvent = async (userId, eventType, ipAddress, browser_info) =
         [userId, eventType, ipAddress, browser_info]
       );
     } catch (error) {
-      console.error('Error logging event:', error);
-      throw new Error('Error logging event');
+      console.error('Error loggeando evento:', error);
+      throw new Error('Error loggeando event');
     }
   };
   

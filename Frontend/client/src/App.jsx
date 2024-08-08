@@ -29,10 +29,16 @@ const AppContent = () => {
     location.pathname === "/login" || location.pathname === "/register";
 
   useEffect(() => {
-    localStorage.setItem("isSidebarVisible", JSON.stringify(isSidebarVisible));
+    localStorage.setItem("isSidebarVisible", JSON.stringify(isSidebarVisible)); // Guarda el estado de la barra lateral en el almacenamiento local
   }, [isSidebarVisible]);
   useEffect(() => {
-    setSidebarVisible(JSON.parse(localStorage.getItem("isSidebarVisible")) ?? true);
+    setSidebarVisible(JSON.parse(localStorage.getItem("isSidebarVisible")) ?? true); // Establece la visibilidad de la barra lateral en función del almacenamiento local
+  }, [user]);
+
+  useEffect(() => { // Verifica si el usuario está siendo recibido
+    if (!user) {
+      setSidebarVisible(false); // Oculta la barra lateral cuando no hay usuario
+    }
   }, [user]);
 
   if (loading) {

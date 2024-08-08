@@ -17,15 +17,15 @@ const Navbar = ({ toggleSidebar }) => {
 
   const handleLogout = () => {
     if (isSidebarVisible) {
-      setIsSidebarVisible(false); // Asegúrate de que la barra lateral esté oculta
-      toggleSidebar();
+      setIsSidebarVisible(false); // Asegúrate de que la barra lateral esté oculta antes de cerrar sesión
+      toggleSidebar(); // Oculta la barra lateral
     }
     logout();
     
     navigate("/login");
   };
 
-  const handleToggleSidebar = () => {
+  const handleToggleSidebar = () => { // Maneja el evento de alternar la barra lateral
     setIsSidebarVisible((prevState) => !prevState); // Alterna la visibilidad de la barra lateral
     toggleSidebar();
   };

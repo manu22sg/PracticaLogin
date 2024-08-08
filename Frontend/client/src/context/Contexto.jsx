@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import {jwtDecode} from "jwt-decode"; // Asegúrate de tener instalada la dependencia jwt-decode
-
+import api from "../services/api"; // Importa la instancia de axios
 // Crear el contexto
 export const AuthContext = createContext();
 
@@ -46,7 +46,8 @@ export const AuthProvider = ({ children }) => {
     setUser(getUserFromToken());
   };
 
-  const logout = () => {
+  const logout =async () => {
+    await api.post("/auth/logout");
     localStorage.removeItem("accessToken");
     setUser(null);
   };
