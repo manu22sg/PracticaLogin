@@ -14,7 +14,6 @@ const CreateCompanyForm = () => {
   const [region, setRegion] = useState(null);
   const [provincia, setProvincia] = useState(null);
   const [comuna, setComuna] = useState(null);
-
   const [emails, setEmails] = useState([{ email: "", nombre: "", cargo: "" }]);
   const [emailFactura, setEmailFactura] = useState("");
 
@@ -111,6 +110,8 @@ if ( !rut || !razonSocial || !emailFactura || !direccion ||
       let errorMessage = "Error al registrar a la empresa";
       if(error.response.status===410){
         errorMessage = "El rut ya está registrado";
+      } else if (error.response.status === 409) {
+        errorMessage = "El correo electronico ya está registrado";
       }
       Swal.fire({
         icon: "error",

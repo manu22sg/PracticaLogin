@@ -27,7 +27,7 @@ export const listUser = async (req, res) => {
   }
 };
 
-export const updateUser = async (req, res) => { // Exportamos una función asíncrona para actualizar un usuario
+export const updateUser = async (req, res) => {
   const { rut } = req.params;
   const {
     name,
@@ -36,23 +36,59 @@ export const updateUser = async (req, res) => { // Exportamos una función asín
     celular,
     email,
     email_opcional,
+    password,
     role,
   } = req.body;
+
   try {
-    // Actualizar el usuario especificado por el RUT
-    const [result] = await pool.query(
-      "UPDATE users SET name = IFNULL(?,name), apellido_paterno = IFNULL(?,apellido_paterno), apellido_materno = IFNULL(?,apellido_materno), celular = IFNULL(?,celular), email = IFNULL(?,email), email_opcional = IFNULL(?, email_opcional), role = IFNULL(?,role) WHERE rut = ?",
-      [
-        name,
-        apellido_paterno,
-        apellido_materno,
-        celular,
-        email,
-        email_opcional,
-        role,
-        rut,
-      ]
-    );
+    // Construir la consulta SQL dinámicamente para manejar campos opcionales
+    const fieldsToUpdate = []; // Inicializar un arreglo para almacenar los campos a actualizar
+    const values = [];
+
+    if (name !== undefined) {
+      fieldsToUpdate.push("name = ?");
+      values.push(name);
+    }
+    if (apellido_paterno !== undefined) {
+      fieldsToUpdate.push("apellido_paterno = ?");
+      values.push(apellido_paterno);
+    }
+    if (apellido_materno !== undefined) {
+      fieldsToUpdate.push("apellido_materno = ?");
+      values.push(apellido_materno);
+    }
+    if (celular !== undefined) {
+      fieldsToUpdate.push("celular = ?");
+      values.push(celular);
+    }
+    if (email !== undefined) {
+      fieldsToUpdate.push("email = ?");
+      values.push(email);
+    }
+    if (email_opcional !== undefined) {
+      fieldsToUpdate.push("email_opcional = ?");
+      values.push(email_opcional);
+    }
+    if (password) { // Actualizar la contraseña solo si se proporciona
+      const hashedPassword = await bcrypt.hash(password, 10);
+      fieldsToUpdate.push("password = ?");
+      values.push(hashedPassword);
+
+    }
+    if (role !== undefined) {
+      fieldsToUpdate.push("role = ?");
+      values.push(role);
+    }
+
+    if (fieldsToUpdate.length === 0) {
+      return res.status(400).json({ message: "No se proporcionaron campos para actualizar" });
+    }
+
+    // Agregar la condición WHERE al final de la consulta
+    const query = `UPDATE users SET ${fieldsToUpdate.join(", ")} WHERE rut = ?`;
+    values.push(rut);
+
+    const [result] = await pool.query(query, values);
 
     if (result.affectedRows <= 0) {
       return res.status(404).json({ message: "Usuario no encontrado" });
@@ -63,9 +99,11 @@ export const updateUser = async (req, res) => { // Exportamos una función asín
     await logUserEvent(rows[0].id, 'update', req.ip, req.headers['user-agent']);
     res.json(rows[0]);
   } catch (error) {
+    console.error(error); // Agrega esta línea para depurar el error
     return res.status(400).json({ message: "Error al actualizar usuario" });
   }
 };
+
 
 export const deleteUser = async (req, res) => { // Exportamos una función asíncrona para eliminar un usuario
   try {

@@ -34,14 +34,14 @@ router.get(
 router.patch(
   "/:rut",
   authenticateToken, /// Definimos el middleware de autenticación
-  checkRole("Administrador Interno"), /// Definimos los roles que pueden acceder a la ruta
+  checkRole("Administrador Interno", "Personal Contable"), /// Definimos los roles que pueden acceder a la ruta
   updateCompany /// Definimos la función de controlador para actualizar una empresa
 );
 
 router.delete(
   "/:rut",
   authenticateToken, /// Definimos el middleware de autenticación
-  checkRole("Administrador Interno"), /// Definimos los roles que pueden acceder a la ruta
+  checkRole("Administrador Interno", "Personal Contable"), /// Definimos los roles que pueden acceder a la ruta
   deleteCompany /// Definimos la función de controlador para eliminar una empresa
 );
 

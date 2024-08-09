@@ -6,11 +6,9 @@ import Swal from "sweetalert2";
 import EditCompanyForm from "./EditCompanyForm";
 import CompanyDetails from "./CompanyDetails";
 import { FaUserEdit, FaExpandAlt, FaFileExcel } from "react-icons/fa";
-import { useContext } from "react";
-import { AuthContext } from "../context/Contexto"; // Asegúrate de importar el contexto
+
 
 const CompanyList = () => {
-  const { user } = useContext(AuthContext); // Obtener el rol del contexto
   const [companies, setCompanies] = useState([]);
   const [allCompanies, setAllCompanies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -27,13 +25,13 @@ const CompanyList = () => {
     try {
       const response = await getCompanies();
       const data = response.data || [];
-      // Validar que data contiene objetos con los campos esperados
       const validData = data.filter(company =>
         company &&
         company.rut &&
         company.razon_social &&
         company.direccion &&
-        company.giro_codigo
+        company.giro_codigo &&
+        company.giro_descripcion
       );
       setAllCompanies(validData);
       setCompanies(validData);
@@ -47,6 +45,7 @@ const CompanyList = () => {
       (company.razon_social && company.razon_social.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (company.rut && company.rut.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (company.direccion && company.direccion.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (company.giro_codigo && company.giro_codigo.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (company.giro_descripcion && company.giro_descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
     );
     setCompanies(filteredCompanies);
@@ -87,10 +86,8 @@ const CompanyList = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          // Usa rut en lugar de id
           const deletePromises = selectedRows.map(row => deleteCompany(row.rut));
           await Promise.all(deletePromises);
-          // Actualiza la lista de compañías después de eliminar
           const updatedCompanies = companies.filter(company => !selectedRows.some(selected => selected.rut === company.rut));
           setCompanies(updatedCompanies);
           setAllCompanies(updatedCompanies);
@@ -105,15 +102,10 @@ const CompanyList = () => {
   };
 
   const handleRowSelected = useCallback(state => {
-    if (user.role === "Administrador Interno") {
-      setSelectedRows(state.selectedRows);
-    }
-  }, [user.role]);
+    setSelectedRows(state.selectedRows);
+  }, []);
 
   const contextActions = useMemo(() => {
-    if (user.role === "Personal Contable") {
-      return null; // No muestra el botón de eliminar para Personal Contable
-    }
     return (
       <button
         key="delete"
@@ -123,7 +115,7 @@ const CompanyList = () => {
         Eliminar
       </button>
     );
-  }, [selectedRows, handleDelete, user.role]);
+  }, [selectedRows, handleDelete]);
 
   const columns = [
     {
@@ -142,23 +134,36 @@ const CompanyList = () => {
       sortable: true,
     },
     {
-      name: "Giro",
-      selector: row => row.giro_codigo, // Mostrar el código del giro
+      name: "Código del Giro",
+      selector: row => row.giro_codigo,
       sortable: true,
+    },
+    {
+      name: "Descripción",
+      selector: row => row.giro_descripcion,
+      sortable: true,
+      cell: row => {
+        const descripcion = row.giro_descripcion;
+    return (
+      <div title={descripcion.length > 40 ? descripcion : null}>
+        {descripcion.length > 40
+          ? `${descripcion.substring(0, 40)}...`
+          : descripcion}
+      </div>
+    )
+      },
     },
     {
       name: "Operaciones",
       cell: row => (
         <div className="flex justify-end space-x-2">
-          {user.role === "Administrador Interno" && (
-            <button
-              onClick={() => setEditingCompany(row)}
-              className="p-2 bg-transparent"
-              title="Editar"
-            >
-              <FaUserEdit className="text-blue-500" size={20} />
-            </button>
-          )}
+          <button
+            onClick={() => setEditingCompany(row)}
+            className="p-2 bg-transparent"
+            title="Editar"
+          >
+            <FaUserEdit className="text-blue-500" size={20} />
+          </button>
           <button
             onClick={() => setViewingCompany(row)}
             className="p-2 bg-transparent"
@@ -173,13 +178,12 @@ const CompanyList = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
-      
       <div className="mb-2 flex justify-between items-center">
         <input
           type="text"
           value={searchTerm}
           onChange={handleSearchTermChange}
-          placeholder="Buscar "
+          placeholder="Buscar empresa..."
           className="p-2 rounded bg-gray-200 text-black w-full max-w-2xl"
         />
         <button
@@ -189,13 +193,12 @@ const CompanyList = () => {
           <FaFileExcel className="w-5 h-5 inline mr-3" />
           Exportar Excel
         </button>
-        
       </div>
       <DataTable
         title="Lista de Empresas"
         columns={columns}
         data={companies}
-        selectableRows={user.role === "Administrador Interno"} // Solo permite selección de filas si es Administrador Interno
+        selectableRows
         contextActions={contextActions}
         onSelectedRowsChange={handleRowSelected}
         clearSelectedRows={toggleCleared}
@@ -232,21 +235,20 @@ const CompanyList = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="relative bg-white p-4 rounded-lg shadow-md max-w-md w-full max-h-[80vh] overflow-y-auto">
             <button
-             
-             onClick={() => setViewingCompany(null)}
-             className="absolute top-4 right-4 p-2 bg-gray-500 hover:bg-gray-600 rounded text-white"
-           >
-             X
-           </button>
-           <CompanyDetails
-             company={viewingCompany}
-             onClose={() => setViewingCompany(null)}
-           />
-         </div>
-       </div>
-     )}
-   </div>
- );
+              onClick={() => setViewingCompany(null)}
+              className="absolute top-4 right-4 p-2 bg-gray-500 hover:bg-gray-600 rounded text-white"
+            >
+              X
+            </button>
+            <CompanyDetails
+              company={viewingCompany}
+              onClose={() => setViewingCompany(null)}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default CompanyList;

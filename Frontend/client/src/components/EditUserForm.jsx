@@ -5,16 +5,15 @@ import { FaSave, FaTrash } from "react-icons/fa";
 
 const EditUserForm = ({ user, onClose, onSave }) => {
   const [name, setName] = useState(user.name);
-  const [apellido_paterno, setApellidoPaterno] = useState(
-    user.apellido_paterno
-  );
-  const [apellido_materno, setApellidoMaterno] = useState(
-    user.apellido_materno
-  );
+  const [apellido_paterno, setApellidoPaterno] = useState(user.apellido_paterno);
+  const [apellido_materno, setApellidoMaterno] = useState(user.apellido_materno);
   const [celular, setCelular] = useState(user.celular);
   const [email, setEmail] = useState(user.email);
   const [email_opcional, setEmailOpcional] = useState(user.email_opcional);
   const [role, setRole] = useState(user.role);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const rolesDisponibles = [
     "Administrador Interno",
     "Gerente",
@@ -35,8 +34,18 @@ const EditUserForm = ({ user, onClose, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (password && password !== confirmPassword) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Las contraseñas no coinciden",
+      });
+      return;
+    }
+
     try {
-      await updateUser(user.rut, {
+      const updatedUser = {
         name,
         apellido_paterno,
         apellido_materno,
@@ -44,7 +53,10 @@ const EditUserForm = ({ user, onClose, onSave }) => {
         email,
         email_opcional,
         role,
-      });
+        ...(password && { password }), // Solo incluir la contraseña si se ha cambiado
+      };
+
+      await updateUser(user.rut, updatedUser);
       onSave(); // Actualiza la lista de usuarios
       onClose(); // Cierra el formulario
       Swal.fire({
@@ -112,7 +124,6 @@ const EditUserForm = ({ user, onClose, onSave }) => {
         </div>
         <div className="mb-2">
           <label className="block mb-1">Email:</label>
-          
           <input
             type="email"
             value={email}
@@ -127,6 +138,24 @@ const EditUserForm = ({ user, onClose, onSave }) => {
             type="email"
             value={email_opcional}
             onChange={(e) => setEmailOpcional(e.target.value)}
+            className="p-1 rounded bg-gray-200 text-black w-full"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Nueva Contraseña:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="p-1 rounded bg-gray-200 text-black w-full"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Confirmar Contraseña:</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             className="p-1 rounded bg-gray-200 text-black w-full"
           />
         </div>
